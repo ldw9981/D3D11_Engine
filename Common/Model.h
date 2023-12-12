@@ -6,7 +6,7 @@
 #include "Node.h"
 #include "Skeleton.h"
 
-class Model: public Node
+class StaticMeshModel: public Node
 {
 public:
 	Model() {}
