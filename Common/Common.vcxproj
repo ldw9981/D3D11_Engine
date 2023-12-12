@@ -149,7 +149,10 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="SceneComponent.h" />
+    <ClInclude Include="SkeletalMeshComponent.h" />
     <ClInclude Include="Skeleton.h" />
+    <ClInclude Include="StaticMeshComponent.h" />
     <ClInclude Include="TimeSystem.h" />
     <ClInclude Include="Node.h" />
   </ItemGroup>
@@ -167,7 +170,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="SceneComponent.cpp" />
+    <ClCompile Include="SkeletalMeshComponent.cpp" />
     <ClCompile Include="Skeleton.cpp" />
+    <ClCompile Include="StaticMeshComponent.cpp" />
     <ClCompile Include="TimeSystem.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>

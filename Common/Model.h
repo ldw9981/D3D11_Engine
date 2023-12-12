@@ -9,8 +9,8 @@
 class StaticMeshModel: public Node
 {
 public:
-	Model() {}
-	~Model() {}
+	StaticMeshModel() {}
+	~StaticMeshModel() {}
 	
 	// 공유 가능한 데이터
 	std::vector<Mesh> m_Meshes;	

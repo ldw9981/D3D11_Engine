@@ -77,7 +77,7 @@ public:
 	CB_MatrixPalette m_MatrixPalette;
 	float m_MeshScale=1.0f;
 	
-	Model m_Model;
+	StaticMeshModel m_Model;
 
 
 	virtual bool Initialize(UINT Width, UINT Height);

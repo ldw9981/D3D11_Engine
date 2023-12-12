@@ -118,6 +118,7 @@ public:
 	void Render(ID3D11DeviceContext* deviceContext);
 };
 
+
 class SkinnedMesh:public StaticMesh
 {
 public:

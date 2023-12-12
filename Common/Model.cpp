@@ -8,7 +8,7 @@
 #include <assimp/cimport.h>
 
 
-bool Model::ReadFile(ID3D11Device* device,const char* filePath)
+bool StaticMeshModel::ReadFile(ID3D11Device* device,const char* filePath)
 {
 	LOG_MESSAGEA("Loading file: %s", filePath);
 	Assimp::Importer importer;
@@ -109,12 +109,12 @@ bool Model::ReadFile(ID3D11Device* device,const char* filePath)
 	return true;
 }
 
-Material* Model::GetMaterial(UINT index)
+Material* StaticMeshModel::GetMaterial(UINT index)
 {
 	assert(index < m_Materials.size());
 	return &m_Materials[index];
 }
-void Model::Update(float deltaTime)
+void StaticMeshModel::Update(float deltaTime)
 {
 	if (!m_Animations.empty())
 	{
@@ -124,7 +124,7 @@ void Model::Update(float deltaTime)
 	}	
 }
 
-void Model::UpdateNodeAnimationReference(UINT index)
+void StaticMeshModel::UpdateNodeAnimationReference(UINT index)
 {
 	assert(index < m_Animations.size());
 	Animation& animation = m_Animations[index];
@@ -136,7 +136,7 @@ void Model::UpdateNodeAnimationReference(UINT index)
 	}
 }
 
-void Model::SetWorldTransform(const Math::Matrix& transform)
+void StaticMeshModel::SetWorldTransform(const Math::Matrix& transform)
 {
 	m_Local = transform;
 }
