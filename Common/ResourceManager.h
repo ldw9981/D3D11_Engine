@@ -9,12 +9,11 @@ public:
 	ResourceManager();
 	~ResourceManager();
 
-	
-	// Texture
-
 	// StaticMesh
 
 	// SkeletalMesh
+
+	// Skeleton
 
 	// Animation
 
