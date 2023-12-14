@@ -161,11 +161,11 @@ bool D3DRenderer::Initialize(UINT Width, UINT Height, HWND Handle)
 		{ "BLENDWEIGHTS" , 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 	hr = m_pDevice->CreateInputLayout(layout, ARRAYSIZE(layout),
-		vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &m_pInputLayout);
+		vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &m_pSkinningInputLayout);
 
 	// 3. Render() 에서 파이프라인에 바인딩할  버텍스 셰이더 생성
 	HR_T(m_pDevice->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(),
-		vertexShaderBuffer->GetBufferSize(), NULL, &m_pVertexShader));
+		vertexShaderBuffer->GetBufferSize(), NULL, &m_pSkinningVertexShader));
 	SAFE_RELEASE(vertexShaderBuffer);
 
 
@@ -243,9 +243,9 @@ void D3DRenderer::Uninitialize()
 	SAFE_RELEASE(m_pCBTransform);
 	SAFE_RELEASE(m_pCBDirectionLight);
 	SAFE_RELEASE(m_pAlphaBlendState);
-	SAFE_RELEASE(m_pVertexShader);
+	SAFE_RELEASE(m_pSkinningVertexShader);
 	SAFE_RELEASE(m_pPixelShader);
-	SAFE_RELEASE(m_pInputLayout);
+	SAFE_RELEASE(m_pSkinningInputLayout);
 	SAFE_RELEASE(m_pSamplerLinear);
 
 	// Cleanup DirectX
@@ -274,10 +274,10 @@ void D3DRenderer::Render()
 	m_pDeviceContext->ClearRenderTargetView(m_pRenderTargetView, clear_color_with_alpha);
 	m_pDeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 	m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	m_pDeviceContext->IASetInputLayout(m_pInputLayout);
+	m_pDeviceContext->IASetInputLayout(m_pSkinningInputLayout);
 
 
-	m_pDeviceContext->VSSetShader(m_pVertexShader, nullptr, 0);
+	m_pDeviceContext->VSSetShader(m_pSkinningVertexShader, nullptr, 0);
 	m_pDeviceContext->VSSetConstantBuffers(0, 1, &m_pCBTransform);
 	m_pDeviceContext->VSSetConstantBuffers(1, 1, &m_pCBDirectionLight);
 
@@ -305,7 +305,7 @@ void D3DRenderer::Render()
 			// 머터리얼 적용
 			Material* pMaterial = ModelPtr->GetMaterial(mesh.m_MaterialIndex);
 			assert(pMaterial != nullptr);
-			pMaterial->ApplyDeviceContext(m_pDeviceContext, &m_CpuCbMaterial, m_pGpuCbMaterial, m_pAlphaBlendState);
+			ApplyMaterial(pMaterial);		
 
 			// 스켈레탈 메쉬(본이있으면) 행렬팔레트 업데이트
 			if (mesh.IsSkeletalMesh())
@@ -370,3 +370,27 @@ void D3DRenderer::Render()
 }
 
 
+
+
+void D3DRenderer::ApplyMaterial(Material* pMaterial)
+{
+	m_pDeviceContext->PSSetShaderResources(0, 1, &pMaterial->m_pDiffuseRV);
+	m_pDeviceContext->PSSetShaderResources(1, 1, &pMaterial->m_pNormalRV);
+	m_pDeviceContext->PSSetShaderResources(2, 1, &pMaterial->m_pSpecularRV);
+	m_pDeviceContext->PSSetShaderResources(3, 1, &pMaterial->m_pEmissiveRV);
+	m_pDeviceContext->PSSetShaderResources(4, 1, &pMaterial->m_pOpacityRV);
+
+	m_CpuCbMaterial.Diffuse = pMaterial->m_Color;
+	m_CpuCbMaterial.UseDiffuseMap = pMaterial->m_pDiffuseRV != nullptr ? true : false;
+	m_CpuCbMaterial.UseNormalMap = pMaterial->m_pNormalRV != nullptr ? true : false;
+	m_CpuCbMaterial.UseSpecularMap = pMaterial->m_pSpecularRV != nullptr ? true : false;
+	m_CpuCbMaterial.UseEmissiveMap = pMaterial->m_pEmissiveRV != nullptr ? true : false;
+	m_CpuCbMaterial.UseOpacityMap = pMaterial->m_pOpacityRV != nullptr ? true : false;
+
+	if (m_CpuCbMaterial.UseOpacityMap && m_pAlphaBlendState != nullptr)
+		m_pDeviceContext->OMSetBlendState(m_pAlphaBlendState, nullptr, 0xffffffff); // 알파블렌드 상태설정 , 다른옵션은 기본값 
+	else
+		m_pDeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);	// 설정해제 , 다른옵션은 기본값
+
+	m_pDeviceContext->UpdateSubresource(m_pGpuCbMaterial, 0, nullptr, &m_CpuCbMaterial, 0, 0);
+}

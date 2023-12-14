@@ -63,11 +63,14 @@ bool GameApp::Initialize(UINT Width, UINT Height)
 	if (!m_D3DRenderer.Initialize(Width, Height, m_hWnd))
 		return false;
 
+	m_ResourceManager = std::make_unique<ResourceManager>();
+	m_ResourceManager->Initialize();
 	return true;
 }
 
 void GameApp::Uninitialize()
 {
+	m_ResourceManager->Uninitialize();
 	m_D3DRenderer.Uninitialize();
 }
 

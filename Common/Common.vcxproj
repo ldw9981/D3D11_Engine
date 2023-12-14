@@ -150,6 +150,7 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="SceneComponent.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="SkeletalMeshComponent.h" />
@@ -173,6 +174,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="SceneComponent.cpp" />
     <ClCompile Include="Singleton.cpp" />
     <ClCompile Include="SkeletalMeshComponent.cpp" />

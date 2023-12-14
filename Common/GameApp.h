@@ -3,6 +3,7 @@
 #include "GameApp.h"
 #include "TimeSystem.h"
 #include "D3DRenderer.h"
+#include "ResourceManager.h"
 
 #define MAX_LOADSTRING 100
 
@@ -28,7 +29,8 @@ public:
 	GameTimer m_Timer;
 	UINT m_ClientWidth;
 	UINT m_ClientHeight;
-	D3DRenderer m_D3DRenderer;
+	D3DRenderer m_D3DRenderer;	
+	std::unique_ptr<ResourceManager> m_ResourceManager;
 public:
 	// 윈도우 정보 등록,생성,보이기 한다.
 	virtual bool Initialize(UINT Width, UINT Height);

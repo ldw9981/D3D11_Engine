@@ -46,6 +46,7 @@ struct CB_Marterial
 };
 
 class StaticMeshModel;
+class Material;
 class D3DRenderer
 {
 public:
@@ -62,9 +63,10 @@ public:
 
 	// 렌더링 파이프라인에 적용하는 리소스 객체의 인터페이스
 
-	ID3D11VertexShader* m_pVertexShader = nullptr;		// 정점 셰이더.
-	ID3D11PixelShader* m_pPixelShader = nullptr;		// 픽셀 셰이더.
-	ID3D11InputLayout* m_pInputLayout = nullptr;		// 입력 레이아웃.
+	ID3D11VertexShader* m_pSkinningVertexShader = nullptr;		// 정점 셰이더.
+	ID3D11InputLayout* m_pSkinningInputLayout = nullptr;		// 입력 레이아웃.
+
+	ID3D11PixelShader* m_pPixelShader = nullptr;		// 픽셀 셰이더.	
 	ID3D11SamplerState* m_pSamplerLinear = nullptr;		// 샘플러 상태.
 	ID3D11BlendState* m_pAlphaBlendState = nullptr;		// 블렌드 상태 변경 (반투명처리를위한 블렌드상태)
 	ID3D11Buffer* m_pGpuCbMaterial = nullptr;				// 상수 버퍼: 변환행렬
@@ -100,5 +102,7 @@ public:
 
 	void Update();
 	void Render();
+
+	void ApplyMaterial(Material* pMaterial);
 };
 
