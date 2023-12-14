@@ -98,15 +98,6 @@ public:
 	bool Initialize(UINT Width, UINT Height, HWND Handle);
 	void Uninitialize();
 
-	bool InitD3D(UINT Width, UINT Height, HWND Handle);
-	void UninitD3D();
-
-	bool InitImGUI();
-	void UninitImGUI();
-
-	bool InitScene();		// Ω¶¿Ã¥ı,πˆ≈ÿΩ∫,¿Œµ¶Ω∫
-	void UninitScene();
-
 	void Update();
 	void Render();
 };
