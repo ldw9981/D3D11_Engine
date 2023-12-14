@@ -25,7 +25,7 @@ D3DRenderer::~D3DRenderer()
 	
 }
 
-bool D3DRenderer::Initialize(UINT Width, UINT Height, HWND Handle)
+bool D3DRenderer::Initialize(HWND Handle,UINT Width, UINT Height)
 {
 	m_hWnd = Handle;
 	HRESULT hr = 0;	// °á°ú°ª.
@@ -374,14 +374,14 @@ void D3DRenderer::Render()
 
 void D3DRenderer::ApplyMaterial(Material* pMaterial)
 {
-	m_pDeviceContext->PSSetShaderResources(0, 1, &pMaterial->m_pDiffuseRV);
+	m_pDeviceContext->PSSetShaderResources(0, 1, &pMaterial->m_pBaseColorRV);
 	m_pDeviceContext->PSSetShaderResources(1, 1, &pMaterial->m_pNormalRV);
 	m_pDeviceContext->PSSetShaderResources(2, 1, &pMaterial->m_pSpecularRV);
 	m_pDeviceContext->PSSetShaderResources(3, 1, &pMaterial->m_pEmissiveRV);
 	m_pDeviceContext->PSSetShaderResources(4, 1, &pMaterial->m_pOpacityRV);
 
 	m_CpuCbMaterial.Diffuse = pMaterial->m_Color;
-	m_CpuCbMaterial.UseDiffuseMap = pMaterial->m_pDiffuseRV != nullptr ? true : false;
+	m_CpuCbMaterial.UseDiffuseMap = pMaterial->m_pBaseColorRV != nullptr ? true : false;
 	m_CpuCbMaterial.UseNormalMap = pMaterial->m_pNormalRV != nullptr ? true : false;
 	m_CpuCbMaterial.UseSpecularMap = pMaterial->m_pSpecularRV != nullptr ? true : false;
 	m_CpuCbMaterial.UseEmissiveMap = pMaterial->m_pEmissiveRV != nullptr ? true : false;

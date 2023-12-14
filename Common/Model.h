@@ -6,15 +6,15 @@
 #include "Node.h"
 #include "Skeleton.h"
 
-class StaticMeshModel: public Node
+class Model: public Node
 {
 public:
-	StaticMeshModel() {}
-	~StaticMeshModel() {}
+	Model() {}
+	~Model() {}
 	
 	// 공유 가능한 데이터
 	std::vector<Mesh> m_Meshes;	
-	std::vector<Material> m_Materials;
+	std::vector<shared_ptr<Material>> m_Materials;
 	std::vector<Animation> m_Animations;	
 	Skeleton m_Skeleton;
 	

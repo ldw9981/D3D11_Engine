@@ -6,9 +6,10 @@
 #include <assimp/postprocess.h>
 #include <assimp/config.h>
 #include <assimp/cimport.h>
+#include "ResourceManager.h"
 
 
-bool StaticMeshModel::ReadFile(ID3D11Device* device,const char* filePath)
+bool Model::ReadFile(ID3D11Device* device,const char* filePath)
 {
 	LOG_MESSAGEA("Loading file: %s", filePath);
 	Assimp::Importer importer;
@@ -56,13 +57,13 @@ bool StaticMeshModel::ReadFile(ID3D11Device* device,const char* filePath)
 	}
 	
 	m_Skeleton.ReadFromAssimp(scene);
-	
-
-
-	m_Materials.resize(scene->mNumMaterials);
+		
 	for (unsigned int i = 0; i < scene->mNumMaterials; ++i)
 	{
-		m_Materials[i].Create(device, scene->mMaterials[i]);
+		std::string key = std::string(filePath) + std::to_string(i);
+		
+		shared_ptr<Material> ret = ResourceManager::GetInstance()->CreateMaterial(key, scene->mMaterials[i]);
+		m_Materials.push_back(ret);
 	}
 
 	m_Meshes.resize(scene->mNumMeshes);
@@ -109,12 +110,12 @@ bool StaticMeshModel::ReadFile(ID3D11Device* device,const char* filePath)
 	return true;
 }
 
-Material* StaticMeshModel::GetMaterial(UINT index)
+Material* Model::GetMaterial(UINT index)
 {
 	assert(index < m_Materials.size());
-	return &m_Materials[index];
+	return m_Materials[index].get();
 }
-void StaticMeshModel::Update(float deltaTime)
+void Model::Update(float deltaTime)
 {
 	if (!m_Animations.empty())
 	{
@@ -124,7 +125,7 @@ void StaticMeshModel::Update(float deltaTime)
 	}	
 }
 
-void StaticMeshModel::UpdateNodeAnimationReference(UINT index)
+void Model::UpdateNodeAnimationReference(UINT index)
 {
 	assert(index < m_Animations.size());
 	Animation& animation = m_Animations[index];
@@ -136,7 +137,7 @@ void StaticMeshModel::UpdateNodeAnimationReference(UINT index)
 	}
 }
 
-void StaticMeshModel::SetWorldTransform(const Math::Matrix& transform)
+void Model::SetWorldTransform(const Math::Matrix& transform)
 {
 	m_Local = transform;
 }

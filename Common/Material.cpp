@@ -12,7 +12,7 @@ Material::Material()
 
 Material::~Material()
 {
-	SAFE_RELEASE(m_pDiffuseRV);
+	SAFE_RELEASE(m_pBaseColorRV);
 	SAFE_RELEASE(m_pNormalRV);
 	SAFE_RELEASE(m_pSpecularRV);
 	SAFE_RELEASE(m_pEmissiveRV);
@@ -61,14 +61,14 @@ void Material::Create(ID3D11Device* device,aiMaterial* pMaterial)
 	if(AI_SUCCESS == pMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, color))
 	{
 		m_Color ={ color.r, color.g, color.b , 1};
-	}
+	}	
 
 	if (AI_SUCCESS == pMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &texturePath)) 
 	{
 		path = ToWString(string(texturePath.C_Str()));		
 		finalPath = basePath + path.filename().wstring();
-		HR_T(CreateTextureFromFile( device, finalPath.c_str(),&m_pDiffuseRV));
-		m_FilePathDiffuse = finalPath;
+		HR_T(CreateTextureFromFile( device, finalPath.c_str(),&m_pBaseColorRV));
+		m_FilePathBaseColor = finalPath;
 	}
 
 	if (AI_SUCCESS == pMaterial->GetTexture(aiTextureType_NORMALS, 0, &texturePath))
@@ -102,5 +102,23 @@ void Material::Create(ID3D11Device* device,aiMaterial* pMaterial)
 		HR_T(CreateTextureFromFile(device, finalPath.c_str(), &m_pOpacityRV));
 		m_FilePathOpacity = finalPath;
 	}	
+
+	if (AI_SUCCESS == pMaterial->GetTexture(aiTextureType_OPACITY, 0, &texturePath))
+	{
+		path = ToWString(string(texturePath.C_Str()));
+		finalPath = basePath + path.filename().wstring();
+		HR_T(CreateTextureFromFile(device, finalPath.c_str(), &m_pOpacityRV));
+		m_FilePathOpacity = finalPath;
+	}
+
+	if (AI_SUCCESS == pMaterial->GetTexture(aiTextureType_OPACITY, 0, &texturePath))
+	{
+		path = ToWString(string(texturePath.C_Str()));
+		finalPath = basePath + path.filename().wstring();
+		HR_T(CreateTextureFromFile(device, finalPath.c_str(), &m_pOpacityRV));
+		m_FilePathOpacity = finalPath;
+	}
+
+
 }
 

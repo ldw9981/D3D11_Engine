@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Singleton.h"
 
 
 #include <DirectXtk/BufferHelpers.h>
@@ -45,9 +45,9 @@ struct CB_Marterial
 	Math::Vector2 pad6;							// 8  16byte
 };
 
-class StaticMeshModel;
+class Model;
 class Material;
-class D3DRenderer
+class D3DRenderer: public Singleton<D3DRenderer>
 {
 public:
 	D3DRenderer();
@@ -95,9 +95,9 @@ public:
 	HWND m_hWnd = nullptr;
 	float m_MeshScale = 1.0f;
 
-	std::list<StaticMeshModel*> m_Models;
+	std::list<Model*> m_Models;
 public:
-	bool Initialize(UINT Width, UINT Height, HWND Handle);
+	bool Initialize(HWND Handle,UINT Width, UINT Height);
 	void Uninitialize();
 
 	void Update();

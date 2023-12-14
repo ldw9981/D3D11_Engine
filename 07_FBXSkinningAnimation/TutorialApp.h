@@ -11,6 +11,7 @@ using namespace DirectX::SimpleMath;
 using namespace DirectX;
 
 
+#define MAX_MODEL 3
 
 class TutorialApp :
     public GameApp
@@ -22,16 +23,12 @@ public:
 
 
 	
-	StaticMeshModel m_Model;
+	Model m_Model[MAX_MODEL];
 
 
 	virtual bool Initialize(UINT Width, UINT Height);
 	virtual void Update();
 	virtual void Render();
-
-
-
-
 
 };
 

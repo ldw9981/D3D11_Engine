@@ -29,7 +29,7 @@ public:
 	GameTimer m_Timer;
 	UINT m_ClientWidth;
 	UINT m_ClientHeight;
-	D3DRenderer m_D3DRenderer;	
+	std::unique_ptr<D3DRenderer> m_D3DRenderer;
 	std::unique_ptr<ResourceManager> m_ResourceManager;
 public:
 	// 윈도우 정보 등록,생성,보이기 한다.
