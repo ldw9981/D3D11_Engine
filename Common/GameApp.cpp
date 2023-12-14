@@ -111,6 +111,11 @@ void GameApp::Update()
 
 }
 
+void GameApp::Render()
+{
+	m_D3DRenderer->Render();
+}
+
 //
 //  ÇÔ¼ö: WndProc(HWND, UINT, WPARAM, LPARAM)
 //

@@ -25,6 +25,12 @@ D3DRenderer::~D3DRenderer()
 	
 }
 
+
+void D3DRenderer::AddModel(Model* pModel)
+{
+	m_Models.push_back(pModel);
+}
+
 bool D3DRenderer::Initialize(HWND Handle,UINT Width, UINT Height)
 {
 	m_hWnd = Handle;
@@ -327,6 +333,7 @@ void D3DRenderer::Render()
 			mesh.Render(m_pDeviceContext);
 		}
 	}
+	m_Models.clear();
 
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls

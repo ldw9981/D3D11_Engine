@@ -11,8 +11,6 @@ using namespace DirectX::SimpleMath;
 using namespace DirectX;
 
 
-#define MAX_MODEL 3
-
 class TutorialApp :
     public GameApp
 {
@@ -22,13 +20,17 @@ public:
 
 
 
-	
-	Model m_Model[MAX_MODEL];
+	std::list<Model>	m_ModelList;
+
 
 
 	virtual bool Initialize(UINT Width, UINT Height);
 	virtual void Update();
 	virtual void Render();
 
+	virtual LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+	void IncreaseModel();
+	void DecreaseModel();
 };
 
