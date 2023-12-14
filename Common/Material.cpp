@@ -1,7 +1,7 @@
 #include "pch.h"
-#include "Helper.h"
 #include "Material.h"
-
+#include "D3DRenderer.h"
+#include "Helper.h"
 #include <assimp/material.h>
 
 

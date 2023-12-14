@@ -1,6 +1,9 @@
 #pragma once
 #include <windows.h>
+#include "GameApp.h"
 #include "TimeSystem.h"
+#include "D3DRenderer.h"
+
 #define MAX_LOADSTRING 100
 
 class GameApp
@@ -25,9 +28,11 @@ public:
 	GameTimer m_Timer;
 	UINT m_ClientWidth;
 	UINT m_ClientHeight;
+	D3DRenderer m_D3DRenderer;
 public:
 	// 윈도우 정보 등록,생성,보이기 한다.
 	virtual bool Initialize(UINT Width, UINT Height);
+	virtual void Uninitialize();
 	virtual bool Run();
 	virtual void Update(); // 상속 받은 클래스에서 구현
 	virtual void Render()=0; // 상속 받은 클래스에서 구현

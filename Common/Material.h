@@ -1,23 +1,8 @@
 #pragma once
+#include "D3DRenderer.h"
+
 
 struct aiMaterial;
-
-
-struct CB_Marterial
-{
-	Math::Vector4 Ambient = { 1.0f,1.0f,1.0f,1.0f };	// 16byte
-	Math::Vector4 Diffuse = { 1.0f,1.0f,1.0f,1.0f };	// 16byte
-	Math::Vector4 Specular = { 1.0f,1.0f,1.0f,1.0f };  // 16byte
-	Math::Vector4 Emissive = { 1.0f,1.0f,1.0f,1.0f };  // 16byte
-	float  SpecularPower = 80;					// 4
-	int UseDiffuseMap = true;					// 4
-	int UseNormalMap = true;					// 4
-	int UseSpecularMap = true;                  // 4 16byte			
-	int UseEmissiveMap = true;					// 4
-	int UseOpacityMap = true;					// 4
-	Math::Vector2 pad6;							// 8  16byte
-};
-
 
 class Material
 {

@@ -8,3 +8,8 @@ SceneComponent::SceneComponent()
 SceneComponent::~SceneComponent()
 {
 }
+
+void SceneComponent::Update(float DeltaTime)
+{
+
+}

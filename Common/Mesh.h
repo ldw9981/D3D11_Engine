@@ -1,5 +1,5 @@
 #pragma once
-
+#include "D3DRenderer.h"
 
 // 정점 선언.
 struct Vertex
@@ -44,10 +44,7 @@ struct BoneReference
 	Math::Matrix* NodeWorldMatrixPtr;
 };
 
-struct CB_MatrixPalette
-{
-	Math::Matrix Array[128];
-};
+
 
 struct aiMesh;
 struct Skeleton;

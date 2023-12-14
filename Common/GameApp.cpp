@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "GameApp.h"
-
+#include <imgui_impl_win32.h>
 
 GameApp* GameApp::m_pInstance = nullptr;
 HWND GameApp::m_hWnd;
@@ -27,7 +27,7 @@ GameApp::GameApp(HINSTANCE hInstance)
 
 GameApp::~GameApp()
 {
-
+	
 }
 
 
@@ -59,7 +59,16 @@ bool GameApp::Initialize(UINT Width, UINT Height)
 	UpdateWindow(m_hWnd);
 
 	m_currentTime = m_previousTime = (float)GetTickCount64() / 1000.0f;
+
+	if (!m_D3DRenderer.Initialize(Width, Height, m_hWnd))
+		return false;
+
 	return true;
+}
+
+void GameApp::Uninitialize()
+{
+	m_D3DRenderer.Uninitialize();
 }
 
 bool GameApp::Run()
@@ -90,6 +99,10 @@ bool GameApp::Run()
 void GameApp::Update()
 {
 	m_Timer.Tick();
+	m_D3DRenderer.Update();
+
+	
+
 }
 
 //
@@ -99,8 +112,14 @@ void GameApp::Update()
 //  WM_DESTROY  - 종료 메시지를 게시하고 반환합니다.
 //
 //
+
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 LRESULT CALLBACK GameApp::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
+		return true;
+
 	switch (message)
 	{
 	case WM_DESTROY:
