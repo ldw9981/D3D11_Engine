@@ -3,6 +3,7 @@
 #include "D3DRenderManager.h"
 #include "Helper.h"
 
+
 ResourceManager* ResourceManager::Instance = nullptr;
 
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ResourceManager::CreateTexture(std::wstring filePath)
@@ -18,6 +19,29 @@ Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ResourceManager::CreateTexture(
 	return pTextureRV;
 }
 
+std::shared_ptr<Animation> ResourceManager::CreateAnimation(std::string key,const aiAnimation* pAiAnimation)
+{
+	// 키로 이미 만들어진 데이터가 있는지 찾는다.
+	auto it = m_AnimationMap.find(key);
+	if (it != m_AnimationMap.end())
+	{
+		std::shared_ptr<Animation> resourcePtr = it->second.lock();
+		if (resourcePtr)  //UseCount가 1이상이라 메모리가 아직 살아있다면 resourcePtr를 리턴한다.
+		{
+			return resourcePtr;
+		}
+		else  //UseCount가 0이라면 메모리가 이미 해제되었으므로 맵에서 제거한다.
+		{
+			m_AnimationMap.erase(it);
+			// 리턴하지 않고 아래에서 새로 만들어서 리턴한다.
+		}
+	}
+	std::shared_ptr<Animation> pAnimation = std::make_shared<Animation>();
+	pAnimation->Create(pAiAnimation);
+	m_AnimationMap[key] = pAnimation;
+	return pAnimation;
+}
+
 ResourceManager::ResourceManager()
 {
 	Instance = this;
@@ -30,7 +54,7 @@ ResourceManager::~ResourceManager()
 
 
 
-std::shared_ptr<Material> ResourceManager::CreateMaterial(std::string key, aiMaterial* pAiMaterial)
+std::shared_ptr<Material> ResourceManager::CreateMaterial(std::string key,const aiMaterial* pAiMaterial)
 {
 	// 키로 이미 만들어진 머터리얼이 있는지 찾는다.
 	auto it = m_MaterialMap.find(key);

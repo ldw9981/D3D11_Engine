@@ -30,4 +30,6 @@ struct Animation
 {
 	float Duration = 0.0f;	// 전체 길이
 	vector<NodeAnimation> NodeAnimations;
+
+	void Create(const aiAnimation* pAiAnimation);
 };

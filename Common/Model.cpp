@@ -81,20 +81,14 @@ bool Model::ReadFile(ID3D11Device* device,const char* filePath)
 	
 	if (scene->HasAnimations())
 	{
-		const aiAnimation* animation = scene->mAnimations[0];
+		const aiAnimation* pAiAnimation = scene->mAnimations[0];
 		// 채널수는 aiAnimation 안에서 애니메이션 정보를  표현하는 aiNode의 개수이다.
-		assert(animation->mNumChannels > 1); // 애니메이션이 있다면 aiNode 는 하나 이상 있어야한다.
+		assert(pAiAnimation->mNumChannels > 1); // 애니메이션이 있다면 aiNode 는 하나 이상 있어야한다.
 
-		m_Animations.resize(1);
-		m_Animations[0].NodeAnimations.resize(animation->mNumChannels);
-		// 전체 시간길이 = 프레임수 / 1초당 프레임수
-		m_Animations[0].Duration = (float)(animation->mDuration / animation->mTicksPerSecond);
-		for (size_t iChannel = 0; iChannel < animation->mNumChannels; iChannel++)
-		{
-			aiNodeAnim* pAiNodeAnim = animation->mChannels[iChannel];
-			NodeAnimation& refNodeAnim = m_Animations[0].NodeAnimations[iChannel];
-			refNodeAnim.Create(pAiNodeAnim, animation->mTicksPerSecond);
-		}
+		std::string key = m_Skeleton.Name +"_" + std::string(filePath);
+		shared_ptr<Animation> ret = ResourceManager::Instance->CreateAnimation(key, pAiAnimation);
+		m_Animations.push_back(ret);
+	
 		// 각 노드는 참조하는 노드애니메이션 ptr가 null이므로 0번 Index 애니메이션의 노드애니메이션을 연결한다.
 		UpdateNodeAnimationReference(0);		
 	}
@@ -120,7 +114,7 @@ void Model::Update(float deltaTime)
 	if (!m_Animations.empty())
 	{
 		m_AnimationProressTime += deltaTime;
-		m_AnimationProressTime = fmod(m_AnimationProressTime, m_Animations[0].Duration);
+		m_AnimationProressTime = fmod(m_AnimationProressTime, m_Animations[0]->Duration);
 		UpdateAnimation(m_AnimationProressTime);
 	}	
 }
@@ -128,7 +122,7 @@ void Model::Update(float deltaTime)
 void Model::UpdateNodeAnimationReference(UINT index)
 {
 	assert(index < m_Animations.size());
-	Animation& animation = m_Animations[index];
+	Animation& animation = *m_Animations[index].get();
 	for (size_t i = 0; i < animation.NodeAnimations.size(); i++)
 	{
 		NodeAnimation& nodeAnimation = animation.NodeAnimations[i];

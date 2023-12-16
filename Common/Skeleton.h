@@ -26,6 +26,7 @@ struct Bone
 struct Skeleton
 {
 public:
+	std::string Name;
 	std::vector<Bone> Bones;
 	std::map<std::string,int> BoneMappingTable;
 	std::map<std::string,int> MeshMappingTable;

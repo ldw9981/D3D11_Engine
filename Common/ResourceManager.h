@@ -1,7 +1,7 @@
 #pragma once
 #include "Singleton.h"
 #include "Material.h"
-
+#include "Animation.h"
 
 class ResourceManager
 {
@@ -10,21 +10,17 @@ public:
 	~ResourceManager();
 
 	static ResourceManager* Instance;
-	// Texture
-	std::map<std::wstring , Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> m_TextureMap;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> CreateTexture(std::wstring filePath);
-
+	
+	std::map<std::wstring , Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> m_TextureMap;	// Texture	
+	std::map<std::string, std::weak_ptr<Animation>> m_AnimationMap;	// Animation	
+	std::map<std::string, std::weak_ptr<Material>> m_MaterialMap;	// Material
 	// StaticMesh
 
 	// SkeletalMesh
 
 	// Skeleton
-
-	// Animation
-
-	// Material
-	std::map<std::string,std::weak_ptr<Material>> m_MaterialMap;
-
-	std::shared_ptr<Material> CreateMaterial(std::string key,aiMaterial* pAiMaterial);
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> CreateTexture(std::wstring filePath);
+	std::shared_ptr<Animation> CreateAnimation(std::string key, const aiAnimation* pAiAnimation);
+	std::shared_ptr<Material> CreateMaterial(std::string key, const aiMaterial* pAiMaterial);
 };
 

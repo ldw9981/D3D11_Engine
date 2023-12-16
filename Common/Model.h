@@ -15,7 +15,7 @@ public:
 	// 공유 가능한 데이터
 	std::vector<Mesh> m_Meshes;	
 	std::vector<shared_ptr<Material>> m_Materials;
-	std::vector<Animation> m_Animations;	
+	std::vector<shared_ptr<Animation>> m_Animations;
 	Skeleton m_Skeleton;
 	
 	// 인스턴스 데이터

@@ -67,3 +67,15 @@ void NodeAnimation::Evaluate(float time, Vector3& position, Quaternion& rotation
 }
 
 
+void Animation::Create(const aiAnimation* pAiAnimation)
+{
+	NodeAnimations.resize(pAiAnimation->mNumChannels);
+	// 전체 시간길이 = 프레임수 / 1초당 프레임수
+	Duration = (float)(pAiAnimation->mDuration / pAiAnimation->mTicksPerSecond);
+	for (size_t iChannel = 0; iChannel < pAiAnimation->mNumChannels; iChannel++)
+	{
+		aiNodeAnim* pAiNodeAnim = pAiAnimation->mChannels[iChannel];
+		NodeAnimation& refNodeAnim = NodeAnimations[iChannel];
+		refNodeAnim.Create(pAiNodeAnim, pAiAnimation->mTicksPerSecond);
+	}
+}
