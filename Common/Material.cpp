@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Material.h"
-#include "D3DRenderer.h"
+#include "D3DRenderManager.h"
 #include "Helper.h"
 #include <assimp/material.h>
 

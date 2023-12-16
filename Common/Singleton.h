@@ -21,6 +21,14 @@ public:
 		}
 		return instance;
 	}
+
+	static void ReleaseInstance() {
+		// Delete the instance if it exists
+		if (instance) {
+			delete instance;
+			instance = nullptr;
+		}
+	}
 };
 
 // Initialize the static instance pointer to null

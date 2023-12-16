@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "TutorialApp.h"
-
+#include "../Common/D3DRenderManager.h"
 
 
 
@@ -41,7 +41,7 @@ void TutorialApp::Render()
 {
 	for (auto& model : m_ModelList)
 	{
-		m_D3DRenderer->AddModel(&model);
+		m_Renderer.AddModel(&model);
 	}
 	__super::Render();
 }
@@ -67,7 +67,7 @@ void TutorialApp::IncreaseModel()
 {
 	Model& model = m_ModelList.emplace_back();
 
-	model.ReadFile(m_D3DRenderer->m_pDevice, "../Resource/SkinningTest.fbx");
+	model.ReadFile(D3DRenderManager::m_pDevice, "../Resource/SkinningTest.fbx");
 	
 }
 

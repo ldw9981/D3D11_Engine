@@ -62,7 +62,7 @@ bool Model::ReadFile(ID3D11Device* device,const char* filePath)
 	{
 		std::string key = std::string(filePath) + std::to_string(i);
 		
-		shared_ptr<Material> ret = ResourceManager::GetInstance()->CreateMaterial(key, scene->mMaterials[i]);
+		shared_ptr<Material> ret = ResourceManager::Instance->CreateMaterial(key, scene->mMaterials[i]);
 		m_Materials.push_back(ret);
 	}
 

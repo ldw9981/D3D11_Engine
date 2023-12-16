@@ -60,21 +60,13 @@ bool GameApp::Initialize(UINT Width, UINT Height)
 
 	m_currentTime = m_previousTime = (float)GetTickCount64() / 1000.0f;
 
-	m_D3DRenderer = std::make_unique<D3DRenderer>();
-	if(	m_D3DRenderer->Initialize(m_hWnd, m_ClientWidth, m_ClientHeight))
+
+	if(m_Renderer.Initialize(m_hWnd, m_ClientWidth, m_ClientHeight))
 	{
 		return false;
 	}
-
-	m_ResourceManager = std::make_unique<ResourceManager>();
-	m_ResourceManager->Initialize();
+	
 	return true;
-}
-
-void GameApp::Uninitialize()
-{
-	m_ResourceManager->Uninitialize();
-	m_D3DRenderer->Uninitialize();
 }
 
 bool GameApp::Run()
@@ -105,7 +97,7 @@ bool GameApp::Run()
 void GameApp::Update()
 {
 	m_Timer.Tick();
-	m_D3DRenderer->Update();
+	m_Renderer.Update();
 
 	
 
@@ -113,7 +105,7 @@ void GameApp::Update()
 
 void GameApp::Render()
 {
-	m_D3DRenderer->Render();
+	m_Renderer.Render();
 }
 
 //

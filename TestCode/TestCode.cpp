@@ -3,6 +3,7 @@
 
 using namespace std;
 
+
 class Item {
 public:
 	Item() : m_nx(0) { cout <<  this << "기본 생성자 호출" << endl; }

@@ -1,11 +1,12 @@
 #pragma once
 #include "Singleton.h"
-
+#include <dxgi.h>
 
 #include <DirectXtk/BufferHelpers.h>
 
 using namespace DirectX::SimpleMath;
 using namespace DirectX;
+
 
 struct CB_Transform
 {
@@ -47,15 +48,15 @@ struct CB_Marterial
 
 class Model;
 class Material;
-class D3DRenderer: public Singleton<D3DRenderer>
+class D3DRenderManager
 {
 public:
-	D3DRenderer();
-	~D3DRenderer();
+	D3DRenderManager();
+	~D3DRenderManager();
 
-
+	static D3DRenderManager* Instance;
 	// 렌더링 파이프라인을 구성하는 필수 객체의 인터페이스
-	ID3D11Device* m_pDevice = nullptr;						// 디바이스
+	static ID3D11Device* m_pDevice;						// 디바이스
 	ID3D11DeviceContext* m_pDeviceContext = nullptr;		// 즉시 디바이스 컨텍스트
 	IDXGISwapChain* m_pSwapChain = nullptr;					// 스왑체인
 	ID3D11RenderTargetView* m_pRenderTargetView = nullptr;	// 렌더링 타겟뷰
@@ -107,4 +108,3 @@ public:
 
 	void ApplyMaterial(Material* pMaterial);
 };
-

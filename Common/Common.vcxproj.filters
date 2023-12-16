@@ -57,7 +57,7 @@
     <ClInclude Include="SkeletalMeshComponent.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="D3DRenderer.h">
+    <ClInclude Include="D3DRenderManager.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Singleton.h">
@@ -110,7 +110,7 @@
     <ClCompile Include="SkeletalMeshComponent.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="D3DRenderer.cpp">
+    <ClCompile Include="D3DRenderManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Singleton.cpp">
@@ -119,5 +119,8 @@
     <ClCompile Include="ResourceManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

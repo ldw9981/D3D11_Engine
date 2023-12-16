@@ -1,5 +1,5 @@
 #pragma once
-#include "D3DRenderer.h"
+#include "D3DRenderManager.h"
 
 // 정점 선언.
 struct Vertex

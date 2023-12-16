@@ -1,14 +1,20 @@
 #include "pch.h"
 #include "ResourceManager.h"
-#include "D3DRenderer.h"
+#include "D3DRenderManager.h"
+
+ResourceManager* ResourceManager::Instance = nullptr;
 
 ResourceManager::ResourceManager()
 {
+	Instance = this;
 }
 
 ResourceManager::~ResourceManager()
 {
+	
 }
+
+
 
 std::shared_ptr<Material> ResourceManager::CreateMaterial(std::string key, aiMaterial* pAiMaterial)
 {
@@ -28,17 +34,9 @@ std::shared_ptr<Material> ResourceManager::CreateMaterial(std::string key, aiMat
 		}
 	}
 	std::shared_ptr<Material> pMaterial = std::make_shared<Material>();
-	pMaterial->Create(D3DRenderer::GetInstance()->m_pDevice,pAiMaterial);
+	pMaterial->Create(D3DRenderManager::m_pDevice,pAiMaterial);
 	m_MaterialMap[key] = pMaterial;
 	return pMaterial;
 }
 
-void ResourceManager::Initialize()
-{
 
-}
-
-void ResourceManager::Uninitialize()
-{
-
-}

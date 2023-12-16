@@ -91,7 +91,7 @@ void SAFE_RELEASE(T* p)
 {
 	if (p)
 	{
-		p->Release();
+		auto result = p->Release();
 		p = nullptr;
 	}
 }

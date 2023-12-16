@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "D3DRenderer.h"
+#include "D3DRenderManager.h"
 #include "Model.h"
 #include "Helper.h"
 #include <d3dcompiler.h>
@@ -7,31 +7,41 @@
 #include <imgui.h>
 #include <imgui_impl_win32.h>
 #include <imgui_impl_dx11.h>
-
+#include <winerror.h>
+#include <dxgidebug.h>
 
 
 #include "Animation.h"
 
-#pragma comment (lib, "d3d11.lib")
+
+#pragma comment(lib,"d3d11.lib")
 #pragma comment(lib,"d3dcompiler.lib")
 
 
-D3DRenderer::D3DRenderer()
+
+D3DRenderManager* D3DRenderManager::Instance = nullptr;
+
+ID3D11Device* D3DRenderManager::m_pDevice = nullptr;
+
+D3DRenderManager::D3DRenderManager()
 {
+	Instance = this;
 }
 
-D3DRenderer::~D3DRenderer()
+D3DRenderManager::~D3DRenderManager()
 {
-	
+	Uninitialize();
 }
 
 
-void D3DRenderer::AddModel(Model* pModel)
+
+
+void D3DRenderManager::AddModel(Model* pModel)
 {
 	m_Models.push_back(pModel);
 }
 
-bool D3DRenderer::Initialize(HWND Handle,UINT Width, UINT Height)
+bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 {
 	m_hWnd = Handle;
 	HRESULT hr = 0;	// °á°ú°ª.
@@ -236,35 +246,41 @@ bool D3DRenderer::Initialize(HWND Handle,UINT Width, UINT Height)
 	return true;
 }
 
-void D3DRenderer::Uninitialize()
+void D3DRenderManager::Uninitialize()
 {
 	// Cleanup
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
 
-
-//	SAFE_RELEASE(m_cbMatrixPallete.GetBuffer());
-	SAFE_RELEASE(m_pGpuCbMaterial);
-	SAFE_RELEASE(m_pCBTransform);
+	//	SAFE_RELEASE(m_cbMatrixPallete.GetBuffer()); //ComPtr
 	SAFE_RELEASE(m_pCBDirectionLight);
+	SAFE_RELEASE(m_pCBTransform);
+	SAFE_RELEASE(m_pGpuCbMaterial);
 	SAFE_RELEASE(m_pAlphaBlendState);
-	SAFE_RELEASE(m_pSkinningVertexShader);
+	SAFE_RELEASE(m_pSamplerLinear);
 	SAFE_RELEASE(m_pPixelShader);
 	SAFE_RELEASE(m_pSkinningInputLayout);
-	SAFE_RELEASE(m_pSamplerLinear);
+	SAFE_RELEASE(m_pSkinningVertexShader);
 
 	// Cleanup DirectX
 	SAFE_RELEASE(m_pRenderTargetView);
 	SAFE_RELEASE(m_pDepthStencilView);
-	SAFE_RELEASE(m_pDevice);
-	SAFE_RELEASE(m_pDeviceContext);
 	SAFE_RELEASE(m_pSwapChain);
+	SAFE_RELEASE(m_pDeviceContext);
+#ifdef DEBUG_D3D11_LIVEDEVICE
+	ID3D11Debug* pD3D11Dbug = nullptr;
+	HRESULT hr;
+	hr = m_pDevice->QueryInterface(IID_PPV_ARGS(&pD3D11Dbug));
+	pD3D11Dbug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+	pD3D11Dbug->Release();
+#endif // DEBUG_D3D11_LIVEDEVICE
+	SAFE_RELEASE(m_pDevice);
 }
 
 
 
-void D3DRenderer::Update()
+void D3DRenderManager::Update()
 {
 	m_World = Matrix::CreateScale(m_MeshScale) * Matrix::CreateFromYawPitchRoll(Vector3(XMConvertToRadians(m_Rotation.x), XMConvertToRadians(m_Rotation.y), 0));
 
@@ -273,7 +289,7 @@ void D3DRenderer::Update()
 	m_Light.EyePosition = m_CameraPos;
 }
 
-void D3DRenderer::Render()
+void D3DRenderManager::Render()
 {
 	// Clear the back buffer
 	const float clear_color_with_alpha[4] = { m_ClearColor.x , m_ClearColor.y , m_ClearColor.z, 1.0f };
@@ -379,7 +395,7 @@ void D3DRenderer::Render()
 
 
 
-void D3DRenderer::ApplyMaterial(Material* pMaterial)
+void D3DRenderManager::ApplyMaterial(Material* pMaterial)
 {
 	m_pDeviceContext->PSSetShaderResources(0, 1, &pMaterial->m_pBaseColorRV);
 	m_pDeviceContext->PSSetShaderResources(1, 1, &pMaterial->m_pNormalRV);
@@ -401,3 +417,6 @@ void D3DRenderer::ApplyMaterial(Material* pMaterial)
 
 	m_pDeviceContext->UpdateSubresource(m_pGpuCbMaterial, 0, nullptr, &m_CpuCbMaterial, 0, 0);
 }
+
+
+

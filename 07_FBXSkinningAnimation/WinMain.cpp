@@ -17,7 +17,5 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	if (!App.Initialize(1280,960))
 		return -1;	
 
-	int result = App.Run();
-	App.Uninitialize();
-	return result;
+	return App.Run();
 }
