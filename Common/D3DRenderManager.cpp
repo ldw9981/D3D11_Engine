@@ -322,31 +322,32 @@ void D3DRenderManager::Render()
 	{
 		for (size_t i = 0; i < ModelPtr->m_Meshes.size(); i++)
 		{
-			MeshInstance& mesh = ModelPtr->m_Meshes[i];
+			SkeletalMeshInstance& meshInstance = ModelPtr->m_Meshes[i];
 
 			// 머터리얼 적용
-			Material* pMaterial = ModelPtr->GetMaterial(mesh.m_MaterialIndex);
-			assert(pMaterial != nullptr);
-			ApplyMaterial(pMaterial);		
-
-			// 스켈레탈 메쉬(본이있으면) 행렬팔레트 업데이트
-			if (mesh.IsSkeletalMesh())
+			if (meshInstance.m_pMaterial)
 			{
-				mesh.UpdateMatrixPallete(&m_MatrixPalette, ModelPtr->m_pSkeleton.get());
-				m_cbMatrixPallete.SetData(m_pDeviceContext, m_MatrixPalette);
+				ApplyMaterial(meshInstance.m_pMaterial);
 			}
+
+			// 스켈레탈 메쉬(본이있으면) 행렬팔레트 업데이트						
+			meshInstance.UpdateMatrixPallete(&m_MatrixPalette, ModelPtr->m_pSkeleton.get());
+			m_cbMatrixPallete.SetData(m_pDeviceContext, m_MatrixPalette);
+			
+			/*
 			else
 			{
 				// MVP Matrix 전송
 				m_Transform.mWorld = mesh.m_pNodeWorldTransform->Transpose();
 			}
+			*/
 
 			m_Transform.mView = m_View.Transpose();
 			m_Transform.mProjection = m_Projection.Transpose();
 			m_pDeviceContext->UpdateSubresource(m_pCBTransform, 0, nullptr, &m_Transform, 0, 0);
 
 			// Draw
-			mesh.Render(m_pDeviceContext);
+			meshInstance.Render(m_pDeviceContext);
 		}
 	}
 	m_Models.clear();

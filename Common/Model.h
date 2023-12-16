@@ -52,7 +52,7 @@ public:
 	SkeletalMeshModel() {}
 	~SkeletalMeshModel() {}
 
-	std::vector<MeshInstance> m_Meshes;
+	std::vector<SkeletalMeshInstance> m_Meshes;
 	std::vector<shared_ptr<Material>> m_Materials;
 	std::vector<shared_ptr<Animation>> m_Animations;
 

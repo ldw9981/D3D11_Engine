@@ -3,6 +3,7 @@
 #include "Material.h"
 #include "Animation.h"
 #include "Skeleton.h"
+#include "Mesh.h"
 
 class ResourceManager
 {
@@ -18,12 +19,12 @@ public:
 	std::map<std::string, std::weak_ptr<Skeleton>> m_SkeletonMap;	// Skeleton
 	// StaticMesh
 
-	// SkeletalMesh
+	std::map<std::string, std::weak_ptr<SkeletalMeshResource>> m_SkeletalMeshMap;	// SkeletalMesh
 
-	// Skeleton
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> CreateTexture(std::wstring filePath);
 	std::shared_ptr<Animation> CreateAnimation(std::string key, const aiAnimation* pAiAnimation);
 	std::shared_ptr<Material> CreateMaterial(std::string key, const aiMaterial* pAiMaterial);
 	std::shared_ptr<Skeleton> CreateSkeleton(std::string key, const aiScene* pAiScene);
+	std::shared_ptr<SkeletalMeshResource> CreateSkeletalMeshResource(std::string key, aiMesh* mesh, Skeleton* skeleton);
 };
 

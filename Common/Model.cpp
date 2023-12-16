@@ -195,9 +195,11 @@ bool SkeletalMeshModel::ReadFile(ID3D11Device* device, const char* filePath)
 		}
 	}
 
+	// 스켈레톤 구조 읽기
+	m_pSkeleton = ResourceManager::Instance->CreateSkeleton(scene->mName.C_Str(), scene);	
+	CreateHierachy(m_pSkeleton.get());// 스켈레톤으로 계층구조 생성
 
-	m_pSkeleton = ResourceManager::Instance->CreateSkeleton(scene->mName.C_Str(), scene);
-
+	// 머터리얼 목록 읽기
 	for (unsigned int i = 0; i < scene->mNumMaterials; ++i)
 	{
 		std::string key = path.string() + std::to_string(i);
@@ -205,14 +207,16 @@ bool SkeletalMeshModel::ReadFile(ID3D11Device* device, const char* filePath)
 		m_Materials.push_back(ret);
 	}
 
+	// 메쉬 읽기
 	m_Meshes.resize(scene->mNumMeshes);
 	for (unsigned int i = 0; i < scene->mNumMeshes; ++i)
 	{
-		m_Meshes[i].Create(device, scene->mMeshes[i], m_pSkeleton.get());
-	}
+		std::string key = path.string() + std::to_string(i);
 
-	CreateHierachy(m_pSkeleton.get());
-	//LoadSkeleton(this, scene->mRootNode);
+		m_Meshes[i].m_pSkeletalMeshResource = ResourceManager::Instance->CreateSkeletalMeshResource(key, scene->mMeshes[i], m_pSkeleton.get());
+		m_Meshes[i].SetMaterial(m_Materials[i].get());
+		m_Meshes[i].Create(key, scene->mMeshes[i], m_pSkeleton.get(),this);		
+	}
 
 	assert(scene->mNumAnimations < 2); // 애니메이션은 없거나 1개여야한다. 
 	// 노드의 애니메이션을 하나로 합치는 방법은 FBX export에서 NLA스트립,모든 액션 옵션을 끕니다.
@@ -231,12 +235,6 @@ bool SkeletalMeshModel::ReadFile(ID3D11Device* device, const char* filePath)
 		// 각 노드는 참조하는 노드애니메이션 ptr가 null이므로 0번 Index 애니메이션의 노드애니메이션을 연결한다.
 		UpdateNodeAnimationReference(0);
 	}
-
-	for (auto& mesh : m_Meshes)
-	{
-		mesh.UpdateNodeInstancePtr(this, m_pSkeleton.get());
-	}
-
 
 	importer.FreeScene();
 	LOG_MESSAGEA("Complete file: %s", filePath);

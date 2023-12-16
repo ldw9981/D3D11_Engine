@@ -2,7 +2,7 @@
 #include "ResourceManager.h"
 #include "D3DRenderManager.h"
 #include "Helper.h"
-
+#include "Model.h"
 
 ResourceManager* ResourceManager::Instance = nullptr;
 
@@ -98,5 +98,28 @@ std::shared_ptr<Skeleton> ResourceManager::CreateSkeleton(std::string key, const
 	pSkeleton->Create(pAiScene);
 	m_SkeletonMap[key] = pSkeleton;
 	return pSkeleton;
+}
+
+std::shared_ptr<SkeletalMeshResource> ResourceManager::CreateSkeletalMeshResource(std::string key, aiMesh* mesh, Skeleton* skeleton)
+{
+	// 키로 이미 만들어진 머터리얼이 있는지 찾는다.
+	auto it = m_SkeletalMeshMap.find(key);
+	if (it != m_SkeletalMeshMap.end())
+	{
+		std::shared_ptr<SkeletalMeshResource> resourcePtr = it->second.lock();
+		if (resourcePtr)  //UseCount가 1이상이라 메모리가 아직 살아있다면 resourcePtr를 리턴한다.
+		{
+			return resourcePtr;
+		}
+		else  //UseCount가 0이라면 메모리가 이미 해제되었으므로 맵에서 제거한다.
+		{
+			m_SkeletalMeshMap.erase(it);
+			// 리턴하지 않고 아래에서 새로 만들어서 리턴한다.
+		}
+	}
+	std::shared_ptr<SkeletalMeshResource> pSkeletalMeshResource = std::make_shared<SkeletalMeshResource>();
+	pSkeletalMeshResource->Create(D3DRenderManager::m_pDevice,mesh,skeleton);
+	m_SkeletalMeshMap[key] = pSkeletalMeshResource;
+	return pSkeletalMeshResource;
 }
 
