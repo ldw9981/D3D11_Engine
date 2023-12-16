@@ -12,6 +12,7 @@
 
 bool Model::ReadFile(ID3D11Device* device,const char* filePath)
 {
+	std::filesystem::path path = ToWString(string(filePath));
 	LOG_MESSAGEA("Loading file: %s", filePath);
 	Assimp::Importer importer;
 	
@@ -48,7 +49,7 @@ bool Model::ReadFile(ID3D11Device* device,const char* filePath)
 		
 	for (unsigned int i = 0; i < scene->mNumMaterials; ++i)
 	{
-		std::string key = std::string(filePath) + std::to_string(i);		
+		std::string key = path.string() + std::to_string(i);
 		shared_ptr<Material> ret = ResourceManager::Instance->CreateMaterial(key, scene->mMaterials[i]);
 		m_Materials.push_back(ret);
 	}
