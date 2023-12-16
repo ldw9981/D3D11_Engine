@@ -397,11 +397,11 @@ void D3DRenderManager::Render()
 
 void D3DRenderManager::ApplyMaterial(Material* pMaterial)
 {
-	m_pDeviceContext->PSSetShaderResources(0, 1, &pMaterial->m_pBaseColorRV);
-	m_pDeviceContext->PSSetShaderResources(1, 1, &pMaterial->m_pNormalRV);
-	m_pDeviceContext->PSSetShaderResources(2, 1, &pMaterial->m_pSpecularRV);
-	m_pDeviceContext->PSSetShaderResources(3, 1, &pMaterial->m_pEmissiveRV);
-	m_pDeviceContext->PSSetShaderResources(4, 1, &pMaterial->m_pOpacityRV);
+	m_pDeviceContext->PSSetShaderResources(0, 1, pMaterial->m_pBaseColorRV.GetAddressOf());
+	m_pDeviceContext->PSSetShaderResources(1, 1, pMaterial->m_pNormalRV.GetAddressOf());
+	m_pDeviceContext->PSSetShaderResources(2, 1, pMaterial->m_pSpecularRV.GetAddressOf());
+	m_pDeviceContext->PSSetShaderResources(3, 1, pMaterial->m_pEmissiveRV.GetAddressOf());
+	m_pDeviceContext->PSSetShaderResources(4, 1, pMaterial->m_pOpacityRV.GetAddressOf());
 
 	m_CpuCbMaterial.Diffuse = pMaterial->m_Color;
 	m_CpuCbMaterial.UseDiffuseMap = pMaterial->m_pBaseColorRV != nullptr ? true : false;

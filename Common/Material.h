@@ -2,6 +2,8 @@
 #include "D3DRenderManager.h"
 
 
+using namespace Microsoft::WRL;
+
 struct aiMaterial;
 
 class Material
@@ -23,14 +25,15 @@ public:
 
 	Math::Vector4 m_Color;	
 	
-	ID3D11ShaderResourceView* m_pBaseColorRV = nullptr;	// ≈ÿΩ∫√≥ ∏Æº“Ω∫ ∫‰.
-	ID3D11ShaderResourceView* m_pNormalRV = nullptr;	// ≥Î∏ª∏  ∏Æº“Ω∫ ∫‰.
-	ID3D11ShaderResourceView* m_pSpecularRV = nullptr;	// Ω∫∆‰≈ß∑Ø∏  ∏Æº“Ω∫ ∫‰.
-	ID3D11ShaderResourceView* m_pEmissiveRV = nullptr;	// ¿ÃπÃΩ√∫Í∏  ∏Æº“Ω∫ ∫‰.	
-	ID3D11ShaderResourceView* m_pOpacityRV = nullptr;	// ≈ı∏Ì∏  ∏Æº“Ω∫ ∫‰.	
 
-	ID3D11ShaderResourceView* m_pRoughnessRV = nullptr;	// ∞≈ƒ•±‚
-	ID3D11ShaderResourceView* m_pMetalnessRV = nullptr;	// ±›º”º∫	
+	ComPtr<ID3D11ShaderResourceView> m_pBaseColorRV = nullptr;	// ≈ÿΩ∫√≥ ∏Æº“Ω∫ ∫‰.
+	ComPtr<ID3D11ShaderResourceView> m_pNormalRV = nullptr;	// ≥Î∏ª∏  ∏Æº“Ω∫ ∫‰.
+	ComPtr<ID3D11ShaderResourceView> m_pSpecularRV = nullptr;	// Ω∫∆‰≈ß∑Ø∏  ∏Æº“Ω∫ ∫‰.
+	ComPtr<ID3D11ShaderResourceView> m_pEmissiveRV = nullptr;	// ¿ÃπÃΩ√∫Í∏  ∏Æº“Ω∫ ∫‰.	
+	ComPtr<ID3D11ShaderResourceView> m_pOpacityRV = nullptr;	// ≈ı∏Ì∏  ∏Æº“Ω∫ ∫‰.	
+
+	ComPtr<ID3D11ShaderResourceView> m_pRoughnessRV = nullptr;	// ∞≈ƒ•±‚
+	ComPtr<ID3D11ShaderResourceView> m_pMetalnessRV = nullptr;	// ±›º”º∫	
 
 	//void ApplyDeviceContext(ID3D11DeviceContext* deviceContext, CB_Marterial* cpuCbMaterial, ID3D11Buffer* gpuCbMarterial, ID3D11BlendState* alphaBlendState);
 };

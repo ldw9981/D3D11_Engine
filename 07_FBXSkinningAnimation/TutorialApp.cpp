@@ -67,7 +67,7 @@ void TutorialApp::IncreaseModel()
 {
 	Model& model = m_ModelList.emplace_back();
 
-	model.ReadFile(D3DRenderManager::m_pDevice, "../Resource/SkinningTest.fbx");
+	model.ReadFile(D3DRenderManager::m_pDevice, "../Resource/Zombie.fbx");
 	
 }
 

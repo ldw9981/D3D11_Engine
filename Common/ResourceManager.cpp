@@ -1,8 +1,22 @@
 #include "pch.h"
 #include "ResourceManager.h"
 #include "D3DRenderManager.h"
+#include "Helper.h"
 
 ResourceManager* ResourceManager::Instance = nullptr;
+
+Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ResourceManager::CreateTexture(std::wstring filePath)
+{
+	auto it = m_TextureMap.find(filePath);
+	if (it != m_TextureMap.end())
+	{
+		return it->second;
+	}
+
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pTextureRV;	
+	HR_T(CreateTextureFromFile(D3DRenderManager::m_pDevice, filePath.c_str(), &pTextureRV));
+	return pTextureRV;
+}
 
 ResourceManager::ResourceManager()
 {

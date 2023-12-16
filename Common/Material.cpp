@@ -3,6 +3,7 @@
 #include "D3DRenderManager.h"
 #include "Helper.h"
 #include <assimp/material.h>
+#include "ResourceManager.h"
 
 
 Material::Material()
@@ -12,11 +13,7 @@ Material::Material()
 
 Material::~Material()
 {
-	SAFE_RELEASE(m_pBaseColorRV);
-	SAFE_RELEASE(m_pNormalRV);
-	SAFE_RELEASE(m_pSpecularRV);
-	SAFE_RELEASE(m_pEmissiveRV);
-	SAFE_RELEASE(m_pOpacityRV);
+	
 }
 
 void Material::Create(ID3D11Device* device,aiMaterial* pMaterial)
@@ -67,7 +64,8 @@ void Material::Create(ID3D11Device* device,aiMaterial* pMaterial)
 	{
 		path = ToWString(string(texturePath.C_Str()));		
 		finalPath = basePath + path.filename().wstring();
-		HR_T(CreateTextureFromFile( device, finalPath.c_str(),&m_pBaseColorRV));
+		
+		m_pBaseColorRV = ResourceManager::Instance->CreateTexture(finalPath);
 		m_FilePathBaseColor = finalPath;
 	}
 
@@ -75,15 +73,15 @@ void Material::Create(ID3D11Device* device,aiMaterial* pMaterial)
 	{
 		path = ToWString(string(texturePath.C_Str()));
 		finalPath = basePath + path.filename().wstring();
-		HR_T(CreateTextureFromFile(device, finalPath.c_str(), &m_pNormalRV));
+		m_pNormalRV = ResourceManager::Instance->CreateTexture(finalPath);
 		m_FilePathNormal = finalPath;
 	}
 
 	if (AI_SUCCESS == pMaterial->GetTexture(aiTextureType_SPECULAR, 0, &texturePath))
 	{
 		path = ToWString(string(texturePath.C_Str()));
-		finalPath = basePath + path.filename().wstring();
-		HR_T(CreateTextureFromFile(device, finalPath.c_str(), &m_pSpecularRV));
+		finalPath = basePath + path.filename().wstring();		
+		m_pSpecularRV = ResourceManager::Instance->CreateTexture(finalPath);	
 		m_FilePathSpecular = finalPath;
 	}
 
@@ -91,7 +89,8 @@ void Material::Create(ID3D11Device* device,aiMaterial* pMaterial)
 	{
 		path = ToWString(string(texturePath.C_Str()));
 		finalPath = basePath + path.filename().wstring();
-		HR_T(CreateTextureFromFile(device, finalPath.c_str(), &m_pEmissiveRV));
+
+		m_pEmissiveRV = ResourceManager::Instance->CreateTexture(finalPath);
 		m_FilePathEmissive = finalPath;
 	}
 
@@ -99,26 +98,9 @@ void Material::Create(ID3D11Device* device,aiMaterial* pMaterial)
 	{
 		path = ToWString(string(texturePath.C_Str()));
 		finalPath = basePath + path.filename().wstring();
-		HR_T(CreateTextureFromFile(device, finalPath.c_str(), &m_pOpacityRV));
-		m_FilePathOpacity = finalPath;
-	}	
 
-	if (AI_SUCCESS == pMaterial->GetTexture(aiTextureType_OPACITY, 0, &texturePath))
-	{
-		path = ToWString(string(texturePath.C_Str()));
-		finalPath = basePath + path.filename().wstring();
-		HR_T(CreateTextureFromFile(device, finalPath.c_str(), &m_pOpacityRV));
+		m_pOpacityRV = ResourceManager::Instance->CreateTexture(finalPath);	
 		m_FilePathOpacity = finalPath;
 	}
-
-	if (AI_SUCCESS == pMaterial->GetTexture(aiTextureType_OPACITY, 0, &texturePath))
-	{
-		path = ToWString(string(texturePath.C_Str()));
-		finalPath = basePath + path.filename().wstring();
-		HR_T(CreateTextureFromFile(device, finalPath.c_str(), &m_pOpacityRV));
-		m_FilePathOpacity = finalPath;
-	}
-
-
 }
 
