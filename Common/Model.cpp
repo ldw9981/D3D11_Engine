@@ -9,6 +9,7 @@
 #include "ResourceManager.h"
 
 
+
 bool Model::ReadFile(ID3D11Device* device,const char* filePath)
 {
 	LOG_MESSAGEA("Loading file: %s", filePath);
@@ -30,29 +31,16 @@ bool Model::ReadFile(ID3D11Device* device,const char* filePath)
 		return false;
 	}
 
-	aiMetadata* metadata = scene->mMetaData;
+	aiMetadata* pAiMetaData = scene->mMetaData;
+	std::vector<MetaData> metaDataList;
 
-	std::string metadataStr;
-	float metadataFloat;
-	int metadataInt;
-	aiString  key;
-	if (metadata) {
-		// Iterate through the metadata
-		for (unsigned int i = 0; i < metadata->mNumProperties; i++) {
-			const aiMetadataEntry& entry = metadata->mValues[i];
-			key = metadata->mKeys[i];
-			
-			
-			// Check the data type of the metadata entry
-			if (entry.mType == aiMetadataType::AI_AISTRING) {
-				metadataStr = std::string((char*)entry.mData);
-			}
-			else if (entry.mType == aiMetadataType::AI_INT32) {
-				metadataInt = *reinterpret_cast<const int*>(entry.mData);
-			}
-			else if (entry.mType == aiMetadataType::AI_FLOAT) {
-				metadataFloat  = *reinterpret_cast<const float*>(entry.mData);
-			}			
+	if (pAiMetaData) 
+	{	// Iterate through the metadata
+		for (unsigned int i = 0; i < pAiMetaData->mNumProperties; i++) 
+		{
+			MetaData& data = metaDataList.emplace_back();
+			data.Name = pAiMetaData->mKeys[i].C_Str();
+			data.SetData(pAiMetaData->mValues[i]);			
 		}
 	}
 	
@@ -136,3 +124,34 @@ void Model::SetWorldTransform(const Math::Matrix& transform)
 }
 
 
+void MetaData::SetData(const aiMetadataEntry& entry)
+{
+	// Check the data type of the metadata entry
+	switch (Type)
+	{
+	case AI_BOOL:
+		break;
+	case AI_INT32:
+		metadataInt = *reinterpret_cast<const int*>(entry.mData);
+		break;
+	case AI_UINT64:
+		break;
+	case AI_FLOAT:
+		metadataFloat = *reinterpret_cast<const float*>(entry.mData);
+		break;
+	case AI_DOUBLE:
+		break;
+	case AI_AISTRING:
+		metadataStr = std::string((char*)entry.mData);
+		break;
+	case AI_AIVECTOR3D:
+		metadataVector[0] = reinterpret_cast<const aiVector3D*>(entry.mData)->x;
+		metadataVector[1] = reinterpret_cast<const aiVector3D*>(entry.mData)->y;
+		metadataVector[2] = reinterpret_cast<const aiVector3D*>(entry.mData)->z;
+		break;
+	case AI_META_MAX:
+		break;
+	default:
+		break;
+	}
+}

@@ -6,6 +6,20 @@
 #include "Node.h"
 #include "Skeleton.h"
 
+
+struct MetaData
+{
+	std::string Name;
+	int Type = -1;
+	std::string metadataStr;
+	float	metadataFloat;
+	int		metadataInt;
+	float	metadataVector[3];
+
+	void SetData(const aiMetadataEntry& entry);
+};
+
+
 class Model: public Node
 {
 public:
