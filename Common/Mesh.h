@@ -49,11 +49,14 @@ struct BoneReference
 struct aiMesh;
 struct Skeleton;
 class Node;
-class Mesh
+
+
+
+class MeshInstance
 {
 public:
-	Mesh();
-	~Mesh();
+	MeshInstance();
+	~MeshInstance();
 public:	
 	std::vector<Vertex>				m_Vertices;
 	std::vector<BoneWeightVertex>	m_BoneWeightVertices;
@@ -85,14 +88,24 @@ public:
 	void Render(ID3D11DeviceContext* deviceContext);
 };
 
-class StaticMesh
+
+class SkeletalMeshResource
+{
+
+};
+
+
+class SkeletalMeshInstance
 {
 public:
-	StaticMesh();
-	~StaticMesh();
-
+	SkeletalMeshInstance();
+	~SkeletalMeshInstance();
+public:
 	std::vector<Vertex>				m_Vertices;
-	std::vector<WORD>				m_Indices;	
+	std::vector<BoneWeightVertex>	m_BoneWeightVertices;
+	std::vector<WORD>				m_Indices;
+
+	std::vector<BoneReference>		m_BoneReferences;
 
 	Math::Matrix* m_pNodeWorldTransform = nullptr;		// StaticMesh의 월드행렬을 가진 노드의 포인터
 	ID3D11Buffer* m_pVertexBuffer = nullptr;
@@ -105,27 +118,17 @@ public:
 	UINT m_MaterialIndex = 0;			// 메테리얼 인덱스.
 	std::string m_Name;					// 메쉬 이름.
 
-	template<class T>
-	void CreateVertexBuffer(ID3D11Device* device, T* vertices, UINT vertexCount);
+	void CreateVertexBuffer(ID3D11Device* device, Vertex* vertices, UINT vertexCount);
+	void CreateBoneWeightVertexBuffer(ID3D11Device* device, BoneWeightVertex* vertices, UINT vertexCount);
+
 	void CreateIndexBuffer(ID3D11Device* device, WORD* indies, UINT indexCount);
-	virtual void Create(ID3D11Device* device, aiMesh* mesh, Skeleton* skeleton);
+	void Create(ID3D11Device* device, aiMesh* mesh, Skeleton* skeleton);
 	// 계층 구조 노드가 소유한 World의 포인터를 설정
 	void SetNodeWorldPtr(Math::Matrix* world) { m_pNodeWorldTransform = world; }
-	virtual void UpdateNodeInstancePtr(Node* pRootNode, Skeleton* skeleton);
+	void UpdateNodeInstancePtr(Node* pRootNode, Skeleton* skeleton);
+	void UpdateMatrixPallete(CB_MatrixPalette* pMatrixPallete, Skeleton* skeleton);
+	bool IsSkeletalMesh() { return !m_BoneReferences.empty(); }
 	void Render(ID3D11DeviceContext* deviceContext);
 };
 
 
-class SkinnedMesh:public StaticMesh
-{
-public:
-	SkinnedMesh();
-	~SkinnedMesh();
-public:
-	std::vector<BoneWeightVertex>	m_BoneWeightVertices;
-	std::vector<BoneReference>		m_BoneReferences;		
-	
-	virtual void Create(ID3D11Device* device, aiMesh* mesh, Skeleton* skeleton);
-	void UpdateMatrixPallete(CB_MatrixPalette* pMatrixPallete, Skeleton* skeleton);	
-	virtual void UpdateNodeInstancePtr(Node* pRootNode, Skeleton* skeleton);
-};

@@ -20,7 +20,7 @@ public:
 
 
 
-	std::list<Model>	m_ModelList;
+	std::list<SkeletalMeshModel>	m_ModelList;
 
 
 

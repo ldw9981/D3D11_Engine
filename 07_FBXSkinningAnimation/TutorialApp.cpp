@@ -65,7 +65,7 @@ LRESULT CALLBACK TutorialApp::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 
 void TutorialApp::IncreaseModel()
 {
-	Model& model = m_ModelList.emplace_back();
+	SkeletalMeshModel& model = m_ModelList.emplace_back();
 
 	model.ReadFile(D3DRenderManager::m_pDevice, "../Resource/Zombie.fbx");
 	

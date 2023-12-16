@@ -10,7 +10,7 @@ Node::~Node()
 	LOG_MESSAGEA("~Node() %s", m_Name.c_str());	
 }
 
-void Node::CreateHierachy(Model* model,aiNode* node)
+void Node::CreateHierachy(StaticMeshModel* model,aiNode* node)
 {
 	m_Name = node->mName.C_Str();	
 	LOG_MESSAGEA(m_Name.c_str());

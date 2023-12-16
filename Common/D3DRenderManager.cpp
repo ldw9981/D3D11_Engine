@@ -36,7 +36,7 @@ D3DRenderManager::~D3DRenderManager()
 
 
 
-void D3DRenderManager::AddModel(Model* pModel)
+void D3DRenderManager::AddModel(SkeletalMeshModel* pModel)
 {
 	m_Models.push_back(pModel);
 }
@@ -322,7 +322,7 @@ void D3DRenderManager::Render()
 	{
 		for (size_t i = 0; i < ModelPtr->m_Meshes.size(); i++)
 		{
-			Mesh& mesh = ModelPtr->m_Meshes[i];
+			MeshInstance& mesh = ModelPtr->m_Meshes[i];
 
 			// 머터리얼 적용
 			Material* pMaterial = ModelPtr->GetMaterial(mesh.m_MaterialIndex);

@@ -20,20 +20,18 @@ struct MetaData
 };
 
 
-class Model: public Node
+class StaticMeshModel: public Node
 {
 public:
-	Model() {}
-	~Model() {}
-	
-	// 공유 가능한 데이터
-	std::vector<Mesh> m_Meshes;	
+	StaticMeshModel() {}
+	~StaticMeshModel() {}
+		
+	std::vector<MeshInstance> m_Meshes;	
 	std::vector<shared_ptr<Material>> m_Materials;
 	std::vector<shared_ptr<Animation>> m_Animations;
 
 	shared_ptr<Skeleton> m_pSkeleton = nullptr;
 	
-	// 인스턴스 데이터
 	float m_AnimationProressTime = 0.0f;
     
 
@@ -48,3 +46,27 @@ public:
 };
 
 
+class SkeletalMeshModel : public Node
+{
+public:
+	SkeletalMeshModel() {}
+	~SkeletalMeshModel() {}
+
+	std::vector<MeshInstance> m_Meshes;
+	std::vector<shared_ptr<Material>> m_Materials;
+	std::vector<shared_ptr<Animation>> m_Animations;
+
+	shared_ptr<Skeleton> m_pSkeleton = nullptr;
+
+	float m_AnimationProressTime = 0.0f;
+
+
+	bool ReadFile(ID3D11Device* device, const char* filePath);
+
+	Material* GetMaterial(UINT index);
+
+	void Update(float deltaTime);
+
+	void UpdateNodeAnimationReference(UINT index);
+	void SetWorldTransform(const Math::Matrix& transform);
+};

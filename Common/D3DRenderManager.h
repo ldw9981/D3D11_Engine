@@ -46,7 +46,8 @@ struct CB_Marterial
 	Math::Vector2 pad6;							// 8  16byte
 };
 
-class Model;
+class StaticMeshModel;
+class SkeletalMeshModel;
 class Material;
 class D3DRenderManager
 {
@@ -96,9 +97,9 @@ public:
 	HWND m_hWnd = nullptr;
 	float m_MeshScale = 1.0f;
 
-	std::list<Model*> m_Models;		//  렌더링할 모델들의 포인터 저장해둔다. 
+	std::list<SkeletalMeshModel*> m_Models;		//  렌더링할 모델들의 포인터 저장해둔다. 
 	// 렌더링 이후에 목록은 사라진다.
-	void AddModel(Model* pModel);
+	void AddModel(SkeletalMeshModel* pModel);
 public:
 	bool Initialize(HWND Handle,UINT Width, UINT Height);
 	void Uninitialize();
