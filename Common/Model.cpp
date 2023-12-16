@@ -56,12 +56,11 @@ bool Model::ReadFile(ID3D11Device* device,const char* filePath)
 		}
 	}
 	
-	m_Skeleton.ReadFromAssimp(scene);
+	m_pSkeleton = ResourceManager::Instance->CreateSkeleton(scene->mName.C_Str(),scene);
 		
 	for (unsigned int i = 0; i < scene->mNumMaterials; ++i)
 	{
-		std::string key = std::string(filePath) + std::to_string(i);
-		
+		std::string key = std::string(filePath) + std::to_string(i);		
 		shared_ptr<Material> ret = ResourceManager::Instance->CreateMaterial(key, scene->mMaterials[i]);
 		m_Materials.push_back(ret);
 	}
@@ -69,10 +68,10 @@ bool Model::ReadFile(ID3D11Device* device,const char* filePath)
 	m_Meshes.resize(scene->mNumMeshes);
 	for (unsigned int i = 0; i < scene->mNumMeshes; ++i)
 	{
-		m_Meshes[i].Create(device, scene->mMeshes[i],&m_Skeleton);
+		m_Meshes[i].Create(device, scene->mMeshes[i], m_pSkeleton.get());
 	}
 
-	LoadSkeleton(&m_Skeleton);
+	CreateHierachy(m_pSkeleton.get());
 	//LoadSkeleton(this, scene->mRootNode);
 
 	assert(scene->mNumAnimations < 2); // 애니메이션은 없거나 1개여야한다. 
@@ -85,7 +84,7 @@ bool Model::ReadFile(ID3D11Device* device,const char* filePath)
 		// 채널수는 aiAnimation 안에서 애니메이션 정보를  표현하는 aiNode의 개수이다.
 		assert(pAiAnimation->mNumChannels > 1); // 애니메이션이 있다면 aiNode 는 하나 이상 있어야한다.
 
-		std::string key = m_Skeleton.Name +"_" + std::string(filePath);
+		std::string key = m_pSkeleton->Name +"_" + std::string(filePath);
 		shared_ptr<Animation> ret = ResourceManager::Instance->CreateAnimation(key, pAiAnimation);
 		m_Animations.push_back(ret);
 	
@@ -95,7 +94,7 @@ bool Model::ReadFile(ID3D11Device* device,const char* filePath)
 
 	for (auto& mesh : m_Meshes)
 	{
-		mesh.UpdateNodeInstancePtr(this, &m_Skeleton);
+		mesh.UpdateNodeInstancePtr(this, m_pSkeleton.get());
 	}
 
 

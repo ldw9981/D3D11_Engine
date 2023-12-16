@@ -10,7 +10,7 @@ Node::~Node()
 	LOG_MESSAGEA("~Node() %s", m_Name.c_str());	
 }
 
-void Node::LoadSkeleton(Model* model,aiNode* node)
+void Node::CreateHierachy(Model* model,aiNode* node)
 {
 	m_Name = node->mName.C_Str();	
 	LOG_MESSAGEA(m_Name.c_str());
@@ -34,11 +34,11 @@ void Node::LoadSkeleton(Model* model,aiNode* node)
 	for (UINT i = 0; i < numChild; ++i)
 	{
 		m_Children[i].m_pParent = this;
-		m_Children[i].LoadSkeleton(model,node->mChildren[i]);
+		m_Children[i].CreateHierachy(model,node->mChildren[i]);
 	}
 }
 
-void Node::LoadSkeleton(Skeleton* skeleton)
+void Node::CreateHierachy(Skeleton* skeleton)
 {
 	UINT count = skeleton->GetBoneCount();
 

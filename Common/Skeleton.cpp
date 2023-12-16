@@ -4,16 +4,16 @@
 
 
 
-void Skeleton::ReadFromAssimp(const aiScene* pScene)
+void Skeleton::Create(const aiScene* pScene)
 {
 	Name = pScene->mName.C_Str();
 	int NumNode = 0;	
 	CountNode(NumNode, pScene->mRootNode);
 	Bones.reserve(NumNode);	// 본이 매번 재할당되지않도록 공간만 확보. 추가할때마다 인덱스가 결정되므로 크기는 결정하지 않는다.
-	CreateBone(pScene, pScene->mRootNode);
+	AddBone(pScene, pScene->mRootNode);
 }
 
-Bone* Skeleton::CreateBone(const aiScene* pScene,const aiNode* pNode)
+Bone* Skeleton::AddBone(const aiScene* pScene,const aiNode* pNode)
 { 	
 	Bone& bone = Bones.emplace_back();
 	bone.Set(pNode);
@@ -36,7 +36,7 @@ Bone* Skeleton::CreateBone(const aiScene* pScene,const aiNode* pNode)
 	UINT numChild = pNode->mNumChildren;	
 	for (UINT i = 0; i < numChild; ++i)
 	{
-		Bone* child = CreateBone(pScene,pNode->mChildren[i]);
+		Bone* child = AddBone(pScene,pNode->mChildren[i]);
 		child->ParentBoneIndex = BoneIndex;
 	}
 	return &Bones[BoneIndex];

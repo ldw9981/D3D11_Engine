@@ -16,7 +16,8 @@ public:
 	std::vector<Mesh> m_Meshes;	
 	std::vector<shared_ptr<Material>> m_Materials;
 	std::vector<shared_ptr<Animation>> m_Animations;
-	Skeleton m_Skeleton;
+
+	shared_ptr<Skeleton> m_pSkeleton = nullptr;
 	
 	// 인스턴스 데이터
 	float m_AnimationProressTime = 0.0f;

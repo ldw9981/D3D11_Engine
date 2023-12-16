@@ -31,8 +31,8 @@ public:
 	std::map<std::string,int> BoneMappingTable;
 	std::map<std::string,int> MeshMappingTable;
 
-	void ReadFromAssimp(const aiScene* pScene);
-	Bone* CreateBone(const aiScene* pScene,const aiNode* pNode);
+	void Create(const aiScene* pScene);
+	Bone* AddBone(const aiScene* pScene,const aiNode* pNode);
 	Bone* FindBone(const std::string& name);
 	Bone* GetBone(int index);
 	int GetBoneIndexByBoneName(const std::string& boneName);	

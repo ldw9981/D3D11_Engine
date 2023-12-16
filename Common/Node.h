@@ -19,8 +19,8 @@ public:
 	Node* m_pParent = nullptr;
 	NodeAnimation* m_pNodeAnimation = nullptr; // 노드가 사용할 NodeAnimation가 있는 주소
 
-	void LoadSkeleton(Model* model,aiNode* node);
-	void LoadSkeleton(Skeleton* skeleton);
+	void CreateHierachy(Model* model,aiNode* node);
+	void CreateHierachy(Skeleton* skeleton);
 
 	void UpdateAnimation(float progressTime);
 	Node* FindNode(const std::string& name);

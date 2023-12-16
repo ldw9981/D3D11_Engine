@@ -332,7 +332,7 @@ void D3DRenderManager::Render()
 			// 스켈레탈 메쉬(본이있으면) 행렬팔레트 업데이트
 			if (mesh.IsSkeletalMesh())
 			{
-				mesh.UpdateMatrixPallete(&m_MatrixPalette, &ModelPtr->m_Skeleton);
+				mesh.UpdateMatrixPallete(&m_MatrixPalette, ModelPtr->m_pSkeleton.get());
 				m_cbMatrixPallete.SetData(m_pDeviceContext, m_MatrixPalette);
 			}
 			else
