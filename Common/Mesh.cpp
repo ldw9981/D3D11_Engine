@@ -35,23 +35,6 @@ void MeshInstance::CreateVertexBuffer(ID3D11Device* device, Vertex* vertices, UI
 	m_VertexBufferOffset = 0;
 }
 
-void MeshInstance::CreateBoneWeightVertexBuffer(ID3D11Device* device, BoneWeightVertex* vertices, UINT vertexCount)
-{
-	D3D11_BUFFER_DESC bd = {};
-	bd.ByteWidth = sizeof(BoneWeightVertex) * vertexCount;
-	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.CPUAccessFlags = 0;
-
-	D3D11_SUBRESOURCE_DATA vbData = {};
-	vbData.pSysMem = vertices;
-	HR_T(device->CreateBuffer(&bd, &vbData, &m_pVertexBuffer));
-
-	// 버텍스 버퍼 정보
-	m_VertexCount = vertexCount;
-	m_VertexBufferStride = sizeof(BoneWeightVertex);
-	m_VertexBufferOffset = 0;
-}
 
 void MeshInstance::CreateIndexBuffer(ID3D11Device* device, WORD* indices, UINT indexCount)
 {
@@ -74,61 +57,18 @@ void MeshInstance::Create(ID3D11Device* device, aiMesh* mesh, Skeleton* skeleton
 	m_MaterialIndex = mesh->mMaterialIndex;
 	m_Name = mesh->mName.C_Str();
 
-	// 버텍스 정보 생성
-	if (!mesh->HasBones())
+	
+	//Static Mesh
+	m_Vertices.resize(mesh->mNumVertices);
+	for (UINT i = 0; i < mesh->mNumVertices; ++i)
 	{
-		//Static Mesh
-		m_Vertices.resize(mesh->mNumVertices);
-		for (UINT i = 0; i < mesh->mNumVertices; ++i)
-		{
-			m_Vertices[i].Position = Vector3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
-			m_Vertices[i].Normal = Vector3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
-			m_Vertices[i].TexCoord = Vector2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
-			m_Vertices[i].Tangent = Vector3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z);
-		}
-		CreateVertexBuffer(device, &m_Vertices[0], (UINT)m_Vertices.size());
+		m_Vertices[i].Position = Vector3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
+		m_Vertices[i].Normal = Vector3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+		m_Vertices[i].TexCoord = Vector2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+		m_Vertices[i].Tangent = Vector3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z);
 	}
-	else
-	{
-		//Skeletal Mesh
-		m_BoneWeightVertices.resize(mesh->mNumVertices);
-		for (UINT i = 0; i < mesh->mNumVertices; ++i)
-		{
-			m_BoneWeightVertices[i].Position = Vector3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
-			m_BoneWeightVertices[i].Normal = Vector3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
-			m_BoneWeightVertices[i].TexCoord = Vector2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
-			m_BoneWeightVertices[i].Tangent = Vector3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z);
-
-		}
-
-		UINT meshBoneCount = mesh->mNumBones;	// 메쉬와 연결된 본개수
-		m_BoneReferences.resize(meshBoneCount); // 본 연결 정보 컨테이너 크기 조절		
-
-		for (UINT i = 0; i < meshBoneCount; ++i)
-		{
-			aiBone* bone = mesh->mBones[i];
-
-			UINT boneIndex = skeleton->GetBoneIndexByBoneName(bone->mName.C_Str());
-			assert(boneIndex != -1);
-			Bone* pBone = skeleton->GetBone(boneIndex);
-			assert(pBone != nullptr);
-
-			m_BoneReferences[i].NodeName = bone->mName.C_Str();
-
-			pBone->OffsetMatrix = Math::Matrix(&bone->mOffsetMatrix.a1).Transpose();
-
-			m_BoneReferences[i].BoneIndex = boneIndex;
-
-			// 본과 연결된 버텍스들을 처리
-			for (UINT j = 0; j < bone->mNumWeights; ++j)
-			{
-				UINT vertexID = bone->mWeights[j].mVertexId;
-				float weight = bone->mWeights[j].mWeight;
-				m_BoneWeightVertices[vertexID].AddBoneData(boneIndex, weight);
-			}
-		}
-		CreateBoneWeightVertexBuffer(device, &m_BoneWeightVertices[0], (UINT)m_BoneWeightVertices.size());
-	}
+	CreateVertexBuffer(device, &m_Vertices[0], (UINT)m_Vertices.size());
+	
 
 	// 인덱스 정보 생성
 	m_Indices.resize(mesh->mNumFaces * 3);

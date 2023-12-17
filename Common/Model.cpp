@@ -160,7 +160,7 @@ bool SkeletalMeshModel::ReadSceneResourceFromFBX(std::string filePath)
 	CreateHierachy(&m_SceneResource->m_Skeleton);	//계층구조 생성	
 
 	m_MeshInstances.resize(m_SceneResource->m_SkeletalMeshResources.size());
-	for (size_t i = 0; i < m_SceneResource->m_SkeletalMeshResources.size(); i++)
+	for (UINT i = 0; i < m_SceneResource->m_SkeletalMeshResources.size(); i++)
 	{
 		m_MeshInstances[i].Create(   &m_SceneResource->m_SkeletalMeshResources[i], // mesh resource
 			&m_SceneResource->m_Skeleton,	 // skeleton resource
