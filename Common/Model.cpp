@@ -45,13 +45,11 @@ bool StaticMeshModel::ReadFile(ID3D11Device* device,const char* filePath)
 		}
 	}
 	
-	
-	m_pSkeleton = ResourceManager::Instance->CreateSkeleton(scene->mName.C_Str(),scene);
 		
 	for (unsigned int i = 0; i < scene->mNumMaterials; ++i)
 	{
 		std::string key = path.string() + std::to_string(i);
-		shared_ptr<Material> ret = ResourceManager::Instance->CreateMaterial(key, scene->mMaterials[i]);
+		shared_ptr<Material> ret = make_shared<Material>();// ResourceManager::Instance->CreateMaterial(key, scene->mMaterials[i]);
 		m_Materials.push_back(ret);
 	}
 
@@ -68,19 +66,6 @@ bool StaticMeshModel::ReadFile(ID3D11Device* device,const char* filePath)
 	// 노드의 애니메이션을 하나로 합치는 방법은 FBX export에서 NLA스트립,모든 액션 옵션을 끕니다.
 
 	
-	if (scene->HasAnimations())
-	{
-		const aiAnimation* pAiAnimation = scene->mAnimations[0];
-		// 채널수는 aiAnimation 안에서 애니메이션 정보를  표현하는 aiNode의 개수이다.
-		assert(pAiAnimation->mNumChannels > 1); // 애니메이션이 있다면 aiNode 는 하나 이상 있어야한다.
-
-		std::string key = m_pSkeleton->Name +"_" + std::string(filePath);
-		shared_ptr<Animation> ret = ResourceManager::Instance->CreateAnimation(key, pAiAnimation);
-		m_Animations.push_back(ret);
-	
-		// 각 노드는 참조하는 노드애니메이션 ptr가 null이므로 0번 Index 애니메이션의 노드애니메이션을 연결한다.
-		UpdateNodeAnimationReference(0);		
-	}
 
 	for (auto& mesh : m_Meshes)
 	{
@@ -160,10 +145,76 @@ void MetaData::SetData(const aiMetadataEntry& entry)
 
 
 
-bool SkeletalMeshModel::ReadFile(ID3D11Device* device, const char* filePath)
+bool SkeletalMeshModel::ReadSceneResourceFromFBX(const char* filePath)
 {
 	std::filesystem::path path = ToWString(string(filePath));
 	LOG_MESSAGEA("Loading file: %s", filePath);
+	
+	// 리소스 매니저에서 가져온다.
+	m_SceneResource = ResourceManager::Instance->CreateSceneResource(filePath);	
+	if (!m_SceneResource) {
+		return false;
+	}
+
+	// 리소스로 인스턴스 처리한다.
+	CreateHierachy(m_SceneResource->m_Skeleton.get());	//계층구조 생성	
+
+	m_MeshInstances.resize(m_SceneResource->m_SkeletalMeshResources.size());
+	for (size_t i = 0; i < m_SceneResource->m_SkeletalMeshResources.size(); i++)
+	{
+		m_MeshInstances[i].Create(m_SceneResource->m_SkeletalMeshResources[i].get(), // mesh resource
+			m_SceneResource->m_Skeleton.get(),	 // skeleton resource
+			this,	// root node
+			m_SceneResource->GetMeshMaterial(i));		//material resource 
+	}
+
+
+	UpdateNodeAnimationReference(0);	// 각 노드의 애니메이션 정보참조 연결	
+	LOG_MESSAGEA("Complete file: %s", filePath);
+	return true;
+}
+
+bool SkeletalMeshModel::AddAnimationOnlyFromFBX(std::string filePath)
+{
+	return true;
+}
+
+Material* SkeletalMeshModel::GetMaterial(UINT index)
+{
+	assert(index < m_SceneResource->m_Materials.size());
+	return m_SceneResource->m_Materials[index].get();
+}
+void SkeletalMeshModel::Update(float deltaTime)
+{
+	if (!m_SceneResource->m_Animations.empty())
+	{
+		m_AnimationProressTime += deltaTime;
+		m_AnimationProressTime = fmod(m_AnimationProressTime, m_SceneResource->m_Animations[m_AnimationIndex]->Duration);
+		UpdateAnimation(m_AnimationProressTime);
+	}
+}
+
+void SkeletalMeshModel::UpdateNodeAnimationReference(UINT index)
+{
+	assert(index < m_SceneResource->m_Animations.size());
+	Animation& animation = *m_SceneResource->m_Animations[index].get();
+	for (size_t i = 0; i < animation.NodeAnimations.size(); i++)
+	{
+		NodeAnimation& nodeAnimation = animation.NodeAnimations[i];
+		Node* node = FindNode(nodeAnimation.NodeName);
+		node->m_pNodeAnimation = &animation.NodeAnimations[i];
+	}
+}
+
+void SkeletalMeshModel::SetWorldTransform(const Math::Matrix& transform)
+{
+	m_Local = transform;
+}
+
+bool SceneResource::Create(std::string filePath)
+{
+	std::filesystem::path path = ToWString(string(filePath));
+	LOG_MESSAGEA("Loading file: %s", filePath.c_str());
 	Assimp::Importer importer;
 
 	importer.SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, 0);	// $assimp_fbx$ 노드 생성안함
@@ -195,80 +246,51 @@ bool SkeletalMeshModel::ReadFile(ID3D11Device* device, const char* filePath)
 		}
 	}
 
-	// 스켈레톤 구조 읽기
-	m_pSkeleton = ResourceManager::Instance->CreateSkeleton(scene->mName.C_Str(), scene);	
-	CreateHierachy(m_pSkeleton.get());// 스켈레톤으로 계층구조 생성
+	m_Skeleton = make_shared<Skeleton>();
+	m_Skeleton->Create(scene);
 
-	// 머터리얼 목록 읽기
+	m_Materials.resize(scene->mNumMaterials);
 	for (unsigned int i = 0; i < scene->mNumMaterials; ++i)
 	{
-		std::string key = path.string() + std::to_string(i);
-		shared_ptr<Material> ret = ResourceManager::Instance->CreateMaterial(key, scene->mMaterials[i]);
-		m_Materials.push_back(ret);
+		m_Materials[i] = make_shared<Material>();
+		m_Materials[i]->Create(scene->mMaterials[i]);
 	}
 
-	// 메쉬 읽기
-	m_Meshes.resize(scene->mNumMeshes);
+	m_SkeletalMeshResources.resize(scene->mNumMeshes);
 	for (unsigned int i = 0; i < scene->mNumMeshes; ++i)
 	{
-		std::string key = path.string() + std::to_string(i);
-
-		m_Meshes[i].m_pSkeletalMeshResource = ResourceManager::Instance->CreateSkeletalMeshResource(key, scene->mMeshes[i], m_pSkeleton.get());
-		m_Meshes[i].SetMaterial(m_Materials[i].get());
-		m_Meshes[i].Create(key, scene->mMeshes[i], m_pSkeleton.get(),this);		
+		m_SkeletalMeshResources[i] = make_shared<SkeletalMeshResource>();
+		m_SkeletalMeshResources[i]->Create(scene->mMeshes[i], m_Skeleton.get());
 	}
+
+	// SceneResource의 기본 애니메이션 추가한다.
 
 	assert(scene->mNumAnimations < 2); // 애니메이션은 없거나 1개여야한다. 
 	// 노드의 애니메이션을 하나로 합치는 방법은 FBX export에서 NLA스트립,모든 액션 옵션을 끕니다.
-
-
 	if (scene->HasAnimations())
 	{
 		const aiAnimation* pAiAnimation = scene->mAnimations[0];
 		// 채널수는 aiAnimation 안에서 애니메이션 정보를  표현하는 aiNode의 개수이다.
 		assert(pAiAnimation->mNumChannels > 1); // 애니메이션이 있다면 aiNode 는 하나 이상 있어야한다.
-
-		std::string key = m_pSkeleton->Name + "_" + std::string(filePath);
-		shared_ptr<Animation> ret = ResourceManager::Instance->CreateAnimation(key, pAiAnimation);
+		shared_ptr<Animation> ret = make_shared<Animation>();
+		ret->Create(filePath, pAiAnimation);
 		m_Animations.push_back(ret);
-
-		// 각 노드는 참조하는 노드애니메이션 ptr가 null이므로 0번 Index 애니메이션의 노드애니메이션을 연결한다.
-		UpdateNodeAnimationReference(0);
 	}
-
 	importer.FreeScene();
-	LOG_MESSAGEA("Complete file: %s", filePath);
+	LOG_MESSAGEA("Complete file: %s", filePath.c_str());
 	return true;
 }
 
-Material* SkeletalMeshModel::GetMaterial(UINT index)
+
+bool SceneResource::AddAnimation(std::string filePath)
+{
+	return true;
+}
+
+Material* SceneResource::GetMeshMaterial(UINT index)
 {
 	assert(index < m_Materials.size());
-	return m_Materials[index].get();
-}
-void SkeletalMeshModel::Update(float deltaTime)
-{
-	if (!m_Animations.empty())
-	{
-		m_AnimationProressTime += deltaTime;
-		m_AnimationProressTime = fmod(m_AnimationProressTime, m_Animations[0]->Duration);
-		UpdateAnimation(m_AnimationProressTime);
-	}
-}
-
-void SkeletalMeshModel::UpdateNodeAnimationReference(UINT index)
-{
-	assert(index < m_Animations.size());
-	Animation& animation = *m_Animations[index].get();
-	for (size_t i = 0; i < animation.NodeAnimations.size(); i++)
-	{
-		NodeAnimation& nodeAnimation = animation.NodeAnimations[i];
-		Node* node = FindNode(nodeAnimation.NodeName);
-		node->m_pNodeAnimation = &animation.NodeAnimations[i];
-	}
-}
-
-void SkeletalMeshModel::SetWorldTransform(const Math::Matrix& transform)
-{
-	m_Local = transform;
+	UINT mindex = m_SkeletalMeshResources[index]->m_MaterialIndex;
+	assert(mindex < m_Materials.size());
+	return m_Materials[mindex].get();
 }

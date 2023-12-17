@@ -16,7 +16,7 @@ Material::~Material()
 	
 }
 
-void Material::Create(ID3D11Device* device,const aiMaterial* pMaterial)
+void Material::Create(const aiMaterial* pMaterial)
 {
 	// Diffuse
 	aiString texturePath;

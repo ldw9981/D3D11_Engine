@@ -12,7 +12,7 @@ public:
 	Material();
 	~Material();
 
-	void Create(ID3D11Device* device, const aiMaterial* pMaterial);
+	void Create(const aiMaterial* pMaterial);
 	
 	std::wstring m_FilePathBaseColor;
 	std::wstring m_FilePathNormal;

@@ -143,42 +143,17 @@ void MeshInstance::Create(ID3D11Device* device, aiMesh* mesh, Skeleton* skeleton
 
 void MeshInstance::UpdateNodeInstancePtr(Node* pRootNode, Skeleton* skeleton)
 {
-	assert(pRootNode != nullptr);
-	if (m_BoneReferences.empty())
-	{
+
 		Bone* pBone = skeleton->GetBone(skeleton->GetBoneIndexByMeshName(m_Name));
 		assert(pBone != nullptr);
 
 		Node* pNode = pRootNode->FindNode(pBone->Name);
 		assert(pNode != nullptr);
 		m_pNodeWorldTransform = &pNode->m_World;
-	}
-	else
-	{
-		for (auto& bone : m_BoneReferences)
-		{
-			Node* pNode = pRootNode->FindNode(bone.NodeName);
-			assert(pNode != nullptr);
-			bone.NodeWorldMatrixPtr = &pNode->m_World;
-		}
-	}
+
 
 }
 
-void MeshInstance::UpdateMatrixPallete(CB_MatrixPalette* pMatrixPallete, Skeleton* skeleton)
-{
-	assert(m_BoneReferences.size() < 128);
-	for (UINT i = 0; i < m_BoneReferences.size(); ++i)
-	{
-		Math::Matrix& BoneNodeWorldMatrix = *m_BoneReferences[i].NodeWorldMatrixPtr;
-		// HLSL 상수버퍼에 업데이트할때 바로 복사할수있도록 전치해서 저장한다.
-
-		int BoneIndex = m_BoneReferences[i].BoneIndex;
-		Bone* pBone = skeleton->GetBone(BoneIndex);
-
-		pMatrixPallete->Array[BoneIndex] = (pBone->OffsetMatrix * BoneNodeWorldMatrix).Transpose();
-	}
-}
 
 void MeshInstance::Render(ID3D11DeviceContext* deviceContext)
 {
@@ -199,54 +174,33 @@ SkeletalMeshInstance::~SkeletalMeshInstance()
 }
 
 
-void SkeletalMeshInstance::Create(std::string key,aiMesh* mesh, Skeleton* skeleton, Node* pRootNode )
+void SkeletalMeshInstance::Create(SkeletalMeshResource* pSkeletalMeshResource,  Skeleton* pSkeleton, Node* pRootNode, Material* pMaterial)
 {	
-	UINT meshBoneCount = mesh->mNumBones;	// 메쉬와 연결된 본개수
+	m_pSkeletalMeshResource = pSkeletalMeshResource;
+	m_pMaterial = pMaterial;
+	size_t meshBoneCount = m_pSkeletalMeshResource->m_BoneReferences.size();	// 메쉬와 연결된 본개수
 	m_BoneReferences.resize(meshBoneCount); // 본 연결 정보 컨테이너 크기 조절		
-	for (UINT i = 0; i < meshBoneCount; ++i)
+	for (size_t i = 0; i < meshBoneCount; ++i)
 	{
-		aiBone* bone = mesh->mBones[i];
-
-		UINT boneIndex = skeleton->GetBoneIndexByBoneName(bone->mName.C_Str());
-		assert(boneIndex != -1);
-		Bone* pBone = skeleton->GetBone(boneIndex);
-		assert(pBone != nullptr);
-
-		m_BoneReferences[i].NodeName = bone->mName.C_Str();
-		m_BoneReferences[i].BoneIndex = boneIndex;
-
-		Node* pNode = pRootNode->FindNode(m_BoneReferences[i].NodeName);
+		std::string& name = m_pSkeletalMeshResource->m_BoneReferences[i].NodeName;
+		Node* pNode = pRootNode->FindNode(name);
 		assert(pNode != nullptr);
-		m_BoneReferences[i].NodeWorldMatrixPtr = &pNode->m_World;
-
-		pBone->OffsetMatrix = Math::Matrix(&bone->mOffsetMatrix.a1).Transpose();
-	}	
-}
-
-
-void SkeletalMeshInstance::UpdateNodeInstancePtr(Node* pRootNode, Skeleton* skeleton)
-{
-	assert(pRootNode != nullptr);
-	for (auto& bone : m_BoneReferences)
-	{
-		Node* pNode = pRootNode->FindNode(bone.NodeName);
-		assert(pNode != nullptr);
-		bone.NodeWorldMatrixPtr = &pNode->m_World;
+		m_BoneReferences[i] = &pNode->m_World;
 	}
 }
 
+
 void SkeletalMeshInstance::UpdateMatrixPallete(CB_MatrixPalette* pMatrixPallete, Skeleton* skeleton)
 {
-	assert(m_BoneReferences.size() < 128);
-	for (UINT i = 0; i < m_BoneReferences.size(); ++i)
+	assert(m_BoneReferences.size() == m_pSkeletalMeshResource->m_BoneReferences.size());
+	size_t meshBoneCount = m_pSkeletalMeshResource->m_BoneReferences.size();	// 메쉬와 연결된 본개수
+	for (size_t i = 0; i < meshBoneCount; ++i)
 	{
-		Math::Matrix& BoneNodeWorldMatrix = *m_BoneReferences[i].NodeWorldMatrixPtr;
+		Math::Matrix& BoneNodeWorldMatrix = *m_BoneReferences[i];
 		// HLSL 상수버퍼에 업데이트할때 바로 복사할수있도록 전치해서 저장한다.
-
-		int BoneIndex = m_BoneReferences[i].BoneIndex;
-		Bone* pBone = skeleton->GetBone(BoneIndex);
-
-		pMatrixPallete->Array[BoneIndex] = (pBone->OffsetMatrix * BoneNodeWorldMatrix).Transpose();
+		
+		BoneReference& br = m_pSkeletalMeshResource->m_BoneReferences[i];
+		pMatrixPallete->Array[br.BoneIndex] = (br.OffsetMatrix * BoneNodeWorldMatrix).Transpose();
 	}
 }
 
@@ -268,7 +222,7 @@ SkeletalMeshResource::~SkeletalMeshResource()
 	SAFE_RELEASE(m_pIndexBuffer);
 }
 
-void SkeletalMeshResource::Create(ID3D11Device* device, aiMesh* mesh, Skeleton* skeleton)
+void SkeletalMeshResource::Create(aiMesh* mesh, Skeleton* skeleton)
 {
 	//Skeletal Mesh
 	m_BoneWeightVertices.resize(mesh->mNumVertices);
@@ -281,24 +235,30 @@ void SkeletalMeshResource::Create(ID3D11Device* device, aiMesh* mesh, Skeleton* 
 
 	}
 	UINT meshBoneCount = mesh->mNumBones;	// 메쉬와 연결된 본개수
+	m_BoneReferences.resize(meshBoneCount); // 본 연결 정보 컨테이너 크기 조절
 	for (UINT i = 0; i < meshBoneCount; ++i)
 	{
-		aiBone* bone = mesh->mBones[i];
+		aiBone* pAiBone = mesh->mBones[i];
 
 		// 스켈레톤에서 본정보를 찾는다.
-		UINT boneIndex = skeleton->GetBoneIndexByBoneName(bone->mName.C_Str());       
+		UINT boneIndex = skeleton->GetBoneIndexByBoneName(pAiBone->mName.C_Str());       
 		assert(boneIndex != -1);
 		Bone* pBone = skeleton->GetBone(boneIndex);
 		assert(pBone != nullptr);		
+				
+		m_BoneReferences[i].NodeName = pAiBone->mName.C_Str();
+		m_BoneReferences[i].BoneIndex = boneIndex;
+		m_BoneReferences[i].OffsetMatrix = Math::Matrix(&pAiBone->mOffsetMatrix.a1).Transpose();
+
 		// 본과 연결된 버텍스들을 처리
-		for (UINT j = 0; j < bone->mNumWeights; ++j)
+		for (UINT j = 0; j < pAiBone->mNumWeights; ++j)
 		{
-			UINT vertexID = bone->mWeights[j].mVertexId;
-			float weight = bone->mWeights[j].mWeight;
+			UINT vertexID = pAiBone->mWeights[j].mVertexId;
+			float weight = pAiBone->mWeights[j].mWeight;
 			m_BoneWeightVertices[vertexID].AddBoneData(boneIndex, weight);
 		}
 	}
-	CreateBoneWeightVertexBuffer(device, &m_BoneWeightVertices[0], (UINT)m_BoneWeightVertices.size());
+	CreateBoneWeightVertexBuffer(&m_BoneWeightVertices[0], (UINT)m_BoneWeightVertices.size());
 	
 
 	// 인덱스 정보 생성
@@ -309,10 +269,10 @@ void SkeletalMeshResource::Create(ID3D11Device* device, aiMesh* mesh, Skeleton* 
 		m_Indices[i * 3 + 1] = mesh->mFaces[i].mIndices[1];
 		m_Indices[i * 3 + 2] = mesh->mFaces[i].mIndices[2];
 	}
-	CreateIndexBuffer(device, &m_Indices[0], (UINT)m_Indices.size());
+	CreateIndexBuffer(&m_Indices[0], (UINT)m_Indices.size());
 }
 
-void SkeletalMeshResource::CreateBoneWeightVertexBuffer(ID3D11Device* device, BoneWeightVertex* vertices, UINT vertexCount)
+void SkeletalMeshResource::CreateBoneWeightVertexBuffer( BoneWeightVertex* vertices, UINT vertexCount)
 {
 	D3D11_BUFFER_DESC bd = {};
 	bd.ByteWidth = sizeof(BoneWeightVertex) * vertexCount;
@@ -322,7 +282,7 @@ void SkeletalMeshResource::CreateBoneWeightVertexBuffer(ID3D11Device* device, Bo
 
 	D3D11_SUBRESOURCE_DATA vbData = {};
 	vbData.pSysMem = vertices;
-	HR_T(device->CreateBuffer(&bd, &vbData, &m_pVertexBuffer));
+	HR_T(D3DRenderManager::m_pDevice->CreateBuffer(&bd, &vbData, &m_pVertexBuffer));
 
 	// 버텍스 버퍼 정보
 	m_VertexCount = vertexCount;
@@ -330,7 +290,7 @@ void SkeletalMeshResource::CreateBoneWeightVertexBuffer(ID3D11Device* device, Bo
 	m_VertexBufferOffset = 0;
 }
 
-void SkeletalMeshResource::CreateIndexBuffer(ID3D11Device* device, WORD* indices, UINT indexCount)
+void SkeletalMeshResource::CreateIndexBuffer(WORD* indices, UINT indexCount)
 {
 	// 인덱스 개수 저장.
 	m_IndexCount = indexCount;
@@ -343,5 +303,5 @@ void SkeletalMeshResource::CreateIndexBuffer(ID3D11Device* device, WORD* indices
 
 	D3D11_SUBRESOURCE_DATA ibData = {};
 	ibData.pSysMem = indices;
-	HR_T(device->CreateBuffer(&bd, &ibData, &m_pIndexBuffer));
+	HR_T(D3DRenderManager::m_pDevice->CreateBuffer(&bd, &ibData, &m_pIndexBuffer));
 }

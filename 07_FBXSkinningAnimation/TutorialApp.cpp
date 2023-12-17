@@ -31,7 +31,7 @@ void TutorialApp::Update()
 
 	for (auto& model : m_ModelList)
 	{
-		model.Update(GameTimer::m_Instance->DeltaTime());
+		model.Update(m_Timer.DeltaTime());
 	}
 
 
@@ -67,7 +67,7 @@ void TutorialApp::IncreaseModel()
 {
 	SkeletalMeshModel& model = m_ModelList.emplace_back();
 
-	model.ReadFile(D3DRenderManager::m_pDevice, "../Resource/Zombie.fbx");
+	model.ReadSceneResourceFromFBX( "../Resource/Zombie.fbx");
 	
 }
 

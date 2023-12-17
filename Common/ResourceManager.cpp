@@ -4,6 +4,13 @@
 #include "Helper.h"
 #include "Model.h"
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+#include <assimp/config.h>
+#include <assimp/cimport.h>
+
+
 ResourceManager* ResourceManager::Instance = nullptr;
 
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ResourceManager::CreateTexture(std::wstring filePath)
@@ -19,28 +26,6 @@ Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ResourceManager::CreateTexture(
 	return pTextureRV;
 }
 
-std::shared_ptr<Animation> ResourceManager::CreateAnimation(std::string key,const aiAnimation* pAiAnimation)
-{
-	// 키로 이미 만들어진 데이터가 있는지 찾는다.
-	auto it = m_AnimationMap.find(key);
-	if (it != m_AnimationMap.end())
-	{
-		std::shared_ptr<Animation> resourcePtr = it->second.lock();
-		if (resourcePtr)  //UseCount가 1이상이라 메모리가 아직 살아있다면 resourcePtr를 리턴한다.
-		{
-			return resourcePtr;
-		}
-		else  //UseCount가 0이라면 메모리가 이미 해제되었으므로 맵에서 제거한다.
-		{
-			m_AnimationMap.erase(it);
-			// 리턴하지 않고 아래에서 새로 만들어서 리턴한다.
-		}
-	}
-	std::shared_ptr<Animation> pAnimation = std::make_shared<Animation>();
-	pAnimation->Create(pAiAnimation);
-	m_AnimationMap[key] = pAnimation;
-	return pAnimation;
-}
 
 ResourceManager::ResourceManager()
 {
@@ -53,73 +38,28 @@ ResourceManager::~ResourceManager()
 }
 
 
-
-std::shared_ptr<Material> ResourceManager::CreateMaterial(std::string key,const aiMaterial* pAiMaterial)
+std::shared_ptr<SceneResource> ResourceManager::CreateSceneResource(std::string filePath)
 {
 	// 키로 이미 만들어진 머터리얼이 있는지 찾는다.
-	auto it = m_MaterialMap.find(key);
-	if (it != m_MaterialMap.end())
+	std::string key = filePath;
+	auto it = m_SceneMap.find(key);
+	if (it != m_SceneMap.end())
 	{
-		std::shared_ptr<Material> resourcePtr = it->second.lock();
-		if (resourcePtr)  //UseCount가 1이상이라 메모리가 아직 살아있다면 resourcePtr를 리턴한다.
-		{
-			 return resourcePtr;
-		}
-		else  //UseCount가 0이라면 메모리가 이미 해제되었으므로 맵에서 제거한다.
-		{
-			 m_MaterialMap.erase(it);
-			 // 리턴하지 않고 아래에서 새로 만들어서 리턴한다.
-		}
-	}
-	std::shared_ptr<Material> pMaterial = std::make_shared<Material>();
-	pMaterial->Create(D3DRenderManager::m_pDevice,pAiMaterial);
-	m_MaterialMap[key] = pMaterial;
-	return pMaterial;
-}
-
-std::shared_ptr<Skeleton> ResourceManager::CreateSkeleton(std::string key, const aiScene* pAiScene)
-{
-	// 키로 이미 만들어진 머터리얼이 있는지 찾는다.
-	auto it = m_SkeletonMap.find(key);
-	if (it != m_SkeletonMap.end())
-	{
-		std::shared_ptr<Skeleton> resourcePtr = it->second.lock();
+		std::shared_ptr<SceneResource> resourcePtr = it->second.lock();
 		if (resourcePtr)  //UseCount가 1이상이라 메모리가 아직 살아있다면 resourcePtr를 리턴한다.
 		{
 			return resourcePtr;
 		}
 		else  //UseCount가 0이라면 메모리가 이미 해제되었으므로 맵에서 제거한다.
 		{
-			m_SkeletonMap.erase(it);
+			m_SceneMap.erase(it);
 			// 리턴하지 않고 아래에서 새로 만들어서 리턴한다.
 		}
 	}
-	std::shared_ptr<Skeleton> pSkeleton = std::make_shared<Skeleton>();
-	pSkeleton->Create(pAiScene);
-	m_SkeletonMap[key] = pSkeleton;
-	return pSkeleton;
-}
 
-std::shared_ptr<SkeletalMeshResource> ResourceManager::CreateSkeletalMeshResource(std::string key, aiMesh* mesh, Skeleton* skeleton)
-{
-	// 키로 이미 만들어진 머터리얼이 있는지 찾는다.
-	auto it = m_SkeletalMeshMap.find(key);
-	if (it != m_SkeletalMeshMap.end())
-	{
-		std::shared_ptr<SkeletalMeshResource> resourcePtr = it->second.lock();
-		if (resourcePtr)  //UseCount가 1이상이라 메모리가 아직 살아있다면 resourcePtr를 리턴한다.
-		{
-			return resourcePtr;
-		}
-		else  //UseCount가 0이라면 메모리가 이미 해제되었으므로 맵에서 제거한다.
-		{
-			m_SkeletalMeshMap.erase(it);
-			// 리턴하지 않고 아래에서 새로 만들어서 리턴한다.
-		}
-	}
-	std::shared_ptr<SkeletalMeshResource> pSkeletalMeshResource = std::make_shared<SkeletalMeshResource>();
-	pSkeletalMeshResource->Create(D3DRenderManager::m_pDevice,mesh,skeleton);
-	m_SkeletalMeshMap[key] = pSkeletalMeshResource;
-	return pSkeletalMeshResource;
+	std::shared_ptr<SceneResource> pSceneResource = std::make_shared<SceneResource>();
+	pSceneResource->Create(filePath.c_str());
+	m_SceneMap[key] = pSceneResource;
+	return pSceneResource;
 }
 

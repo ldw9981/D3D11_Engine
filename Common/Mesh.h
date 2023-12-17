@@ -41,7 +41,7 @@ struct BoneReference
 {
 	std::string NodeName;		 // 노드 이름
 	int BoneIndex = -1;			 // 본 인덱스
-	Math::Matrix* NodeWorldMatrixPtr = nullptr;
+	Math::Matrix OffsetMatrix;	 // 본기준 메시의 OffsetMatrix
 };
 
 
@@ -61,7 +61,6 @@ public:
 	std::vector<Vertex>				m_Vertices;
 	std::vector<BoneWeightVertex>	m_BoneWeightVertices;
 	std::vector<WORD>				m_Indices;
-
 	std::vector<BoneReference>		m_BoneReferences;
 
 	Math::Matrix* m_pNodeWorldTransform = nullptr;		// StaticMesh의 월드행렬을 가진 노드의 포인터
@@ -97,6 +96,7 @@ public:
 
 	std::vector<BoneWeightVertex>	m_BoneWeightVertices;
 	std::vector<WORD>				m_Indices;	
+	std::vector<BoneReference>		m_BoneReferences;
 
 	ID3D11Buffer* m_pVertexBuffer = nullptr;
 	ID3D11Buffer* m_pIndexBuffer = nullptr;
@@ -108,11 +108,11 @@ public:
 	UINT m_MaterialIndex = 0;			// 메테리얼 인덱스.
 	std::string m_Name;					// 메쉬 이름.	
 
-	void Create(ID3D11Device* device, aiMesh* mesh, Skeleton* skeleton);
+	void Create(aiMesh* mesh, Skeleton* skeleton);
 
-	void CreateBoneWeightVertexBuffer(ID3D11Device* device, BoneWeightVertex* vertices, UINT vertexCount);
+	void CreateBoneWeightVertexBuffer(BoneWeightVertex* vertices, UINT vertexCount);
 
-	void CreateIndexBuffer(ID3D11Device* device, WORD* indies, UINT indexCount);
+	void CreateIndexBuffer(WORD* indies, UINT indexCount);
 };
 
 
@@ -123,17 +123,14 @@ public:
 	~SkeletalMeshInstance();
 public:
 
-	std::shared_ptr<SkeletalMeshResource> m_pSkeletalMeshResource;
-	
-	std::vector<BoneReference>		m_BoneReferences;
-	Math::Matrix* m_pNodeWorldTransform = nullptr;		// StaticMesh의 월드행렬을 가진 노드의 포인터
+	SkeletalMeshResource* m_pSkeletalMeshResource;
 	Material* m_pMaterial = nullptr;
 
-	void Create(std::string key, aiMesh* mesh, Skeleton* skeleton,Node* pRootNode );
-	// 계층 구조 노드가 소유한 World의 포인터를 설정
-	void SetNodeWorldPtr(Math::Matrix* world) { m_pNodeWorldTransform = world; }
-	void SetMaterial(Material* material) { m_pMaterial = material; }
-	void UpdateNodeInstancePtr(Node* pRootNode, Skeleton* skeleton);
+	std::vector<Math::Matrix*>		m_BoneReferences;	// 본에 해당되는 노드MATRIX의 포인터를 저장한다.
+	
+
+	void Create(SkeletalMeshResource* pSkeletalMeshResource, Skeleton* skeleton, Node* pRootNode, Material* pMaterial);
+
 	void UpdateMatrixPallete(CB_MatrixPalette* pMatrixPallete, Skeleton* skeleton);
 
 	void Render(ID3D11DeviceContext* deviceContext);

@@ -320,18 +320,16 @@ void D3DRenderManager::Render()
 
 	for (const auto& ModelPtr : m_Models) 
 	{
-		for (size_t i = 0; i < ModelPtr->m_Meshes.size(); i++)
+		for (size_t i = 0; i < ModelPtr->m_MeshInstances.size(); i++)
 		{
-			SkeletalMeshInstance& meshInstance = ModelPtr->m_Meshes[i];
+			SkeletalMeshInstance& meshInstance = ModelPtr->m_MeshInstances[i];
 
 			// 머터리얼 적용
-			if (meshInstance.m_pMaterial)
-			{
-				ApplyMaterial(meshInstance.m_pMaterial);
-			}
+			assert(meshInstance.m_pMaterial!=nullptr);
+			ApplyMaterial(meshInstance.m_pMaterial);			
 
 			// 스켈레탈 메쉬(본이있으면) 행렬팔레트 업데이트						
-			meshInstance.UpdateMatrixPallete(&m_MatrixPalette, ModelPtr->m_pSkeleton.get());
+			meshInstance.UpdateMatrixPallete(&m_MatrixPalette, ModelPtr->m_SceneResource->m_Skeleton.get());
 			m_cbMatrixPallete.SetData(m_pDeviceContext, m_MatrixPalette);
 			
 			/*
