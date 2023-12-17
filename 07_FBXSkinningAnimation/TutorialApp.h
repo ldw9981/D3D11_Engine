@@ -32,5 +32,7 @@ public:
 
 	void IncreaseModel();
 	void DecreaseModel();
+	void IncreaseAnimationIndex();
+	void DecreaseAnimationIndex();
 };
 

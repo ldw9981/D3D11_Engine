@@ -329,7 +329,7 @@ void D3DRenderManager::Render()
 			ApplyMaterial(meshInstance.m_pMaterial);			
 
 			// 스켈레탈 메쉬(본이있으면) 행렬팔레트 업데이트						
-			meshInstance.UpdateMatrixPallete(&m_MatrixPalette, ModelPtr->m_SceneResource->m_Skeleton.get());
+			meshInstance.UpdateMatrixPallete(&m_MatrixPalette, &ModelPtr->m_SceneResource->m_Skeleton);
 			m_cbMatrixPallete.SetData(m_pDeviceContext, m_MatrixPalette);
 			
 			/*

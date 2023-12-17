@@ -59,9 +59,8 @@ public:
 	~MeshInstance();
 public:	
 	std::vector<Vertex>				m_Vertices;
-	std::vector<BoneWeightVertex>	m_BoneWeightVertices;
 	std::vector<WORD>				m_Indices;
-	std::vector<BoneReference>		m_BoneReferences;
+
 
 	Math::Matrix* m_pNodeWorldTransform = nullptr;		// StaticMesh의 월드행렬을 가진 노드의 포인터
 	ID3D11Buffer* m_pVertexBuffer = nullptr;
@@ -75,15 +74,13 @@ public:
 	std::string m_Name;					// 메쉬 이름.
 
 	void CreateVertexBuffer(ID3D11Device* device, Vertex* vertices, UINT vertexCount);
-	void CreateBoneWeightVertexBuffer(ID3D11Device* device, BoneWeightVertex* vertices, UINT vertexCount);
 
 	void CreateIndexBuffer(ID3D11Device* device, WORD* indies, UINT indexCount);
 	void Create(ID3D11Device* device,aiMesh* mesh, Skeleton* skeleton);
 	// 계층 구조 노드가 소유한 World의 포인터를 설정
 	void SetNodeWorldPtr(Math::Matrix* world) { m_pNodeWorldTransform = world; }
 	void UpdateNodeInstancePtr(Node* pRootNode, Skeleton* skeleton);
-	void UpdateMatrixPallete(CB_MatrixPalette* pMatrixPallete, Skeleton* skeleton);
-	bool IsSkeletalMesh() { return !m_BoneReferences.empty(); }		
+	
 	void Render(ID3D11DeviceContext* deviceContext);
 };
 
@@ -130,9 +127,7 @@ public:
 	
 
 	void Create(SkeletalMeshResource* pSkeletalMeshResource, Skeleton* skeleton, Node* pRootNode, Material* pMaterial);
-
 	void UpdateMatrixPallete(CB_MatrixPalette* pMatrixPallete, Skeleton* skeleton);
-
 	void Render(ID3D11DeviceContext* deviceContext);
 };
 

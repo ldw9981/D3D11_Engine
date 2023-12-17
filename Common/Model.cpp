@@ -145,10 +145,10 @@ void MetaData::SetData(const aiMetadataEntry& entry)
 
 
 
-bool SkeletalMeshModel::ReadSceneResourceFromFBX(const char* filePath)
+bool SkeletalMeshModel::ReadSceneResourceFromFBX(std::string filePath)
 {
 	std::filesystem::path path = ToWString(string(filePath));
-	LOG_MESSAGEA("Loading file: %s", filePath);
+	LOG_MESSAGEA("Loading file: %s", filePath.c_str());
 	
 	// 리소스 매니저에서 가져온다.
 	m_SceneResource = ResourceManager::Instance->CreateSceneResource(filePath);	
@@ -157,39 +157,48 @@ bool SkeletalMeshModel::ReadSceneResourceFromFBX(const char* filePath)
 	}
 
 	// 리소스로 인스턴스 처리한다.
-	CreateHierachy(m_SceneResource->m_Skeleton.get());	//계층구조 생성	
+	CreateHierachy(&m_SceneResource->m_Skeleton);	//계층구조 생성	
 
 	m_MeshInstances.resize(m_SceneResource->m_SkeletalMeshResources.size());
 	for (size_t i = 0; i < m_SceneResource->m_SkeletalMeshResources.size(); i++)
 	{
-		m_MeshInstances[i].Create(m_SceneResource->m_SkeletalMeshResources[i].get(), // mesh resource
-			m_SceneResource->m_Skeleton.get(),	 // skeleton resource
+		m_MeshInstances[i].Create(   &m_SceneResource->m_SkeletalMeshResources[i], // mesh resource
+			&m_SceneResource->m_Skeleton,	 // skeleton resource
 			this,	// root node
 			m_SceneResource->GetMeshMaterial(i));		//material resource 
 	}
 
 
 	UpdateNodeAnimationReference(0);	// 각 노드의 애니메이션 정보참조 연결	
-	LOG_MESSAGEA("Complete file: %s", filePath);
+	LOG_MESSAGEA("Complete file: %s", filePath.c_str());
 	return true;
 }
 
 bool SkeletalMeshModel::AddAnimationOnlyFromFBX(std::string filePath)
 {
-	return true;
+	auto it = std::find_if(m_SceneResource->m_Animations.begin(), m_SceneResource->m_Animations.end(),
+		[filePath](const Animation& node) {
+			return node.FilePath == filePath;
+		});
+
+	if (it != m_SceneResource->m_Animations.end())
+	{
+		return false;
+	}
+	return m_SceneResource->AddAnimation(filePath);
 }
 
 Material* SkeletalMeshModel::GetMaterial(UINT index)
 {
 	assert(index < m_SceneResource->m_Materials.size());
-	return m_SceneResource->m_Materials[index].get();
+	return &m_SceneResource->m_Materials[index];
 }
 void SkeletalMeshModel::Update(float deltaTime)
 {
 	if (!m_SceneResource->m_Animations.empty())
 	{
 		m_AnimationProressTime += deltaTime;
-		m_AnimationProressTime = fmod(m_AnimationProressTime, m_SceneResource->m_Animations[m_AnimationIndex]->Duration);
+		m_AnimationProressTime = fmod(m_AnimationProressTime, m_SceneResource->m_Animations[m_AnimationIndex].Duration);
 		UpdateAnimation(m_AnimationProressTime);
 	}
 }
@@ -197,18 +206,27 @@ void SkeletalMeshModel::Update(float deltaTime)
 void SkeletalMeshModel::UpdateNodeAnimationReference(UINT index)
 {
 	assert(index < m_SceneResource->m_Animations.size());
-	Animation& animation = *m_SceneResource->m_Animations[index].get();
+	Animation& animation = m_SceneResource->m_Animations[index];
 	for (size_t i = 0; i < animation.NodeAnimations.size(); i++)
 	{
 		NodeAnimation& nodeAnimation = animation.NodeAnimations[i];
-		Node* node = FindNode(nodeAnimation.NodeName);
-		node->m_pNodeAnimation = &animation.NodeAnimations[i];
+		Node* pNode = FindNode(nodeAnimation.NodeName);
+		assert(pNode!=nullptr);
+		pNode->m_pNodeAnimation = &animation.NodeAnimations[i];
 	}
 }
 
 void SkeletalMeshModel::SetWorldTransform(const Math::Matrix& transform)
 {
 	m_Local = transform;
+}
+
+void SkeletalMeshModel::PlayAnimation(UINT index)
+{
+	assert(index < m_SceneResource->m_Animations.size());
+	m_AnimationIndex = index;
+	m_AnimationProressTime = 0.0f;
+	UpdateNodeAnimationReference(index);
 }
 
 bool SceneResource::Create(std::string filePath)
@@ -246,21 +264,18 @@ bool SceneResource::Create(std::string filePath)
 		}
 	}
 
-	m_Skeleton = make_shared<Skeleton>();
-	m_Skeleton->Create(scene);
+	m_Skeleton.Create(scene);
 
 	m_Materials.resize(scene->mNumMaterials);
 	for (unsigned int i = 0; i < scene->mNumMaterials; ++i)
 	{
-		m_Materials[i] = make_shared<Material>();
-		m_Materials[i]->Create(scene->mMaterials[i]);
+		m_Materials[i].Create(scene->mMaterials[i]);
 	}
 
 	m_SkeletalMeshResources.resize(scene->mNumMeshes);
 	for (unsigned int i = 0; i < scene->mNumMeshes; ++i)
-	{
-		m_SkeletalMeshResources[i] = make_shared<SkeletalMeshResource>();
-		m_SkeletalMeshResources[i]->Create(scene->mMeshes[i], m_Skeleton.get());
+	{		
+		m_SkeletalMeshResources[i].Create(scene->mMeshes[i], &m_Skeleton);
 	}
 
 	// SceneResource의 기본 애니메이션 추가한다.
@@ -272,9 +287,9 @@ bool SceneResource::Create(std::string filePath)
 		const aiAnimation* pAiAnimation = scene->mAnimations[0];
 		// 채널수는 aiAnimation 안에서 애니메이션 정보를  표현하는 aiNode의 개수이다.
 		assert(pAiAnimation->mNumChannels > 1); // 애니메이션이 있다면 aiNode 는 하나 이상 있어야한다.
-		shared_ptr<Animation> ret = make_shared<Animation>();
-		ret->Create(filePath, pAiAnimation);
-		m_Animations.push_back(ret);
+		
+		Animation& ret = m_Animations.emplace_back();
+		ret.Create(filePath, pAiAnimation);
 	}
 	importer.FreeScene();
 	LOG_MESSAGEA("Complete file: %s", filePath.c_str());
@@ -283,14 +298,40 @@ bool SceneResource::Create(std::string filePath)
 
 
 bool SceneResource::AddAnimation(std::string filePath)
-{
+{	
+	std::filesystem::path path = ToWString(string(filePath));
+	LOG_MESSAGEA("Loading file: %s", filePath.c_str());
+	Assimp::Importer importer;
+
+	importer.SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, 0);	// $assimp_fbx$ 노드 생성안함
+	unsigned int importFlags = aiProcess_ConvertToLeftHanded;	// 왼손 좌표계로 변환
+
+	const aiScene* scene = importer.ReadFile(filePath, importFlags);
+	if (!scene) {
+		LOG_ERRORA("Error loading file: %s", importer.GetErrorString());
+		return false;
+	}
+
+	assert(scene->mNumAnimations < 2); // 애니메이션은 없거나 1개여야한다. 
+	// 노드의 애니메이션을 하나로 합치는 방법은 FBX export에서 NLA스트립,모든 액션 옵션을 끕니다.
+	if (scene->HasAnimations())
+	{
+		const aiAnimation* pAiAnimation = scene->mAnimations[0];
+		// 채널수는 aiAnimation 안에서 애니메이션 정보를  표현하는 aiNode의 개수이다.
+		assert(pAiAnimation->mNumChannels > 1); // 애니메이션이 있다면 aiNode 는 하나 이상 있어야한다.
+
+		Animation& ret = m_Animations.emplace_back();	// Vector라 파괴후 복사한다. 최적화는 나중에하자
+		ret.Create(filePath, pAiAnimation);
+	}
+	importer.FreeScene();
+	LOG_MESSAGEA("Complete file: %s", filePath.c_str());
 	return true;
 }
 
 Material* SceneResource::GetMeshMaterial(UINT index)
 {
 	assert(index < m_Materials.size());
-	UINT mindex = m_SkeletalMeshResources[index]->m_MaterialIndex;
+	UINT mindex = m_SkeletalMeshResources[index].m_MaterialIndex;
 	assert(mindex < m_Materials.size());
-	return m_Materials[mindex].get();
+	return &m_Materials[mindex];
 }

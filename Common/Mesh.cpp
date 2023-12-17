@@ -188,8 +188,6 @@ void SkeletalMeshInstance::Create(SkeletalMeshResource* pSkeletalMeshResource,  
 		m_BoneReferences[i] = &pNode->m_World;
 	}
 }
-
-
 void SkeletalMeshInstance::UpdateMatrixPallete(CB_MatrixPalette* pMatrixPallete, Skeleton* skeleton)
 {
 	assert(m_BoneReferences.size() == m_pSkeletalMeshResource->m_BoneReferences.size());

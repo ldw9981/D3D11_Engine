@@ -26,11 +26,11 @@ public:
 	~SceneResource() {}
 
 	//std::vector<StaticMeshResource> m_StaticMeshModels;
-	std::vector<shared_ptr<SkeletalMeshResource>> m_SkeletalMeshResources;
-	std::vector<shared_ptr<Material>> m_Materials;
-	shared_ptr<Skeleton> m_Skeleton;
+	std::vector<SkeletalMeshResource> m_SkeletalMeshResources;
+	std::vector<Material> m_Materials;
+	Skeleton m_Skeleton;
 		
-	std::vector<shared_ptr<Animation>> m_Animations;
+	std::vector<Animation> m_Animations;
 
 	bool Create(std::string filePath);
 	bool AddAnimation(std::string filePath);
@@ -77,7 +77,7 @@ public:
 	float m_AnimationProressTime = 0.0f;
 	UINT  m_AnimationIndex = 0;
 
-	bool ReadSceneResourceFromFBX(const char* filePath);
+	bool ReadSceneResourceFromFBX(std::string filePath);
 	bool AddAnimationOnlyFromFBX(std::string filePath);
 
 	Material* GetMaterial(UINT index);
@@ -86,5 +86,6 @@ public:
 
 	void UpdateNodeAnimationReference(UINT index);
 	void SetWorldTransform(const Math::Matrix& transform);
+	void PlayAnimation(UINT index);
 
 };
