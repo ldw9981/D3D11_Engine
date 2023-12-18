@@ -47,6 +47,11 @@ public:
 
     std::set<std::weak_ptr<IButtonNotify>> m_listeners;
 
+    void AddListener(std::shared_ptr<IButtonNotify> ptr)
+    {
+        m_listeners.insert(ptr);
+    }
+
     // 재정의
     virtual void onClick()
     {
@@ -68,12 +73,22 @@ public:
 };
 
 
-
+class Other : public IButtonNotify
+{
+public:
+    virtual void onClick() {
+        std::cout << "Other OnClick" << std::endl;
+    }
+};
 
 
 int main_TestButton() {
-    MyButton myButton("클릭하세요");
-    myButton.Click();
+
+    //std::shared_ptr<Other> ptr = std::make_shared<Other>();
+    NotifyButton button("클릭하세요");
+    //button.AddListener(ptr);
+
+    button.Click();
 
     return 0;
 }
