@@ -396,18 +396,24 @@ void D3DRenderManager::Render()
 
 void D3DRenderManager::ApplyMaterial(Material* pMaterial)
 {
-	m_pDeviceContext->PSSetShaderResources(0, 1, pMaterial->m_pBaseColorRV.GetAddressOf());
-	m_pDeviceContext->PSSetShaderResources(1, 1, pMaterial->m_pNormalRV.GetAddressOf());
-	m_pDeviceContext->PSSetShaderResources(2, 1, pMaterial->m_pSpecularRV.GetAddressOf());
-	m_pDeviceContext->PSSetShaderResources(3, 1, pMaterial->m_pEmissiveRV.GetAddressOf());
-	m_pDeviceContext->PSSetShaderResources(4, 1, pMaterial->m_pOpacityRV.GetAddressOf());
+	if(pMaterial->m_pBaseColor)
+		m_pDeviceContext->PSSetShaderResources(0, 1, pMaterial->m_pBaseColor->m_pTextureSRV.GetAddressOf());
+	
+	if (pMaterial->m_pNormal)
+		m_pDeviceContext->PSSetShaderResources(1, 1, pMaterial->m_pNormal->m_pTextureSRV.GetAddressOf());
+	if (pMaterial->m_pSpecular)
+		m_pDeviceContext->PSSetShaderResources(2, 1, pMaterial->m_pSpecular->m_pTextureSRV.GetAddressOf());
+	if (pMaterial->m_pEmissive)
+		m_pDeviceContext->PSSetShaderResources(3, 1, pMaterial->m_pEmissive->m_pTextureSRV.GetAddressOf());
+	if (pMaterial->m_pOpacity)
+		m_pDeviceContext->PSSetShaderResources(4, 1, pMaterial->m_pOpacity->m_pTextureSRV.GetAddressOf());
 
 	m_CpuCbMaterial.Diffuse = pMaterial->m_Color;
-	m_CpuCbMaterial.UseDiffuseMap = pMaterial->m_pBaseColorRV != nullptr ? true : false;
-	m_CpuCbMaterial.UseNormalMap = pMaterial->m_pNormalRV != nullptr ? true : false;
-	m_CpuCbMaterial.UseSpecularMap = pMaterial->m_pSpecularRV != nullptr ? true : false;
-	m_CpuCbMaterial.UseEmissiveMap = pMaterial->m_pEmissiveRV != nullptr ? true : false;
-	m_CpuCbMaterial.UseOpacityMap = pMaterial->m_pOpacityRV != nullptr ? true : false;
+	m_CpuCbMaterial.UseDiffuseMap = pMaterial->m_pBaseColor != nullptr ? true : false;
+	m_CpuCbMaterial.UseNormalMap = pMaterial->m_pNormal != nullptr ? true : false;
+	m_CpuCbMaterial.UseSpecularMap = pMaterial->m_pSpecular != nullptr ? true : false;
+	m_CpuCbMaterial.UseEmissiveMap = pMaterial->m_pEmissive != nullptr ? true : false;
+	m_CpuCbMaterial.UseOpacityMap = pMaterial->m_pOpacity != nullptr ? true : false;
 
 	if (m_CpuCbMaterial.UseOpacityMap && m_pAlphaBlendState != nullptr)
 		m_pDeviceContext->OMSetBlendState(m_pAlphaBlendState, nullptr, 0xffffffff); // 알파블렌드 상태설정 , 다른옵션은 기본값 

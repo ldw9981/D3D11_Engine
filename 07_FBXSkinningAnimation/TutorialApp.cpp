@@ -74,8 +74,8 @@ void TutorialApp::IncreaseModel()
 	SkeletalMeshModel& model = m_ModelList.emplace_back();
 
 	model.ReadSceneResourceFromFBX( "../Resource/Zombie.fbx");
-	model.AddAnimationOnlyFromFBX("../Resource/Zombie_Run.fbx");
-	model.AddAnimationOnlyFromFBX("../Resource/SkinningTest.fbx");
+	//model.AddAnimationOnlyFromFBX("../Resource/Zombie_Run.fbx");
+	//model.AddAnimationOnlyFromFBX("../Resource/SkinningTest.fbx");
 	model.PlayAnimation(0);
 }
 

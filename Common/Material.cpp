@@ -65,42 +65,48 @@ void Material::Create(const aiMaterial* pMaterial)
 		path = ToWString(string(texturePath.C_Str()));		
 		finalPath = basePath + path.filename().wstring();
 		
-		m_pBaseColorRV = ResourceManager::Instance->CreateTexture(finalPath);
-		m_FilePathBaseColor = finalPath;
+		m_pBaseColor = ResourceManager::Instance->CreateMaterialTexture(finalPath);		
 	}
 
 	if (AI_SUCCESS == pMaterial->GetTexture(aiTextureType_NORMALS, 0, &texturePath))
 	{
 		path = ToWString(string(texturePath.C_Str()));
 		finalPath = basePath + path.filename().wstring();
-		m_pNormalRV = ResourceManager::Instance->CreateTexture(finalPath);
-		m_FilePathNormal = finalPath;
+		m_pNormal = ResourceManager::Instance->CreateMaterialTexture(finalPath);	
 	}
 
 	if (AI_SUCCESS == pMaterial->GetTexture(aiTextureType_SPECULAR, 0, &texturePath))
 	{
 		path = ToWString(string(texturePath.C_Str()));
 		finalPath = basePath + path.filename().wstring();		
-		m_pSpecularRV = ResourceManager::Instance->CreateTexture(finalPath);	
-		m_FilePathSpecular = finalPath;
+		m_pSpecular = ResourceManager::Instance->CreateMaterialTexture(finalPath);			
 	}
 
 	if (AI_SUCCESS == pMaterial->GetTexture(aiTextureType_EMISSIVE, 0, &texturePath))
 	{
 		path = ToWString(string(texturePath.C_Str()));
 		finalPath = basePath + path.filename().wstring();
-
-		m_pEmissiveRV = ResourceManager::Instance->CreateTexture(finalPath);
-		m_FilePathEmissive = finalPath;
+		m_pEmissive = ResourceManager::Instance->CreateMaterialTexture(finalPath);
 	}
 
 	if (AI_SUCCESS == pMaterial->GetTexture(aiTextureType_OPACITY, 0, &texturePath))
 	{
 		path = ToWString(string(texturePath.C_Str()));
 		finalPath = basePath + path.filename().wstring();
-
-		m_pOpacityRV = ResourceManager::Instance->CreateTexture(finalPath);	
-		m_FilePathOpacity = finalPath;
+		m_pOpacity = ResourceManager::Instance->CreateMaterialTexture(finalPath);		
 	}
 }
 
+MaterialTexture::MaterialTexture()
+{
+}
+
+MaterialTexture::~MaterialTexture()
+{
+}
+
+void MaterialTexture::Create(const std::wstring& filePath)
+{
+	HR_T(CreateTextureFromFile(D3DRenderManager::m_pDevice, filePath.c_str(), &m_pTextureSRV));
+	m_FilePath = filePath;
+}

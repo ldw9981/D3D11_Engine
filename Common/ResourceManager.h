@@ -15,13 +15,10 @@ public:
 	static ResourceManager* Instance;
 	
 	std::map<std::string, std::weak_ptr<SceneResource>> m_SceneMap;
+	std::map<std::wstring ,std::weak_ptr<MaterialTexture>> m_MaterialTextureMap;	// Texture	
 
 
-	std::map<std::wstring , Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> m_TextureMap;	// Texture	
-
-	std::map<std::string, std::weak_ptr<SkeletalMeshResource>> m_SkeletalMeshMap;	// SkeletalMesh
-
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> CreateTexture(std::wstring filePath);
+	std::shared_ptr<MaterialTexture> CreateMaterialTexture(std::wstring filePath);
 	std::shared_ptr<SceneResource> CreateSceneResource(std::string filePath);
 };
 
