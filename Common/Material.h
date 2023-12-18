@@ -26,6 +26,8 @@ public:
 	Material();
 	~Material();
 
+	void TestMaterialPropery(const aiMaterial* pMaterial);
+	void TestTextureProperty(const aiMaterial* pMaterial, std::vector<std::pair<aiTextureType, std::string>>& textureProperties);
 	void Create(const aiMaterial* pMaterial);
 
 	Math::Vector4 m_Color;	
