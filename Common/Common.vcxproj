@@ -153,7 +153,6 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="SceneComponent.h" />
-    <ClInclude Include="Singleton.h" />
     <ClInclude Include="SkeletalMeshComponent.h" />
     <ClInclude Include="SkeletalMeshInstance.h" />
     <ClInclude Include="SkeletalMeshResource.h" />
@@ -183,7 +182,6 @@
     </ClCompile>
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="SceneComponent.cpp" />
-    <ClCompile Include="Singleton.cpp" />
     <ClCompile Include="SkeletalMeshComponent.cpp" />
     <ClCompile Include="SkeletalMeshInstance.cpp" />
     <ClCompile Include="SkeletalMeshResource.cpp" />

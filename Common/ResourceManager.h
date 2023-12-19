@@ -1,6 +1,4 @@
 #pragma once
-#include "Singleton.h"
-
 
 class MaterialTexture;
 class StaticMeshSceneResource;
