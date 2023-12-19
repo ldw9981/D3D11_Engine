@@ -46,7 +46,7 @@ Material* StaticMeshModel::GetMaterial(UINT index)
 
 void StaticMeshModel::Update(float deltaTime)
 {
-
+	__super::Update(deltaTime);
 }
 
 void StaticMeshModel::SetWorldTransform(const Math::Matrix& transform)
@@ -103,7 +103,7 @@ bool SkeletalMeshModel::ReadSceneResourceFromFBX(std::string filePath)
 	}
 
 	// 리소스로 인스턴스 처리한다.
-	CreateHierachy(&m_SceneResource->m_Skeleton);	//계층구조 생성	
+	CreateHierachy(&m_SceneResource->m_Skeleton,&m_AnimationProressTime);	//계층구조 생성	
 
 	m_MeshInstances.resize(m_SceneResource->m_SkeletalMeshResources.size());
 	for (UINT i = 0; i < m_SceneResource->m_SkeletalMeshResources.size(); i++)
@@ -144,8 +144,9 @@ void SkeletalMeshModel::Update(float deltaTime)
 	{
 		m_AnimationProressTime += deltaTime;
 		m_AnimationProressTime = fmod(m_AnimationProressTime, m_SceneResource->m_Animations[m_AnimationIndex].Duration);
-		UpdateAnimation(m_AnimationProressTime);
+		
 	}
+	__super::Update(deltaTime);	
 }
 
 void SkeletalMeshModel::UpdateNodeAnimationReference(UINT index)

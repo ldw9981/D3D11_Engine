@@ -10,7 +10,7 @@ Node::~Node()
 	//LOG_MESSAGEA("~Node() %s", m_Name.c_str());	
 }
 
-void Node::CreateHierachy(SkeletonInfo* skeleton)
+void Node::CreateHierachy(SkeletonInfo* skeleton, float* pAnimationTime)
 {
 	UINT count = skeleton->GetBoneCount();
 
@@ -33,17 +33,18 @@ void Node::CreateHierachy(SkeletonInfo* skeleton)
 		node.m_Local = pBone->RelativeTransform;
 		node.m_Children.reserve(pBone->NumChildren);
 		node.m_pParent = pParentNode;
+		node.m_pAnimationTime = pAnimationTime;
 	}
 }
 
-void Node::UpdateAnimation(float progressTime)
+void Node::Update(float DeltaTime)
 {
 	// 노드의 애니메이션이 있다면 애니메이션을 업데이트한다.
 	if (m_pNodeAnimation != nullptr)
 	{
 		Math::Vector3 position, scaling;
 		Math::Quaternion rotation;
-		m_pNodeAnimation->Evaluate(progressTime, position, rotation, scaling);
+		m_pNodeAnimation->Evaluate(*m_pAnimationTime, position, rotation, scaling);
 		m_Local = Math::Matrix::CreateScale(scaling) * Math::Matrix::CreateFromQuaternion(rotation) * Math::Matrix::CreateTranslation(position);
 	}
 
@@ -55,13 +56,8 @@ void Node::UpdateAnimation(float progressTime)
 
 	for (auto& child : m_Children)
 	{	// 자식 노드들의 Update()를 호출한다.
-		child.UpdateAnimation(progressTime);
+		child.Update(DeltaTime);
 	}
-}
-
-void Node::Update(float DeltaTime)
-{
-
 }
 
 Node* Node::FindNode(const std::string& name)
