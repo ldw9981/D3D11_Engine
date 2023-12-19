@@ -362,7 +362,7 @@ bool StaticMeshSceneResource::Create(std::string filePath)
 
 Material* StaticMeshSceneResource::GetMeshMaterial(UINT index)
 {
-	assert(index < m_Materials.size());
+	assert(index < m_StaticMeshResources.size());
 	UINT mindex = m_StaticMeshResources[index].m_MaterialIndex;
 	assert(mindex < m_Materials.size());
 	return &m_Materials[mindex];

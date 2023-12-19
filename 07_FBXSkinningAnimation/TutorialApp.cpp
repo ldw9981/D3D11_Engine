@@ -19,8 +19,12 @@ bool TutorialApp::Initialize(UINT Width, UINT Height)
 {
 	__super::Initialize(Width, Height);
 
+	Math::Vector3 RotationAngle;
+	//Math::Quaternion rotQuaternion;
+	//rotQuaternion = Math::Quaternion::CreateFromYawPitchRoll(RotationAngle.x, RotationAngle.y, RotationAngle.z);
+	//Math::Matrix rotMatrix = Math::Matrix::CreateFromQuaternion(rotQuaternion);
 
-
+	
 	
 	return true;
 }
@@ -96,7 +100,7 @@ void TutorialApp::IncreaseModel()
 		int range = 500;
 		float pos = (float)(rand() % range) - range * 0.5f;
 		model.m_Local = Matrix::CreateTranslation(pos, 0, 0);
-		model.ReadSceneResourceFromFBX("../Resource/Zombie.fbx");	
+		model.ReadSceneResourceFromFBX("../Resource/ZeldaPosed001.fbx");	
 	}
 }
 
@@ -111,5 +115,10 @@ void TutorialApp::DecreaseModel()
 	{
 		m_StaticMeshModelList.pop_back();
 	}
+}
+
+void TutorialApp::ImGuiRender()
+{
+
 }
 

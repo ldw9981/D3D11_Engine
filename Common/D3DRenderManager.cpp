@@ -262,7 +262,10 @@ void D3DRenderManager::Uninitialize()
 
 void D3DRenderManager::Update()
 {
-	m_World = Matrix::CreateScale(m_MeshScale) * Matrix::CreateFromYawPitchRoll(Vector3(XMConvertToRadians(m_Rotation.x), XMConvertToRadians(m_Rotation.y), 0));
+	m_World = Matrix::CreateScale(m_MeshScale) * 
+		Matrix::CreateFromYawPitchRoll(Vector3(XMConvertToRadians(m_Rotation.x),
+									XMConvertToRadians(m_Rotation.y),
+									XMConvertToRadians(m_Rotation.z)));
 
 	m_View = XMMatrixLookToLH(m_CameraPos, Vector3(0, 0, 1), Vector3(0, 1, 0));
 
@@ -368,7 +371,7 @@ void D3DRenderManager::Render()
 
 		ImGui::Text("Cube");
 		ImGui::SliderFloat("Scale", (float*)&m_MeshScale, 1, 100);
-		ImGui::SliderFloat2("Rotation", (float*)&m_Rotation, -180, 180);
+		ImGui::SliderFloat3("Rotation", (float*)&m_Rotation, 0, 360);
 
 		ImGui::Text("Light");
 		ImGui::SliderFloat3("LightDirection", (float*)&m_Light.Direction, -1.0f, 1.0f);
@@ -388,6 +391,10 @@ void D3DRenderManager::Render()
 
 		ImGui::Text("BackBuffer");
 		ImGui::ColorEdit4("clear color", (float*)&m_ClearColor); // Edit 3 floats representing a color	
+
+		if(m_pImGuiRender)
+			m_pImGuiRender->ImGuiRender();
+
 		ImGui::End();
 	}
 	ImGui::Render();

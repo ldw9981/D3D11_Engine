@@ -56,6 +56,13 @@ public:
 	virtual void Render(ID3D11DeviceContext* pDeviceContext) = 0;
 };
 
+class IImGuiRenderable
+{
+public:
+	virtual void ImGuiRender() = 0;
+};
+
+
 class D3DRenderManager
 {
 public:
@@ -95,7 +102,7 @@ public:
 	Matrix  m_Projection;			// 단위장치좌표계( Normalized Device Coordinate) 공간으로 변환을 위한 행렬.
 
 	Vector3 m_ClearColor = { 0.0f, 0.0f, 0.0f };
-	Vector2 m_Rotation = Vector2(0.0f, 0.0f);
+	Vector3 m_Rotation = Vector3(0.0f, 0.0f,0.0f);
 	Vector3 m_CameraPos = Vector3(0.0f, 100.0f, -1000.0f);
 
 	CB_Transform m_Transform;
@@ -106,7 +113,8 @@ public:
 
 	HWND m_hWnd = nullptr;
 	float m_MeshScale = 1.0f;
-
+	
+	void SetImGuiRender(IImGuiRenderable* val) { m_pImGuiRender = val; }
 	std::list<SkeletalMeshModel*> m_Models;		//  렌더링할 모델들의 포인터 저장해둔다. 
 	std::list<StaticMeshModel*> m_StaticModels;		//  렌더링할 모델들의 포인터 저장해둔다. 
 	// 렌더링 이후에 목록은 사라진다.
@@ -122,4 +130,6 @@ public:
 	void CreateSkeletalMesh_VS_IL();
 	void CreateStaticMesh_VS_IL();
 	void ApplyMaterial(Material* pMaterial);
+private:
+	IImGuiRenderable* m_pImGuiRender = nullptr;
 };

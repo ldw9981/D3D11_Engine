@@ -12,13 +12,11 @@ using namespace DirectX;
 
 
 class TutorialApp :
-    public GameApp
+    public GameApp,public IImGuiRenderable
 {
 public:
 	TutorialApp(HINSTANCE hInstance);
 	~TutorialApp();
-
-
 
 	std::list<StaticMeshModel>		m_StaticMeshModelList;
 	std::list<SkeletalMeshModel>	m_SkeletalMeshModelList;
@@ -32,5 +30,6 @@ public:
 
 	void IncreaseModel();
 	void DecreaseModel();
+	virtual void ImGuiRender();
 };
 
