@@ -132,7 +132,8 @@ void SkeletalMeshInstance::Create(SkeletalMeshResource* pMeshResource,  Skeleton
 		Node* pNode = pRootNode->FindNode(name);
 		assert(pNode != nullptr);
 		m_BoneReferences[i] = &pNode->m_World;
-	}
+	}	
+	m_pNodeWorldTransform = &pRootNode->m_World;
 }
 void SkeletalMeshInstance::UpdateMatrixPallete(CB_MatrixPalette* pMatrixPallete, SkeletonInfo* skeleton)
 {
