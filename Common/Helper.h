@@ -213,3 +213,15 @@ Vector3 CalculateTangent(Vector3 v1,Vector3 v2,Vector3 v3,Vector2 tex1, Vector2 
 
 
 	std::wstring ToWString(const std::string& s);
+
+	struct MetaData
+	{
+		std::string Name;
+		int Type = -1;
+		std::string metadataStr;
+		float	metadataFloat;
+		int		metadataInt;
+		float	metadataVector[3];
+
+		void SetData(const aiMetadataEntry& entry);
+	};

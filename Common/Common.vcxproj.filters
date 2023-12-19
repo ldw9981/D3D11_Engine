@@ -30,9 +30,6 @@
     <ClInclude Include="TimeSystem.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Material.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -42,10 +39,7 @@
     <ClInclude Include="Node.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SkeletonInfo.h">
+    <ClInclude Include="SkeletonResource.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SceneComponent.h">
@@ -78,6 +72,18 @@
     <ClInclude Include="SkeletalMeshActor.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="SkeletalMeshInstance.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletalMeshResource.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticMeshResource.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticMeshInstance.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Common.cpp">
@@ -95,9 +101,6 @@
     <ClCompile Include="TimeSystem.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Material.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -107,10 +110,7 @@
     <ClCompile Include="Node.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SkeletonInfo.cpp">
+    <ClCompile Include="SkeletonResource.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SceneComponent.cpp">
@@ -141,6 +141,18 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SkeletalMeshActor.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletalMeshInstance.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletalMeshResource.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticMeshResource.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticMeshInstance.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

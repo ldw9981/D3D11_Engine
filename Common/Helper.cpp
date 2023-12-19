@@ -88,3 +88,36 @@ std::wstring ToWString(const std::string& s)
 	std::wstring wsTmp(s.begin(), s.end());
 	return wsTmp;
 }
+
+
+void MetaData::SetData(const aiMetadataEntry& entry)
+{
+	// Check the data type of the metadata entry
+	switch (Type)
+	{
+	case AI_BOOL:
+		break;
+	case AI_INT32:
+		metadataInt = *reinterpret_cast<const int*>(entry.mData);
+		break;
+	case AI_UINT64:
+		break;
+	case AI_FLOAT:
+		metadataFloat = *reinterpret_cast<const float*>(entry.mData);
+		break;
+	case AI_DOUBLE:
+		break;
+	case AI_AISTRING:
+		metadataStr = std::string((char*)entry.mData);
+		break;
+	case AI_AIVECTOR3D:
+		metadataVector[0] = reinterpret_cast<const aiVector3D*>(entry.mData)->x;
+		metadataVector[1] = reinterpret_cast<const aiVector3D*>(entry.mData)->y;
+		metadataVector[2] = reinterpret_cast<const aiVector3D*>(entry.mData)->z;
+		break;
+	case AI_META_MAX:
+		break;
+	default:
+		break;
+	}
+}

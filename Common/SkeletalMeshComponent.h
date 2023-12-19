@@ -1,5 +1,9 @@
 #pragma once
 #include "SceneComponent.h"
+#include "Node.h"
+#include "SkeletalMeshInstance.h"
+
+
 class Actor;
 class SkeletalMeshComponent :
     public SceneComponent
@@ -11,3 +15,31 @@ public:
 
 };
 
+//  이후에 Component로 변경될 예정입니다.
+class Material;
+class SkeletalMeshSceneResource;
+class SkeletalMeshInstance;
+class SkeletalMeshModel : public Node
+{
+public:
+	SkeletalMeshModel() {}
+	~SkeletalMeshModel() {}
+
+	std::shared_ptr<SkeletalMeshSceneResource>  m_SceneResource;
+	std::vector<SkeletalMeshInstance> m_MeshInstances;
+
+	float m_AnimationProressTime = 0.0f;
+	UINT  m_AnimationIndex = 0;
+
+	bool ReadSceneResourceFromFBX(std::string filePath);
+	bool ReadAnimationOnlyFromFBX(std::string filePath);
+
+	Material* GetMaterial(UINT index);
+
+	void Update(float deltaTime);
+
+	void UpdateNodeAnimationReference(UINT index);
+	void SetWorldTransform(const Math::Matrix& transform);
+	void PlayAnimation(UINT index);
+	void CreateHierachy(SkeletonResource* skeleton);
+};

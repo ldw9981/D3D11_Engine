@@ -1,10 +1,10 @@
 #include "pch.h"
-#include "SkeletonInfo.h"
+#include "SkeletonResource.h"
 #include "Node.h"
 
 
 
-void SkeletonInfo::Create(const aiScene* pScene)
+void SkeletonResource::Create(const aiScene* pScene)
 {
 	Name = pScene->mName.C_Str();
 	int NumNode = 0;	
@@ -28,7 +28,7 @@ void SkeletonInfo::Create(const aiScene* pScene)
 	}
 }
 
-BoneInfo* SkeletonInfo::AddBone(const aiScene* pScene,const aiNode* pNode)
+BoneInfo* SkeletonResource::AddBone(const aiScene* pScene,const aiNode* pNode)
 { 	
 	BoneInfo& bone = Bones.emplace_back();
 	bone.Set(pNode);
@@ -58,7 +58,7 @@ BoneInfo* SkeletonInfo::AddBone(const aiScene* pScene,const aiNode* pNode)
 }
 
 
-BoneInfo* SkeletonInfo::FindBone(const std::string& name)
+BoneInfo* SkeletonResource::FindBone(const std::string& name)
 {
 	auto iter = BoneMappingTable.find(name);
 	if (iter == BoneMappingTable.end())
@@ -66,14 +66,14 @@ BoneInfo* SkeletonInfo::FindBone(const std::string& name)
 	return &Bones[iter->second];
 }
 
-BoneInfo* SkeletonInfo::GetBone(int index)
+BoneInfo* SkeletonResource::GetBone(int index)
 {
 	if (index < 0 || index >= Bones.size())
 		return nullptr;
 	return &Bones[index];
 }
 
-int SkeletonInfo::GetBoneIndexByBoneName(const std::string& boneName)
+int SkeletonResource::GetBoneIndexByBoneName(const std::string& boneName)
 {
 	auto iter = BoneMappingTable.find(boneName);
 	if (iter == BoneMappingTable.end())
@@ -81,7 +81,7 @@ int SkeletonInfo::GetBoneIndexByBoneName(const std::string& boneName)
 	return iter->second;
 }
 
-int SkeletonInfo::GetBoneIndexByMeshName(const std::string& meshName)
+int SkeletonResource::GetBoneIndexByMeshName(const std::string& meshName)
 {
 	auto iter = MeshMappingTable.find(meshName);
 	if (iter == MeshMappingTable.end())
@@ -89,7 +89,7 @@ int SkeletonInfo::GetBoneIndexByMeshName(const std::string& meshName)
 	return iter->second;
 }
 
-void SkeletonInfo::CountNode(int& Count,const aiNode* pNode)
+void SkeletonResource::CountNode(int& Count,const aiNode* pNode)
 {
 	Count++;
 	std::string name = pNode->mName.C_Str();

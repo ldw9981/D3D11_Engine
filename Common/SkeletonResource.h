@@ -23,7 +23,7 @@ struct BoneInfo
 };
 
 // 본 정보를 저장하는 구조체
-struct SkeletonInfo
+struct SkeletonResource
 {
 public:
 	std::string Name;

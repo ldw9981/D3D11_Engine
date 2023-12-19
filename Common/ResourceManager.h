@@ -1,11 +1,10 @@
 #pragma once
 #include "Singleton.h"
-#include "Material.h"
-#include "Animation.h"
-#include "SkeletonInfo.h"
-#include "Mesh.h"
-#include "Model.h"
 
+
+class MaterialTexture;
+class StaticMeshSceneResource;
+class SkeletalMeshSceneResource;
 class ResourceManager
 {
 public:

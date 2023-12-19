@@ -2,13 +2,9 @@
 #include "ResourceManager.h"
 #include "D3DRenderManager.h"
 #include "Helper.h"
-#include "Model.h"
-
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-#include <assimp/config.h>
-#include <assimp/cimport.h>
+#include "Material.h"
+#include "SkeletalMeshResource.h"
+#include "StaticMeshResource.h"
 
 
 ResourceManager* ResourceManager::Instance = nullptr;

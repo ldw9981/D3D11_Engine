@@ -3,7 +3,7 @@
 struct aiNode;
 class StaticMeshModel;
 struct NodeAnimation;
-struct SkeletonInfo;
+struct SkeletonResource;
 struct BoneInfo;
 
 

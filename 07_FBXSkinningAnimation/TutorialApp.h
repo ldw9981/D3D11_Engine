@@ -1,11 +1,13 @@
 #pragma once
 #include "../Common/GameApp.h"
-#include "../Common/Mesh.h"
+
 #include "../Common/Material.h"
 #include "../Common/Animation.h"
 #include "../Common/Node.h"
-#include "../Common/Model.h"
+
 #include "../Common/World.h"
+#include "../Common/StaticMeshComponent.h"
+#include "../Common/SkeletalMeshComponent.h"
 
 using namespace DirectX::SimpleMath;
 using namespace DirectX;

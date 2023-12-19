@@ -1,7 +1,10 @@
 #include "pch.h"
 #include "TutorialApp.h"
 #include "../Common/D3DRenderManager.h"
-
+#include "../Common/SkeletalMeshComponent.h"
+#include "../Common/StaticMeshComponent.h"
+#include "../Common/SkeletalMeshResource.h"
+#include "../Common/StaticMeshResource.h"
 
 
 TutorialApp::TutorialApp(HINSTANCE hInstance)

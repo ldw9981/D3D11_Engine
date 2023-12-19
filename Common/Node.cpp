@@ -1,9 +1,8 @@
 #include "pch.h"
 #include "Node.h"
-#include "Model.h"
 #include "Helper.h"
-#include "SkeletonInfo.h"
-
+#include "SkeletonResource.h"
+#include "Animation.h"
 
 Node::~Node()
 {

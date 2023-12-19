@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "D3DRenderManager.h"
-#include "Model.h"
+
 #include "Helper.h"
 #include <d3dcompiler.h>
 #include <Directxtk/DDSTextureLoader.h>
@@ -10,8 +10,16 @@
 #include <winerror.h>
 #include <dxgidebug.h>
 
-
+#include "SkeletalMeshComponent.h"
+#include "StaticMeshComponent.h"
 #include "Animation.h"
+#include "Material.h"	
+#include "StaticMeshInstance.h"
+#include "StaticMeshResource.h"
+
+#include "SkeletalMeshInstance.h"
+#include "SkeletalMeshResource.h"
+
 
 
 #pragma comment(lib,"d3d11.lib")
