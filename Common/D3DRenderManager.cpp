@@ -280,8 +280,8 @@ void D3DRenderManager::Render()
 	m_pDeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 	m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);	
 
-
-	
+	// 버텍스셰이더 설정 (StaticMesh-SkeletalMesh에 따라 Render직전에 바뀐다)
+	// 버텍스 셰이더 상수 설정
 	m_pDeviceContext->VSSetConstantBuffers(0, 1, &m_pCBTransform);
 	m_pDeviceContext->VSSetConstantBuffers(1, 1, &m_pCBDirectionLight);
 
@@ -289,7 +289,9 @@ void D3DRenderManager::Render()
 	auto buffer = m_cbMatrixPallete.GetBuffer();
 	m_pDeviceContext->VSSetConstantBuffers(3, 1, &buffer);
 
+	// 픽셀셰이더 설정
 	m_pDeviceContext->PSSetShader(m_pPixelShader, nullptr, 0);
+	// 픽셀셰이더 상수설정
 	m_pDeviceContext->PSSetConstantBuffers(0, 1, &m_pCBTransform);
 	m_pDeviceContext->PSSetConstantBuffers(1, 1, &m_pCBDirectionLight);
 	m_pDeviceContext->PSSetConstantBuffers(2, 1, &m_pGpuCbMaterial);
