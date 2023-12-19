@@ -142,8 +142,8 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	HR_T(m_pDevice->CreateBlendState(&blendDesc, &m_pAlphaBlendState));
 
 	/*
-	ImGui 초기화.
-*/
+		ImGui 초기화.
+	*/
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 
@@ -156,24 +156,12 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	ImGui_ImplWin32_Init(m_hWnd);
 	ImGui_ImplDX11_Init(this->m_pDevice, this->m_pDeviceContext);
 
+	// * Render() 에서 파이프라인에 바인딩할 버텍스 셰이더 생성
 	CreateSkeletalMesh_VS_IL();
 	CreateStaticMesh_VS_IL();
 
-
-
-
-	// 5. Render() 에서 파이프라인에 바인딩할 픽셀 셰이더 생성
-	ID3D10Blob* pixelShaderBuffer = nullptr;
-	hr = CompileShaderFromFile(L"07_PixelShader.hlsl", nullptr, "main", "ps_5_0", &pixelShaderBuffer);
-	if (FAILED(hr))
-	{
-		hr = D3DReadFileToBlob(L"07_PixelShader.cso", &pixelShaderBuffer);
-	}
-	HR_T(hr);
-
-	HR_T(m_pDevice->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
-		pixelShaderBuffer->GetBufferSize(), NULL, &m_pPixelShader));
-	SAFE_RELEASE(pixelShaderBuffer);
+	// * Render() 에서 파이프라인에 바인딩할 픽셀 셰이더 생성
+	CreatePS();
 
 
 	// 6. Render() 에서 파이프라인에 바인딩할 상수 버퍼 생성
@@ -476,6 +464,22 @@ void D3DRenderManager::CreateStaticMesh_VS_IL()
 	HR_T(m_pDevice->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(),
 		vertexShaderBuffer->GetBufferSize(), NULL, &m_pStaticMeshVertexShader));
 	SAFE_RELEASE(vertexShaderBuffer);
+}
+
+void D3DRenderManager::CreatePS()
+{
+	HRESULT hr;
+	ID3D10Blob* pixelShaderBuffer = nullptr;
+	hr = CompileShaderFromFile(L"07_PixelShader.hlsl", nullptr, "main", "ps_5_0", &pixelShaderBuffer);
+	if (FAILED(hr))
+	{
+		hr = D3DReadFileToBlob(L"07_PixelShader.cso", &pixelShaderBuffer);
+	}
+	HR_T(hr);
+
+	HR_T(m_pDevice->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
+		pixelShaderBuffer->GetBufferSize(), NULL, &m_pPixelShader));
+	SAFE_RELEASE(pixelShaderBuffer);
 }
 
 void D3DRenderManager::ApplyMaterial(Material* pMaterial)

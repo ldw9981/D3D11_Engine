@@ -134,6 +134,7 @@ public:
 
 	void CreateSkeletalMesh_VS_IL();
 	void CreateStaticMesh_VS_IL();
+	void CreatePS();
 	void ApplyMaterial(Material* pMaterial);
 private:
 	IImGuiRenderable* m_pImGuiRender = nullptr;
