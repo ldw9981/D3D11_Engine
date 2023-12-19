@@ -49,6 +49,13 @@ struct CB_Marterial
 class StaticMeshModel;
 class SkeletalMeshModel;
 class Material;
+
+class IRender
+{
+public:
+	virtual void Render(ID3D11DeviceContext* pDeviceContext) = 0;
+};
+
 class D3DRenderManager
 {
 public:
@@ -98,8 +105,10 @@ public:
 	float m_MeshScale = 1.0f;
 
 	std::list<SkeletalMeshModel*> m_Models;		//  렌더링할 모델들의 포인터 저장해둔다. 
+	std::list<StaticMeshModel*> m_StaticModels;		//  렌더링할 모델들의 포인터 저장해둔다. 
 	// 렌더링 이후에 목록은 사라진다.
 	void AddModel(SkeletalMeshModel* pModel);
+	void AddModel(StaticMeshModel* pModel);
 public:
 	bool Initialize(HWND Handle,UINT Width, UINT Height);
 	void Uninitialize();

@@ -18,7 +18,7 @@ struct Bone
 	}
 	~Bone()
 	{
-		LOG_MESSAGEA("~Bone() %s", Name.c_str());
+		
 	}
 };
 

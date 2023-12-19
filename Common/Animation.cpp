@@ -15,7 +15,7 @@ void NodeAnimation::Create(aiNodeAnim* nodeAnimation,double tickPerSecond)
 	assert(nodeAnimation->mNumRotationKeys == nodeAnimation->mNumScalingKeys);
 	
 	NodeName = nodeAnimation->mNodeName.C_Str();
-	LOG_MESSAGEA(NodeName.c_str());
+	//LOG_MESSAGEA(NodeName.c_str());
 	size_t numkeys = nodeAnimation->mNumPositionKeys;	
 	AnimationKeys.resize(numkeys);
 	

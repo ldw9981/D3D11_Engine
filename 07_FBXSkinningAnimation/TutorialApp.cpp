@@ -29,20 +29,28 @@ void TutorialApp::Update()
 {
 	__super::Update();
 
-	for (auto& model : m_ModelList)
+	for (auto& model : m_SkeletalMeshModelList)
 	{
 		model.Update(m_Timer.DeltaTime());
 	}
-
+	for (auto& model : m_StaticMeshModelList)
+	{
+		model.Update(m_Timer.DeltaTime());
+	}
 
 }
 
 void TutorialApp::Render()
 {
-	for (auto& model : m_ModelList)
+	for (auto& model : m_SkeletalMeshModelList)
 	{
 		m_Renderer.AddModel(&model);
 	}
+	for (auto& model : m_StaticMeshModelList)
+	{
+		m_Renderer.AddModel(&model);
+	}
+
 	__super::Render();
 }
 
@@ -57,12 +65,7 @@ LRESULT CALLBACK TutorialApp::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 		else if (wParam == VK_DOWN) {
 			DecreaseModel();
 		}
-		else if (wParam == VK_LEFT) {
-			DecreaseAnimationIndex();
-		}
-		else if (wParam == VK_RIGHT) {
-			IncreaseAnimationIndex();
-		}
+	
 		break;
 	}
 
@@ -71,47 +74,42 @@ LRESULT CALLBACK TutorialApp::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 
 void TutorialApp::IncreaseModel()
 {
-	SkeletalMeshModel& model = m_ModelList.emplace_back();
+	{
+		SkeletalMeshModel& model = m_SkeletalMeshModelList.emplace_back();
 
-	model.ReadSceneResourceFromFBX( "../Resource/Zombie.fbx");
-	model.AddAnimationOnlyFromFBX("../Resource/Zombie_Run.fbx");
-	model.AddAnimationOnlyFromFBX("../Resource/SkinningTest.fbx");
-	model.PlayAnimation(0);
+		int range = 500;
+		float pos = (float)(rand() % range) - range * 0.5f;
+		model.m_Local = Matrix::CreateTranslation(pos, 0, 0);
+
+		model.ReadSceneResourceFromFBX("../Resource/Zombie.fbx");
+		model.ReadAnimationOnlyFromFBX("../Resource/Zombie_Run.fbx");
+		model.ReadAnimationOnlyFromFBX("../Resource/SkinningTest.fbx");
+
+		int playindex = rand() % model.m_SceneResource->m_Animations.size();
+		model.PlayAnimation(playindex);
+	}
+
+
+	{
+		StaticMeshModel& model = m_StaticMeshModelList.emplace_back();
+
+		int range = 500;
+		float pos = (float)(rand() % range) - range * 0.5f;
+		model.m_Local = Matrix::CreateTranslation(pos, 0, 0);
+		model.ReadSceneResourceFromFBX("../Resource/Box.fbx");	
+	}
 }
 
 void TutorialApp::DecreaseModel()
 {
-	if (m_ModelList.empty())
-		return;
-
-	m_ModelList.pop_back();
-
-}
-
-void TutorialApp::IncreaseAnimationIndex()
-{	
-	for (auto& model : m_ModelList)
+	if (!m_SkeletalMeshModelList.empty())
 	{
-		model.m_AnimationIndex++;
-		if (model.m_AnimationIndex >= model.m_SceneResource->m_Animations.size())
-			model.m_AnimationIndex = 0;
-		model.PlayAnimation(model.m_AnimationIndex);
+		m_SkeletalMeshModelList.pop_back();
+	}
+
+	if (!m_StaticMeshModelList.empty())
+	{
+		m_StaticMeshModelList.pop_back();
 	}
 }
 
-void TutorialApp::DecreaseAnimationIndex()
-{	
-	for (auto& model : m_ModelList)
-	{
-		if (model.m_AnimationIndex == 0)
-		{
-			model.m_AnimationIndex = model.m_SceneResource->m_Animations.size() - 1;
-		}
-		else
-		{
-			model.m_AnimationIndex--;
-		}	
-
-		model.PlayAnimation(model.m_AnimationIndex);
-	}
-}

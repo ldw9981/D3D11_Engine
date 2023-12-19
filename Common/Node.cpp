@@ -7,7 +7,7 @@
 
 Node::~Node()
 {
-	LOG_MESSAGEA("~Node() %s", m_Name.c_str());	
+	//LOG_MESSAGEA("~Node() %s", m_Name.c_str());	
 }
 
 void Node::CreateHierachy(Skeleton* skeleton)

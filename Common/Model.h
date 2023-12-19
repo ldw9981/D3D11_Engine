@@ -19,13 +19,27 @@ struct MetaData
 	void SetData(const aiMetadataEntry& entry);
 };
 
-class SceneResource
+class StaticMeshSceneResource
 {
 public:
-	SceneResource() {}
-	~SceneResource() {}
+	StaticMeshSceneResource() {}
+	~StaticMeshSceneResource() {}
 
-	//std::vector<StaticMeshResource> m_StaticMeshModels;
+	std::vector<StaticMeshResource> m_StaticMeshResources;
+	std::vector<Material> m_Materials;
+	
+	bool Create(std::string filePath);
+	Material* GetMeshMaterial(UINT index);
+};
+
+
+class SkeletalMeshSceneResource
+{
+public:
+	SkeletalMeshSceneResource() {}
+	~SkeletalMeshSceneResource() {}
+
+
 	std::vector<SkeletalMeshResource> m_SkeletalMeshResources;
 	std::vector<Material> m_Materials;
 	Skeleton m_Skeleton;
@@ -45,22 +59,15 @@ public:
 	StaticMeshModel() {}
 	~StaticMeshModel() {}
 		
-	std::vector<MeshInstance> m_Meshes;	
-	std::vector<shared_ptr<Material>> m_Materials;
-	std::vector<shared_ptr<Animation>> m_Animations;
+	shared_ptr<StaticMeshSceneResource>  m_SceneResource;
+	std::vector<StaticMeshInstance> m_MeshInstances;
+	    
 
-	shared_ptr<Skeleton> m_pSkeleton = nullptr;
-	
-	float m_AnimationProressTime = 0.0f;
-    
-
-	bool ReadFile(ID3D11Device* device,const char* filePath);
-		
+	bool ReadSceneResourceFromFBX(std::string filePath);
 	Material* GetMaterial(UINT index);
 
-	void Update(float deltaTime);	
 
-	void UpdateNodeAnimationReference(UINT index);
+	void Update(float deltaTime);	
 	void SetWorldTransform(const Math::Matrix& transform);
 };
 
@@ -71,14 +78,14 @@ public:
 	SkeletalMeshModel() {}
 	~SkeletalMeshModel() {}
 
-	shared_ptr<SceneResource>  m_SceneResource;
+	shared_ptr<SkeletalMeshSceneResource>  m_SceneResource;
 	std::vector<SkeletalMeshInstance> m_MeshInstances;
 
 	float m_AnimationProressTime = 0.0f;
 	UINT  m_AnimationIndex = 0;
 
 	bool ReadSceneResourceFromFBX(std::string filePath);
-	bool AddAnimationOnlyFromFBX(std::string filePath);
+	bool ReadAnimationOnlyFromFBX(std::string filePath);
 
 	Material* GetMaterial(UINT index);
 

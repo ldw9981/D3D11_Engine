@@ -7,102 +7,46 @@
 #include <assimp/config.h>
 #include <assimp/cimport.h>
 #include "ResourceManager.h"
+#include "TimeSystem.h"
 
 
-
-bool StaticMeshModel::ReadFile(ID3D11Device* device,const char* filePath)
+bool StaticMeshModel::ReadSceneResourceFromFBX(std::string filePath)
 {
 	std::filesystem::path path = ToWString(string(filePath));
-	LOG_MESSAGEA("Loading file: %s", filePath);
-	Assimp::Importer importer;
-	
-	importer.SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS,0);	// $assimp_fbx$ 노드 생성안함
-	
-	
-	unsigned int importFlags = aiProcess_Triangulate | // 삼각형으로 변환
-		aiProcess_GenNormals |	// 노말 생성/
-		aiProcess_GenUVCoords |		// UV 생성
-		aiProcess_CalcTangentSpace |  // 탄젠트 생성
-		aiProcess_LimitBoneWeights |	// 본의 영향을 받는 정점의 최대 개수를 4개로 제한
-		aiProcess_ConvertToLeftHanded;	// 왼손 좌표계로 변환
-
-	const aiScene* scene = importer.ReadFile(filePath, importFlags);
-	if (!scene) {
-		LOG_ERRORA("Error loading file: %s", importer.GetErrorString());
+	LOG_MESSAGEA("Loading file: %s", filePath.c_str());
+	GameTimer timer;
+	timer.Tick();
+	// 리소스 매니저에서 가져온다.
+	m_SceneResource = ResourceManager::Instance->CreateStaticMeshSceneResource(filePath);
+	if (!m_SceneResource) {
 		return false;
 	}
 
-	//데이터 확인용 게임에 필요없음
-	aiMetadata* pAiMetaData = scene->mMetaData;
-	std::vector<MetaData> metaDataList;
-	if (pAiMetaData) 
-	{	// Iterate through the metadata
-		for (unsigned int i = 0; i < pAiMetaData->mNumProperties; i++) 
-		{
-			MetaData& data = metaDataList.emplace_back();
-			data.Name = pAiMetaData->mKeys[i].C_Str();
-			data.SetData(pAiMetaData->mValues[i]);			
-		}
-	}
-	
-		
-	for (unsigned int i = 0; i < scene->mNumMaterials; ++i)
+	//CreateHierachy(&m_SceneResource->m_Skeleton);	//StaticMesh는 계층구조는 사용 안하기로 한다.
+
+	// 인스턴스 생성
+	m_MeshInstances.resize(m_SceneResource->m_StaticMeshResources.size());
+	for (UINT i = 0; i < m_SceneResource->m_StaticMeshResources.size(); i++)
 	{
-		std::string key = path.string() + std::to_string(i);
-		shared_ptr<Material> ret = make_shared<Material>();// ResourceManager::Instance->CreateMaterial(key, scene->mMaterials[i]);
-		m_Materials.push_back(ret);
+		m_MeshInstances[i].Create(&m_SceneResource->m_StaticMeshResources[i], // mesh resource		
+			this,	// root node
+			m_SceneResource->GetMeshMaterial(i));		//material resource 
 	}
 
-	m_Meshes.resize(scene->mNumMeshes);
-	for (unsigned int i = 0; i < scene->mNumMeshes; ++i)
-	{
-		m_Meshes[i].Create(device, scene->mMeshes[i], m_pSkeleton.get());
-	}
-
-	CreateHierachy(m_pSkeleton.get());
-	//LoadSkeleton(this, scene->mRootNode);
-
-	assert(scene->mNumAnimations < 2); // 애니메이션은 없거나 1개여야한다. 
-	// 노드의 애니메이션을 하나로 합치는 방법은 FBX export에서 NLA스트립,모든 액션 옵션을 끕니다.
-
-	
-
-	for (auto& mesh : m_Meshes)
-	{
-		mesh.UpdateNodeInstancePtr(this, m_pSkeleton.get());
-	}
-
-
-	importer.FreeScene();
-	LOG_MESSAGEA("Complete file: %s", filePath);
+	timer.Tick();
+	LOG_MESSAGEA("Complete file: %s %f", filePath.c_str(), timer.DeltaTime());
 	return true;
 }
 
 Material* StaticMeshModel::GetMaterial(UINT index)
 {
-	assert(index < m_Materials.size());
-	return m_Materials[index].get();
-}
-void StaticMeshModel::Update(float deltaTime)
-{
-	if (!m_Animations.empty())
-	{
-		m_AnimationProressTime += deltaTime;
-		m_AnimationProressTime = fmod(m_AnimationProressTime, m_Animations[0]->Duration);
-		UpdateAnimation(m_AnimationProressTime);
-	}	
+	assert(index < m_SceneResource->m_Materials.size());
+	return &m_SceneResource->m_Materials[index];
 }
 
-void StaticMeshModel::UpdateNodeAnimationReference(UINT index)
+void StaticMeshModel::Update(float deltaTime)
 {
-	assert(index < m_Animations.size());
-	Animation& animation = *m_Animations[index].get();
-	for (size_t i = 0; i < animation.NodeAnimations.size(); i++)
-	{
-		NodeAnimation& nodeAnimation = animation.NodeAnimations[i];
-		Node* node = FindNode(nodeAnimation.NodeName);
-		node->m_pNodeAnimation = &animation.NodeAnimations[i];
-	}
+
 }
 
 void StaticMeshModel::SetWorldTransform(const Math::Matrix& transform)
@@ -147,11 +91,13 @@ void MetaData::SetData(const aiMetadataEntry& entry)
 
 bool SkeletalMeshModel::ReadSceneResourceFromFBX(std::string filePath)
 {
-	std::filesystem::path path = ToWString(string(filePath));
+	std::filesystem::path path = ToWString(string(filePath));	
 	LOG_MESSAGEA("Loading file: %s", filePath.c_str());
 	
+	GameTimer timer;
+	timer.Tick();
 	// 리소스 매니저에서 가져온다.
-	m_SceneResource = ResourceManager::Instance->CreateSceneResource(filePath);	
+	m_SceneResource = ResourceManager::Instance->CreateSkeletalMeshSceneResource(filePath);	
 	if (!m_SceneResource) {
 		return false;
 	}
@@ -167,14 +113,13 @@ bool SkeletalMeshModel::ReadSceneResourceFromFBX(std::string filePath)
 			this,	// root node
 			m_SceneResource->GetMeshMaterial(i));		//material resource 
 	}
-
-
 	UpdateNodeAnimationReference(0);	// 각 노드의 애니메이션 정보참조 연결	
-	LOG_MESSAGEA("Complete file: %s", filePath.c_str());
+	timer.Tick();
+	LOG_MESSAGEA("Complete file: %s %f", filePath.c_str(),timer.DeltaTime());
 	return true;
 }
 
-bool SkeletalMeshModel::AddAnimationOnlyFromFBX(std::string filePath)
+bool SkeletalMeshModel::ReadAnimationOnlyFromFBX(std::string filePath)
 {
 	auto it = std::find_if(m_SceneResource->m_Animations.begin(), m_SceneResource->m_Animations.end(),
 		[filePath](const Animation& node) {
@@ -184,7 +129,7 @@ bool SkeletalMeshModel::AddAnimationOnlyFromFBX(std::string filePath)
 	if (it != m_SceneResource->m_Animations.end())
 	{
 		return false;
-	}
+	}	
 	return m_SceneResource->AddAnimation(filePath);
 }
 
@@ -229,7 +174,7 @@ void SkeletalMeshModel::PlayAnimation(UINT index)
 	UpdateNodeAnimationReference(index);
 }
 
-bool SceneResource::Create(std::string filePath)
+bool SkeletalMeshSceneResource::Create(std::string filePath)
 {
 	std::filesystem::path path = ToWString(string(filePath));
 	LOG_MESSAGEA("Loading file: %s", filePath.c_str());
@@ -297,7 +242,7 @@ bool SceneResource::Create(std::string filePath)
 }
 
 
-bool SceneResource::AddAnimation(std::string filePath)
+bool SkeletalMeshSceneResource::AddAnimation(std::string filePath)
 {	
 	std::filesystem::path path = ToWString(string(filePath));
 	LOG_MESSAGEA("Loading file: %s", filePath.c_str());
@@ -328,10 +273,69 @@ bool SceneResource::AddAnimation(std::string filePath)
 	return true;
 }
 
-Material* SceneResource::GetMeshMaterial(UINT index)
+Material* SkeletalMeshSceneResource::GetMeshMaterial(UINT index)
 {
 	assert(index < m_Materials.size());
 	UINT mindex = m_SkeletalMeshResources[index].m_MaterialIndex;
+	assert(mindex < m_Materials.size());
+	return &m_Materials[mindex];
+}
+
+bool StaticMeshSceneResource::Create(std::string filePath)
+{
+	std::filesystem::path path = ToWString(string(filePath));
+	LOG_MESSAGEA("Loading file: %s", filePath.c_str());
+	Assimp::Importer importer;
+
+	importer.SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, 0);	// $assimp_fbx$ 노드 생성안함
+
+	unsigned int importFlags = aiProcess_Triangulate | // 삼각형으로 변환
+		aiProcess_GenNormals |	// 노말 생성/
+		aiProcess_GenUVCoords |		// UV 생성
+		aiProcess_CalcTangentSpace |  // 탄젠트 생성	
+		aiProcess_ConvertToLeftHanded;	// 왼손 좌표계로 변환
+
+	const aiScene* scene = importer.ReadFile(filePath, importFlags);
+	if (!scene) {
+		LOG_ERRORA("Error loading file: %s", importer.GetErrorString());
+		return false;
+	}
+
+	//데이터 확인용 게임에 필요없음
+	aiMetadata* pAiMetaData = scene->mMetaData;
+	std::vector<MetaData> metaDataList;
+	if (pAiMetaData)
+	{	// Iterate through the metadata
+		for (unsigned int i = 0; i < pAiMetaData->mNumProperties; i++)
+		{
+			MetaData& data = metaDataList.emplace_back();
+			data.Name = pAiMetaData->mKeys[i].C_Str();
+			data.SetData(pAiMetaData->mValues[i]);
+		}
+	}
+
+	m_Materials.resize(scene->mNumMaterials);
+	for (unsigned int i = 0; i < scene->mNumMaterials; ++i)
+	{
+		m_Materials[i].Create(scene->mMaterials[i]);
+	}
+
+	m_StaticMeshResources.resize(scene->mNumMeshes);
+	for (unsigned int i = 0; i < scene->mNumMeshes; ++i)
+	{
+		m_StaticMeshResources[i].Create(scene->mMeshes[i]);
+	}
+
+	
+	importer.FreeScene();
+	LOG_MESSAGEA("Complete file: %s", filePath.c_str());
+	return true;
+}
+
+Material* StaticMeshSceneResource::GetMeshMaterial(UINT index)
+{
+	assert(index < m_Materials.size());
+	UINT mindex = m_StaticMeshResources[index].m_MaterialIndex;
 	assert(mindex < m_Materials.size());
 	return &m_Materials[mindex];
 }

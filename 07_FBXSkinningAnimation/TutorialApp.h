@@ -20,8 +20,8 @@ public:
 
 
 
-	std::list<SkeletalMeshModel>	m_ModelList;
-
+	std::list<StaticMeshModel>		m_StaticMeshModelList;
+	std::list<SkeletalMeshModel>	m_SkeletalMeshModelList;
 
 
 	virtual bool Initialize(UINT Width, UINT Height);
@@ -32,7 +32,5 @@ public:
 
 	void IncreaseModel();
 	void DecreaseModel();
-	void IncreaseAnimationIndex();
-	void DecreaseAnimationIndex();
 };
 

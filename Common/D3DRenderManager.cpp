@@ -41,6 +41,11 @@ void D3DRenderManager::AddModel(SkeletalMeshModel* pModel)
 	m_Models.push_back(pModel);
 }
 
+void D3DRenderManager::AddModel(StaticMeshModel* pModel)
+{
+	m_StaticModels.push_back(pModel);
+}
+
 bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 {
 	m_hWnd = Handle;
@@ -349,6 +354,28 @@ void D3DRenderManager::Render()
 		}
 	}
 	m_Models.clear();
+
+	for (const auto& ModelPtr : m_StaticModels)
+	{
+		for (size_t i = 0; i < ModelPtr->m_MeshInstances.size(); i++)
+		{
+			StaticMeshInstance& meshInstance = ModelPtr->m_MeshInstances[i];
+
+			// 머터리얼 적용
+			assert(meshInstance.m_pMaterial != nullptr);
+			ApplyMaterial(meshInstance.m_pMaterial);			
+				
+			m_Transform.mWorld = meshInstance.m_pNodeWorldTransform->Transpose();
+			m_Transform.mView = m_View.Transpose();
+			m_Transform.mProjection = m_Projection.Transpose();
+			m_pDeviceContext->UpdateSubresource(m_pCBTransform, 0, nullptr, &m_Transform, 0, 0);
+
+			// Draw
+			meshInstance.Render(m_pDeviceContext);
+		}
+	}
+	m_StaticModels.clear();
+
 
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
