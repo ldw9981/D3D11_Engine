@@ -94,5 +94,5 @@ public:
 	void UpdateNodeAnimationReference(UINT index);
 	void SetWorldTransform(const Math::Matrix& transform);
 	void PlayAnimation(UINT index);
-
+	void CreateHierachy(SkeletonInfo* skeleton);
 };

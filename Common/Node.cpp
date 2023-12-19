@@ -10,32 +10,7 @@ Node::~Node()
 	//LOG_MESSAGEA("~Node() %s", m_Name.c_str());	
 }
 
-void Node::CreateHierachy(SkeletonInfo* skeleton, float* pAnimationTime)
-{
-	UINT count = skeleton->GetBoneCount();
 
-	BoneInfo* pBone = skeleton->GetBone(0);
-	m_Name = pBone->Name;
-	m_Children.reserve(pBone->NumChildren);	
-		
-	// 0번 루트는 컨테이너이므로 현재 Node와 같다 그러므로 1번부터 시작한다.
-	for (UINT i = 1; i < count; i++)
-	{
-		BoneInfo* pBone = skeleton->GetBone(i);
-		assert(pBone != nullptr);
-		assert(pBone->ParentBoneIndex != -1);
-
-		Node* pParentNode = FindNode(skeleton->GetBoneName(pBone->ParentBoneIndex));
-		assert(pParentNode != nullptr);
-
-		auto& node = pParentNode->m_Children.emplace_back();
-		node.m_Name = pBone->Name;
-		node.m_Local = pBone->RelativeTransform;
-		node.m_Children.reserve(pBone->NumChildren);
-		node.m_pParent = pParentNode;
-		node.m_pAnimationTime = pAnimationTime;
-	}
-}
 
 void Node::Update(float DeltaTime)
 {

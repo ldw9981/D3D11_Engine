@@ -103,7 +103,7 @@ bool SkeletalMeshModel::ReadSceneResourceFromFBX(std::string filePath)
 	}
 
 	// 리소스로 인스턴스 처리한다.
-	CreateHierachy(&m_SceneResource->m_Skeleton,&m_AnimationProressTime);	//계층구조 생성	
+	CreateHierachy(&m_SceneResource->m_Skeleton);	//계층구조 생성	
 
 	m_MeshInstances.resize(m_SceneResource->m_SkeletalMeshResources.size());
 	for (UINT i = 0; i < m_SceneResource->m_SkeletalMeshResources.size(); i++)
@@ -173,6 +173,33 @@ void SkeletalMeshModel::PlayAnimation(UINT index)
 	m_AnimationIndex = index;
 	m_AnimationProressTime = 0.0f;
 	UpdateNodeAnimationReference(index);
+}
+
+void SkeletalMeshModel::CreateHierachy(SkeletonInfo* skeleton)
+{
+	UINT count = skeleton->GetBoneCount();
+
+	BoneInfo* pBone = skeleton->GetBone(0);
+	m_Name = pBone->Name;
+	m_Children.reserve(pBone->NumChildren);
+
+	// 0번 루트는 컨테이너이므로 현재 Node와 같다 그러므로 1번부터 시작한다.
+	for (UINT i = 1; i < count; i++)
+	{
+		BoneInfo* pBone = skeleton->GetBone(i);
+		assert(pBone != nullptr);
+		assert(pBone->ParentBoneIndex != -1);
+
+		Node* pParentNode = FindNode(skeleton->GetBoneName(pBone->ParentBoneIndex));
+		assert(pParentNode != nullptr);
+
+		auto& node = pParentNode->m_Children.emplace_back();
+		node.m_Name = pBone->Name;
+		node.m_Local = pBone->RelativeTransform;
+		node.m_Children.reserve(pBone->NumChildren);
+		node.m_pParent = pParentNode;
+		node.m_pAnimationTime = &m_AnimationProressTime;
+	}
 }
 
 bool SkeletalMeshSceneResource::Create(std::string filePath)
