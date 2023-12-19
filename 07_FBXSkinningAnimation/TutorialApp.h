@@ -5,7 +5,7 @@
 #include "../Common/Animation.h"
 #include "../Common/Node.h"
 #include "../Common/Model.h"
-
+#include "../Common/World.h"
 
 using namespace DirectX::SimpleMath;
 using namespace DirectX;
@@ -17,6 +17,9 @@ class TutorialApp :
 public:
 	TutorialApp(HINSTANCE hInstance);
 	~TutorialApp();
+
+
+	World m_World;
 
 	std::list<StaticMeshModel>		m_StaticMeshModelList;
 	std::list<SkeletalMeshModel>	m_SkeletalMeshModelList;

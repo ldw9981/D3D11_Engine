@@ -1,8 +1,11 @@
 #pragma once
-class SceneComponent
+#include "Component.h"
+
+class SceneComponent: public Component
 {
 public:
-	SceneComponent();
+	SceneComponent() {};
+	SceneComponent(Actor* pOwner, const std::string& Name);
 	~SceneComponent();
 
 	std::string m_Name;

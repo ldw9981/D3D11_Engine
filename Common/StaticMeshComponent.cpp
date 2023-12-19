@@ -1,9 +1,13 @@
 #include "pch.h"
 #include "StaticMeshComponent.h"
 
-StaticMeshComponent::StaticMeshComponent()
+
+StaticMeshComponent::StaticMeshComponent(Actor* pOwner, const std::string& Name)
+	:SceneComponent(pOwner,Name)
 {
+
 }
+
 
 StaticMeshComponent::~StaticMeshComponent()
 {

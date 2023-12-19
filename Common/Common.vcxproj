@@ -142,9 +142,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
+    <ClInclude Include="SkeletalMeshActor.h" />
+    <ClInclude Include="Component.h" />
     <ClInclude Include="D3DRenderManager.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GameApp.h" />
+    <ClInclude Include="Actor.h" />
     <ClInclude Include="Helper.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
@@ -158,12 +161,16 @@
     <ClInclude Include="StaticMeshComponent.h" />
     <ClInclude Include="TimeSystem.h" />
     <ClInclude Include="Node.h" />
+    <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
+    <ClCompile Include="SkeletalMeshActor.cpp" />
     <ClCompile Include="Common.cpp" />
+    <ClCompile Include="Component.cpp" />
     <ClCompile Include="D3DRenderManager.cpp" />
     <ClCompile Include="GameApp.cpp" />
+    <ClCompile Include="Actor.cpp" />
     <ClCompile Include="Helper.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -185,6 +192,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Node.cpp" />
+    <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
