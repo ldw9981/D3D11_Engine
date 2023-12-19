@@ -4,7 +4,7 @@
 #include "Material.h"
 #include "Animation.h"
 #include "Node.h"
-#include "Skeleton.h"
+#include "SkeletonInfo.h"
 
 
 struct MetaData
@@ -42,7 +42,7 @@ public:
 
 	std::vector<SkeletalMeshResource> m_SkeletalMeshResources;
 	std::vector<Material> m_Materials;
-	Skeleton m_Skeleton;
+	SkeletonInfo m_Skeleton;
 		
 	std::vector<Animation> m_Animations;
 

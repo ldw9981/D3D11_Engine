@@ -2,7 +2,7 @@
 #include "Singleton.h"
 #include "Material.h"
 #include "Animation.h"
-#include "Skeleton.h"
+#include "SkeletonInfo.h"
 #include "Mesh.h"
 #include "Model.h"
 

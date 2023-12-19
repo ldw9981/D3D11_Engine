@@ -47,7 +47,7 @@ struct BoneReference
 
 
 struct aiMesh;
-struct Skeleton;
+struct SkeletonInfo;
 class Node;
 
 class StaticMeshResource
@@ -111,7 +111,7 @@ public:
 	UINT m_MaterialIndex = 0;			// 메테리얼 인덱스.
 	std::string m_Name;					// 메쉬 이름.	
 
-	void Create(aiMesh* mesh, Skeleton* skeleton);
+	void Create(aiMesh* mesh, SkeletonInfo* skeleton);
 	void CreateVertexBuffer(BoneWeightVertex* vertices, UINT vertexCount);
 	void CreateIndexBuffer(WORD* indies, UINT indexCount);
 };
@@ -129,8 +129,8 @@ public:
 	std::vector<Math::Matrix*>		m_BoneReferences;	// 본에 해당되는 노드MATRIX의 포인터를 저장한다.
 	
 
-	void Create(SkeletalMeshResource* pMeshResource, Skeleton* skeleton, Node* pRootNode, Material* pMaterial);
-	void UpdateMatrixPallete(CB_MatrixPalette* pMatrixPallete, Skeleton* skeleton);
+	void Create(SkeletalMeshResource* pMeshResource, SkeletonInfo* skeleton, Node* pRootNode, Material* pMaterial);
+	void UpdateMatrixPallete(CB_MatrixPalette* pMatrixPallete, SkeletonInfo* skeleton);
 	void Render(ID3D11DeviceContext* deviceContext);
 };
 

@@ -45,7 +45,7 @@
     <ClInclude Include="Model.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Skeleton.h">
+    <ClInclude Include="SkeletonInfo.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SceneComponent.h">
@@ -98,7 +98,7 @@
     <ClCompile Include="Model.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Skeleton.cpp">
+    <ClCompile Include="SkeletonInfo.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SceneComponent.cpp">

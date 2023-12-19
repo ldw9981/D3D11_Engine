@@ -154,7 +154,7 @@
     <ClInclude Include="SceneComponent.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="SkeletalMeshComponent.h" />
-    <ClInclude Include="Skeleton.h" />
+    <ClInclude Include="SkeletonInfo.h" />
     <ClInclude Include="StaticMeshComponent.h" />
     <ClInclude Include="TimeSystem.h" />
     <ClInclude Include="Node.h" />
@@ -178,7 +178,7 @@
     <ClCompile Include="SceneComponent.cpp" />
     <ClCompile Include="Singleton.cpp" />
     <ClCompile Include="SkeletalMeshComponent.cpp" />
-    <ClCompile Include="Skeleton.cpp" />
+    <ClCompile Include="SkeletonInfo.cpp" />
     <ClCompile Include="StaticMeshComponent.cpp" />
     <ClCompile Include="TimeSystem.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>

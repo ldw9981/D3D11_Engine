@@ -1,10 +1,10 @@
 #include "pch.h"
-#include "Skeleton.h"
+#include "SkeletonInfo.h"
 #include "Node.h"
 
 
 
-void Skeleton::Create(const aiScene* pScene)
+void SkeletonInfo::Create(const aiScene* pScene)
 {
 	Name = pScene->mName.C_Str();
 	int NumNode = 0;	
@@ -22,15 +22,15 @@ void Skeleton::Create(const aiScene* pScene)
 		for (UINT iBone = 0; iBone < pMesh->mNumBones; iBone++)
 		{
 			aiBone* pAiBone = pMesh->mBones[iBone];
-			Bone* pBone = FindBone(pAiBone->mName.C_Str());
+			BoneInfo* pBone = FindBone(pAiBone->mName.C_Str());
 			pBone->OffsetMatrix = Math::Matrix(&pAiBone->mOffsetMatrix.a1).Transpose();
 		}
 	}
 }
 
-Bone* Skeleton::AddBone(const aiScene* pScene,const aiNode* pNode)
+BoneInfo* SkeletonInfo::AddBone(const aiScene* pScene,const aiNode* pNode)
 { 	
-	Bone& bone = Bones.emplace_back();
+	BoneInfo& bone = Bones.emplace_back();
 	bone.Set(pNode);
 	
 	int BoneIndex = (int)(Bones.size() - 1);		
@@ -51,14 +51,14 @@ Bone* Skeleton::AddBone(const aiScene* pScene,const aiNode* pNode)
 	UINT numChild = pNode->mNumChildren;	
 	for (UINT i = 0; i < numChild; ++i)
 	{
-		Bone* child = AddBone(pScene,pNode->mChildren[i]);
+		BoneInfo* child = AddBone(pScene,pNode->mChildren[i]);
 		child->ParentBoneIndex = BoneIndex;
 	}
 	return &Bones[BoneIndex];
 }
 
 
-Bone* Skeleton::FindBone(const std::string& name)
+BoneInfo* SkeletonInfo::FindBone(const std::string& name)
 {
 	auto iter = BoneMappingTable.find(name);
 	if (iter == BoneMappingTable.end())
@@ -66,14 +66,14 @@ Bone* Skeleton::FindBone(const std::string& name)
 	return &Bones[iter->second];
 }
 
-Bone* Skeleton::GetBone(int index)
+BoneInfo* SkeletonInfo::GetBone(int index)
 {
 	if (index < 0 || index >= Bones.size())
 		return nullptr;
 	return &Bones[index];
 }
 
-int Skeleton::GetBoneIndexByBoneName(const std::string& boneName)
+int SkeletonInfo::GetBoneIndexByBoneName(const std::string& boneName)
 {
 	auto iter = BoneMappingTable.find(boneName);
 	if (iter == BoneMappingTable.end())
@@ -81,7 +81,7 @@ int Skeleton::GetBoneIndexByBoneName(const std::string& boneName)
 	return iter->second;
 }
 
-int Skeleton::GetBoneIndexByMeshName(const std::string& meshName)
+int SkeletonInfo::GetBoneIndexByMeshName(const std::string& meshName)
 {
 	auto iter = MeshMappingTable.find(meshName);
 	if (iter == MeshMappingTable.end())
@@ -89,7 +89,7 @@ int Skeleton::GetBoneIndexByMeshName(const std::string& meshName)
 	return iter->second;
 }
 
-void Skeleton::CountNode(int& Count,const aiNode* pNode)
+void SkeletonInfo::CountNode(int& Count,const aiNode* pNode)
 {
 	Count++;
 	std::string name = pNode->mName.C_Str();

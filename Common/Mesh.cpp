@@ -2,7 +2,7 @@
 #include "Mesh.h"
 #include "Helper.h"
 #include "Node.h"
-#include "Skeleton.h"
+#include "SkeletonInfo.h"
 #include "ResourceManager.h"
 #include "D3DRenderManager.h"
 
@@ -120,7 +120,7 @@ SkeletalMeshInstance::~SkeletalMeshInstance()
 }
 
 
-void SkeletalMeshInstance::Create(SkeletalMeshResource* pMeshResource,  Skeleton* pSkeleton, Node* pRootNode, Material* pMaterial)
+void SkeletalMeshInstance::Create(SkeletalMeshResource* pMeshResource,  SkeletonInfo* pSkeleton, Node* pRootNode, Material* pMaterial)
 {	
 	m_pMeshResource = pMeshResource;
 	m_pMaterial = pMaterial;
@@ -134,7 +134,7 @@ void SkeletalMeshInstance::Create(SkeletalMeshResource* pMeshResource,  Skeleton
 		m_BoneReferences[i] = &pNode->m_World;
 	}
 }
-void SkeletalMeshInstance::UpdateMatrixPallete(CB_MatrixPalette* pMatrixPallete, Skeleton* skeleton)
+void SkeletalMeshInstance::UpdateMatrixPallete(CB_MatrixPalette* pMatrixPallete, SkeletonInfo* skeleton)
 {
 	assert(m_BoneReferences.size() == m_pMeshResource->m_BoneReferences.size());
 	size_t meshBoneCount = m_pMeshResource->m_BoneReferences.size();	// 메쉬와 연결된 본개수
@@ -166,7 +166,7 @@ SkeletalMeshResource::~SkeletalMeshResource()
 	SAFE_RELEASE(m_pIndexBuffer);
 }
 
-void SkeletalMeshResource::Create(aiMesh* mesh, Skeleton* skeleton)
+void SkeletalMeshResource::Create(aiMesh* mesh, SkeletonInfo* skeleton)
 {
 	//Skeletal Mesh
 	m_Vertices.resize(mesh->mNumVertices);
@@ -187,7 +187,7 @@ void SkeletalMeshResource::Create(aiMesh* mesh, Skeleton* skeleton)
 		// 스켈레톤에서 본정보를 찾는다.
 		UINT boneIndex = skeleton->GetBoneIndexByBoneName(pAiBone->mName.C_Str());       
 		assert(boneIndex != -1);
-		Bone* pBone = skeleton->GetBone(boneIndex);
+		BoneInfo* pBone = skeleton->GetBone(boneIndex);
 		assert(pBone != nullptr);		
 				
 		m_BoneReferences[i].NodeName = pAiBone->mName.C_Str();

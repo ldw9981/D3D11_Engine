@@ -3,8 +3,8 @@
 struct aiNode;
 class StaticMeshModel;
 struct NodeAnimation;
-struct Skeleton;
-struct Bone;
+struct SkeletonInfo;
+struct BoneInfo;
 class Node
 {
 public:
@@ -19,9 +19,10 @@ public:
 	Node* m_pParent = nullptr;
 	NodeAnimation* m_pNodeAnimation = nullptr; // 노드가 사용할 NodeAnimation가 있는 주소
 
-	void CreateHierachy(Skeleton* skeleton);
+	void CreateHierachy(SkeletonInfo* skeleton);
 
 	void UpdateAnimation(float progressTime);
+	void Update(float DeltaTime);
 	Node* FindNode(const std::string& name);
 };	
 
