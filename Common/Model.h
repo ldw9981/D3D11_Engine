@@ -39,7 +39,6 @@ public:
 	SkeletalMeshSceneResource() {}
 	~SkeletalMeshSceneResource() {}
 
-
 	std::vector<SkeletalMeshResource> m_SkeletalMeshResources;
 	std::vector<Material> m_Materials;
 	SkeletonInfo m_Skeleton;

@@ -69,6 +69,9 @@ public:
 	UINT m_MaterialIndex = 0;			// 메테리얼 인덱스.
 	std::string m_Name;					// 메쉬 이름.	
 
+	Math::Vector3 m_AABBmin;
+	Math::Vector3 m_AABBmax;
+
 	void Create(aiMesh* mesh);
 	void CreateVertexBuffer(Vertex* vertices, UINT vertexCount);
 	void CreateIndexBuffer(WORD* indies, UINT indexCount);
@@ -110,6 +113,9 @@ public:
 	UINT m_IndexCount = 0;				// 인덱스 개수.
 	UINT m_MaterialIndex = 0;			// 메테리얼 인덱스.
 	std::string m_Name;					// 메쉬 이름.	
+
+	Math::Vector3 m_AABBmin;
+	Math::Vector3 m_AABBmax;
 
 	void Create(aiMesh* mesh, SkeletonInfo* skeleton);
 	void CreateVertexBuffer(BoneWeightVertex* vertices, UINT vertexCount);
