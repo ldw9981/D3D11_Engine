@@ -44,14 +44,20 @@ D3DRenderManager::~D3DRenderManager()
 
 
 
-void D3DRenderManager::AddModel(SkeletalMeshModel* pModel)
+void D3DRenderManager::AddMeshInstance(SkeletalMeshModel* pModel)
 {
-	m_Models.push_back(pModel);
+	for (size_t i = 0; i < pModel->m_MeshInstances.size(); i++)
+	{
+		m_SkeletalMeshInstance.push_back(&pModel->m_MeshInstances[i]);
+	}
 }
 
-void D3DRenderManager::AddModel(StaticMeshModel* pModel)
+void D3DRenderManager::AddMeshInstance(StaticMeshModel* pModel)
 {
-	m_StaticModels.push_back(pModel);
+	for (size_t i = 0; i < pModel->m_MeshInstances.size(); i++)
+	{
+		m_StaticMeshInstance.push_back(&pModel->m_MeshInstances[i]);
+	}
 }
 
 bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
@@ -313,49 +319,41 @@ void D3DRenderManager::Render()
 	m_TransformVP.mProjection = m_Projection.Transpose();
 	m_pDeviceContext->UpdateSubresource(m_pCBTransformVP, 0, nullptr, &m_TransformVP, 0, 0);
 
-	for (const auto& ModelPtr : m_Models) 
-	{
-		m_pDeviceContext->IASetInputLayout(m_pSkeletalMeshInputLayout);
-		m_pDeviceContext->VSSetShader(m_pSkeletalMeshVertexShader, nullptr, 0);
-		for (size_t i = 0; i < ModelPtr->m_MeshInstances.size(); i++)
-		{
-			SkeletalMeshInstance& meshInstance = ModelPtr->m_MeshInstances[i];
+	// m_SkeletalMeshInstance
+	m_pDeviceContext->IASetInputLayout(m_pSkeletalMeshInputLayout);
+	m_pDeviceContext->VSSetShader(m_pSkeletalMeshVertexShader, nullptr, 0);
+	for (const auto& meshInstance : m_SkeletalMeshInstance)
+	{	
+		// 머터리얼 적용
+		assert(meshInstance->m_pMaterial!=nullptr);
+		ApplyMaterial(meshInstance->m_pMaterial);
 
-			// 머터리얼 적용
-			assert(meshInstance.m_pMaterial!=nullptr);
-			ApplyMaterial(meshInstance.m_pMaterial);			
-
-			// 스켈레탈 메쉬(본이있으면) 행렬팔레트 업데이트						
-			meshInstance.UpdateMatrixPallete(&m_MatrixPalette, &ModelPtr->m_SceneResource->m_Skeleton);
-			m_cbMatrixPallete.SetData(m_pDeviceContext, m_MatrixPalette);
-
-
-			// Draw
-			meshInstance.Render(m_pDeviceContext);
-		}
+		// 행렬팔레트 업데이트						
+		meshInstance->UpdateMatrixPallete(&m_MatrixPalette);
+		m_cbMatrixPallete.SetData(m_pDeviceContext, m_MatrixPalette);
+		
+		// Draw
+		meshInstance->Render(m_pDeviceContext);		
 	}
-	m_Models.clear();
+	m_SkeletalMeshInstance.clear();
 
-	for (const auto& ModelPtr : m_StaticModels)
-	{
-		m_pDeviceContext->IASetInputLayout(m_pStaticMeshInputLayout);
-		m_pDeviceContext->VSSetShader(m_pStaticMeshVertexShader, nullptr, 0);
-		for (size_t i = 0; i < ModelPtr->m_MeshInstances.size(); i++)
-		{
-			StaticMeshInstance& meshInstance = ModelPtr->m_MeshInstances[i];
 
-			// 머터리얼 적용
-			assert(meshInstance.m_pMaterial != nullptr);
-			ApplyMaterial(meshInstance.m_pMaterial);			
+	// m_StaticMeshInstance
+	m_pDeviceContext->IASetInputLayout(m_pStaticMeshInputLayout);
+	m_pDeviceContext->VSSetShader(m_pStaticMeshVertexShader, nullptr, 0);
+	for (const auto& meshInstance : m_StaticMeshInstance)
+	{		
+		// 머터리얼 적용
+		assert(meshInstance->m_pMaterial != nullptr);
+		ApplyMaterial(meshInstance->m_pMaterial);
 				
-			m_TransformW.mWorld = meshInstance.m_pNodeWorldTransform->Transpose();			
-			m_pDeviceContext->UpdateSubresource(m_pCBTransformW, 0, nullptr, &m_TransformW, 0, 0);
-
-			// Draw
-			meshInstance.Render(m_pDeviceContext);
-		}
+		m_TransformW.mWorld = meshInstance->m_pNodeWorldTransform->Transpose();
+		m_pDeviceContext->UpdateSubresource(m_pCBTransformW, 0, nullptr, &m_TransformW, 0, 0);
+		
+		// Draw
+		meshInstance->Render(m_pDeviceContext);
 	}
-	m_StaticModels.clear();
+	m_StaticMeshInstance.clear();
 
 
 	ImGuiIO& io = ImGui::GetIO(); (void)io;

@@ -51,11 +51,11 @@ void TutorialApp::Render()
 {
 	for (auto& model : m_SkeletalMeshModelList)
 	{
-		m_Renderer.AddModel(&model);
+		m_Renderer.AddMeshInstance(&model);
 	}
 	for (auto& model : m_StaticMeshModelList)
 	{
-		m_Renderer.AddModel(&model);
+		m_Renderer.AddMeshInstance(&model);
 	}
 
 	__super::Render();

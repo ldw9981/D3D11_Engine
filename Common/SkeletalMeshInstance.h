@@ -19,7 +19,7 @@ public:
 	Math::Matrix* m_pNodeWorldTransform = nullptr;
 
 	void Create(SkeletalMeshResource* pMeshResource, SkeletonResource* skeleton, Node* pRootNode, Material* pMaterial);
-	void UpdateMatrixPallete(CB_MatrixPalette* pMatrixPallete, SkeletonResource* skeleton);
+	void UpdateMatrixPallete(CB_MatrixPalette* pMatrixPallete);
 
 
 	virtual void Render(ID3D11DeviceContext* deviceContext);

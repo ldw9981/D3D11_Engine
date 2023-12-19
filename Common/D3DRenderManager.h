@@ -64,7 +64,8 @@ public:
 	virtual void ImGuiRender() = 0;
 };
 
-
+class StaticMeshInstance;
+class SkeletalMeshInstance;
 class D3DRenderManager
 {
 public:
@@ -119,11 +120,13 @@ public:
 	float m_MeshScale = 1.0f;
 	
 	void SetImGuiRender(IImGuiRenderable* val) { m_pImGuiRender = val; }
-	std::list<SkeletalMeshModel*> m_Models;		//  렌더링할 모델들의 포인터 저장해둔다. 
-	std::list<StaticMeshModel*> m_StaticModels;		//  렌더링할 모델들의 포인터 저장해둔다. 
+
+	std::list<StaticMeshInstance*> m_StaticMeshInstance;		//  렌더링할 모델들의 포인터 저장해둔다. 
+	std::list<SkeletalMeshInstance*> m_SkeletalMeshInstance;		//  렌더링할 모델들의 포인터 저장해둔다. 
+
 	// 렌더링 이후에 목록은 사라진다.
-	void AddModel(SkeletalMeshModel* pModel);
-	void AddModel(StaticMeshModel* pModel);
+	void AddMeshInstance(SkeletalMeshModel* pModel);
+	void AddMeshInstance(StaticMeshModel* pModel);
 public:
 	bool Initialize(HWND Handle,UINT Width, UINT Height);
 	void Uninitialize();

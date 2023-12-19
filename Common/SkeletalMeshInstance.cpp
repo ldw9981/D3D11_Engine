@@ -31,7 +31,7 @@ void SkeletalMeshInstance::Create(SkeletalMeshResource* pMeshResource, SkeletonR
 	}
 	m_pNodeWorldTransform = &pRootNode->m_World;
 }
-void SkeletalMeshInstance::UpdateMatrixPallete(CB_MatrixPalette* pMatrixPallete, SkeletonResource* skeleton)
+void SkeletalMeshInstance::UpdateMatrixPallete(CB_MatrixPalette* pMatrixPallete)
 {
 	assert(m_BoneReferences.size() == m_pMeshResource->m_BoneReferences.size());
 	size_t meshBoneCount = m_pMeshResource->m_BoneReferences.size();	// 메쉬와 연결된 본개수
