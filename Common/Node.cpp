@@ -50,3 +50,8 @@ Node* Node::FindNode(const std::string& name)
 	return nullptr;
 }
 
+Node& Node::CreateChild()
+{
+	return m_Children.emplace_back();	
+}
+
