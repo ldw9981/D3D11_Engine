@@ -18,6 +18,7 @@ void Node::CreateHierachy(SkeletonInfo* skeleton)
 	m_Name = pBone->Name;
 	m_Children.reserve(pBone->NumChildren);	
 		
+	// 0번 루트는 컨테이너이므로 현재 Node와 같다 그러므로 1번부터 시작한다.
 	for (UINT i = 1; i < count; i++)
 	{
 		BoneInfo* pBone = skeleton->GetBone(i);
