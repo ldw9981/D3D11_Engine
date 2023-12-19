@@ -70,10 +70,13 @@ public:
 	ID3D11RenderTargetView* m_pRenderTargetView = nullptr;	// 렌더링 타겟뷰
 	ID3D11DepthStencilView* m_pDepthStencilView = nullptr;	// 깊이/스텐실 뷰
 
-	// 렌더링 파이프라인에 적용하는 리소스 객체의 인터페이스
 
-	ID3D11VertexShader* m_pSkinningVertexShader = nullptr;		// 정점 셰이더.
-	ID3D11InputLayout* m_pSkinningInputLayout = nullptr;		// 입력 레이아웃.
+	// 렌더링 파이프라인에 적용하는 리소스 객체의 인터페이스
+	ID3D11VertexShader* m_pSkeletalMeshVertexShader = nullptr;	// SkeletalMesh 정점 셰이더.
+	ID3D11InputLayout* m_pSkeletalMeshInputLayout = nullptr;	// SkeletalMesh 입력 레이아웃.
+	
+	ID3D11VertexShader* m_pStaticMeshVertexShader = nullptr;	// StaticMesh 정점 셰이더.
+	ID3D11InputLayout* m_pStaticMeshInputLayout = nullptr;		// StaticMesh 입력 레이아웃.
 
 	ID3D11PixelShader* m_pPixelShader = nullptr;		// 픽셀 셰이더.	
 	ID3D11SamplerState* m_pSamplerLinear = nullptr;		// 샘플러 상태.
@@ -116,5 +119,7 @@ public:
 	void Update();
 	void Render();
 
+	void CreateSkeletalMesh_VS_IL();
+	void CreateStaticMesh_VS_IL();
 	void ApplyMaterial(Material* pMaterial);
 };

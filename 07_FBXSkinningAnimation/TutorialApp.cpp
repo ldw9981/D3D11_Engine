@@ -73,7 +73,7 @@ LRESULT CALLBACK TutorialApp::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 }
 
 void TutorialApp::IncreaseModel()
-{
+{	
 	{
 		SkeletalMeshModel& model = m_SkeletalMeshModelList.emplace_back();
 
@@ -88,7 +88,7 @@ void TutorialApp::IncreaseModel()
 		int playindex = rand() % model.m_SceneResource->m_Animations.size();
 		model.PlayAnimation(playindex);
 	}
-
+	
 
 	{
 		StaticMeshModel& model = m_StaticMeshModelList.emplace_back();
@@ -96,7 +96,7 @@ void TutorialApp::IncreaseModel()
 		int range = 500;
 		float pos = (float)(rand() % range) - range * 0.5f;
 		model.m_Local = Matrix::CreateTranslation(pos, 0, 0);
-		model.ReadSceneResourceFromFBX("../Resource/Box.fbx");	
+		model.ReadSceneResourceFromFBX("../Resource/Zombie.fbx");	
 	}
 }
 
