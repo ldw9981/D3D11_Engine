@@ -315,15 +315,6 @@ void D3DRenderManager::Render()
 			// 스켈레탈 메쉬(본이있으면) 행렬팔레트 업데이트						
 			meshInstance.UpdateMatrixPallete(&m_MatrixPalette, &ModelPtr->m_SceneResource->m_Skeleton);
 			m_cbMatrixPallete.SetData(m_pDeviceContext, m_MatrixPalette);
-			
-			/*
-			else
-			{
-				// MVP Matrix 전송
-				m_Transform.mWorld = mesh.m_pNodeWorldTransform->Transpose();
-			}
-			*/
-
 			m_Transform.mView = m_View.Transpose();
 			m_Transform.mProjection = m_Projection.Transpose();
 			m_pDeviceContext->UpdateSubresource(m_pCBTransform, 0, nullptr, &m_Transform, 0, 0);
@@ -346,7 +337,7 @@ void D3DRenderManager::Render()
 			assert(meshInstance.m_pMaterial != nullptr);
 			ApplyMaterial(meshInstance.m_pMaterial);			
 				
-			m_Transform.mWorld = meshInstance.m_pNodeWorldTransform->Transpose();
+			m_Transform.mWorld = meshInstance.m_pNodeWorldTransform->Transpose();			
 			m_Transform.mView = m_View.Transpose();
 			m_Transform.mProjection = m_Projection.Transpose();
 			m_pDeviceContext->UpdateSubresource(m_pCBTransform, 0, nullptr, &m_Transform, 0, 0);
