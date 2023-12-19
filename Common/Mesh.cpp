@@ -85,7 +85,11 @@ void StaticMeshResource::CreateIndexBuffer(WORD* indices, UINT indexCount)
 	HR_T(D3DRenderManager::m_pDevice->CreateBuffer(&bd, &ibData, &m_pIndexBuffer));
 }
 
-
+void StaticMeshResource::GetAABB(Math::Vector3& min, Math::Vector3& max)
+{
+	min = m_AABBmin;
+	max = m_AABBmax;
+}
 
 StaticMeshInstance::StaticMeshInstance()
 {
@@ -218,9 +222,6 @@ void SkeletalMeshResource::Create(aiMesh* mesh, SkeletonInfo* skeleton)
 		m_Indices[i * 3 + 2] = mesh->mFaces[i].mIndices[2];
 	}
 	CreateIndexBuffer(&m_Indices[0], (UINT)m_Indices.size());
-
-	m_AABBmin = Vector3(mesh->mAABB.mMin.x, mesh->mAABB.mMin.y, mesh->mAABB.mMin.z);
-	m_AABBmax = Vector3(mesh->mAABB.mMax.x, mesh->mAABB.mMax.y, mesh->mAABB.mMax.z);
 }
 
 void SkeletalMeshResource::CreateVertexBuffer( BoneWeightVertex* vertices, UINT vertexCount)

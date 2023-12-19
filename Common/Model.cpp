@@ -252,6 +252,18 @@ bool SkeletalMeshSceneResource::Create(std::string filePath)
 		m_SkeletalMeshResources[i].Create(scene->mMeshes[i], &m_Skeleton);
 	}
 
+	m_AABBmin = Math::Vector3(FLT_MAX, FLT_MAX, FLT_MAX);
+	m_AABBmax = Math::Vector3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+	for (UINT i = 0; i < scene->mNumMeshes; i++)
+	{
+		aiMesh* pMesh = scene->mMeshes[i];
+		Math::Vector3 meshMin = Math::Vector3(pMesh->mAABB.mMin.x, pMesh->mAABB.mMin.y, pMesh->mAABB.mMin.z);
+		Math::Vector3 meshMax = Math::Vector3(pMesh->mAABB.mMax.x, pMesh->mAABB.mMax.y, pMesh->mAABB.mMax.z);
+
+		m_AABBmin = Math::Vector3::Min(m_AABBmin, meshMin);
+		m_AABBmax = Math::Vector3::Max(m_AABBmax, meshMax);
+	}
+
 	// SceneResource의 기본 애니메이션 추가한다.
 
 	assert(scene->mNumAnimations < 2); // 애니메이션은 없거나 1개여야한다. 
@@ -356,6 +368,17 @@ bool StaticMeshSceneResource::Create(std::string filePath)
 		m_StaticMeshResources[i].Create(scene->mMeshes[i]);
 	}
 
+	m_AABBmin = Math::Vector3(FLT_MAX, FLT_MAX, FLT_MAX);
+	m_AABBmax = Math::Vector3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+	for (UINT i = 0; i < scene->mNumMeshes; i++)
+	{
+		aiMesh* pMesh = scene->mMeshes[i];
+		Math::Vector3 meshMin = Math::Vector3(pMesh->mAABB.mMin.x, pMesh->mAABB.mMin.y, pMesh->mAABB.mMin.z);
+		Math::Vector3 meshMax = Math::Vector3(pMesh->mAABB.mMax.x, pMesh->mAABB.mMax.y, pMesh->mAABB.mMax.z);
+		
+		m_AABBmin = Math::Vector3::Min(m_AABBmin, meshMin);
+		m_AABBmax = Math::Vector3::Max(m_AABBmax, meshMax);
+	}
 	
 	importer.FreeScene();
 	LOG_MESSAGEA("Complete file: %s", filePath.c_str());
