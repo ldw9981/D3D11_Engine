@@ -7,10 +7,13 @@
 using namespace DirectX::SimpleMath;
 using namespace DirectX;
 
-
-struct CB_Transform
+struct CB_TransformW
 {
 	Matrix mWorld;
+};
+
+struct CB_TransformVP
+{
 	Matrix mView;
 	Matrix mProjection;
 };
@@ -50,7 +53,7 @@ class StaticMeshModel;
 class SkeletalMeshModel;
 class Material;
 
-class IRender
+class IRenderable
 {
 public:
 	virtual void Render(ID3D11DeviceContext* pDeviceContext) = 0;
@@ -89,7 +92,8 @@ public:
 	ID3D11SamplerState* m_pSamplerLinear = nullptr;		// 샘플러 상태.
 	ID3D11BlendState* m_pAlphaBlendState = nullptr;		// 블렌드 상태 변경 (반투명처리를위한 블렌드상태)
 	ID3D11Buffer* m_pGpuCbMaterial = nullptr;				// 상수 버퍼: 변환행렬
-	ID3D11Buffer* m_pCBTransform = nullptr;				// 상수 버퍼: 변환행렬
+	ID3D11Buffer* m_pCBTransformW = nullptr;				// 상수 버퍼: 변환행렬
+	ID3D11Buffer* m_pCBTransformVP = nullptr;				// 상수 버퍼: 변환행렬
 	ID3D11Buffer* m_pCBDirectionLight = nullptr;		// 상수 버퍼: 방향광
 	ConstantBuffer<CB_MatrixPalette> m_cbMatrixPallete; // DirectXTK의 상수버퍼 클래스 활용
 
@@ -105,7 +109,8 @@ public:
 	Vector3 m_Rotation = Vector3(0.0f, 0.0f,0.0f);
 	Vector3 m_CameraPos = Vector3(0.0f, 100.0f, -1000.0f);
 
-	CB_Transform m_Transform;
+	CB_TransformW m_TransformW;
+	CB_TransformVP m_TransformVP;
 	CB_Marterial m_CpuCbMaterial;
 	CB_DirectionLight m_Light;
 	CB_MatrixPalette m_MatrixPalette;

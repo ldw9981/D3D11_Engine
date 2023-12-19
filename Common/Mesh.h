@@ -76,7 +76,7 @@ public:
 
 
 
-class StaticMeshInstance
+class StaticMeshInstance : public IRenderable
 {
 public:
 	StaticMeshInstance();
@@ -87,7 +87,7 @@ public:
 	Math::Matrix* m_pNodeWorldTransform = nullptr;		// StaticMesh의 월드행렬을 가진 노드의 포인터
 	
 	void Create(StaticMeshResource* pMeshResource,Node* pRootNode, Material* pMaterial);	
-	void Render(ID3D11DeviceContext* deviceContext);
+	virtual void Render(ID3D11DeviceContext* deviceContext);
 };
 
 
@@ -117,7 +117,7 @@ public:
 };
 
 
-class SkeletalMeshInstance
+class SkeletalMeshInstance: public IRenderable
 {
 public:
 	SkeletalMeshInstance();
@@ -131,7 +131,9 @@ public:
 
 	void Create(SkeletalMeshResource* pMeshResource, SkeletonInfo* skeleton, Node* pRootNode, Material* pMaterial);
 	void UpdateMatrixPallete(CB_MatrixPalette* pMatrixPallete, SkeletonInfo* skeleton);
-	void Render(ID3D11DeviceContext* deviceContext);
+
+	
+	virtual void Render(ID3D11DeviceContext* deviceContext);
 };
 
 

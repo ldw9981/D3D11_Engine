@@ -9,14 +9,19 @@ Texture2D txOpacity : register(t4);
 
 SamplerState samLinear : register(s0);
 
-cbuffer Transform : register(b0)
+cbuffer TransformW : register(b0)
 {
     matrix World;
+}
+
+cbuffer TransformVP : register(b1)
+{
     matrix View;
     matrix Projection;
 }
 
-cbuffer DirectionLight : register(b1)
+
+cbuffer DirectionLight : register(b2)
 {
     float3 LightDirection;
     float DirectionLightPad0;
@@ -27,7 +32,7 @@ cbuffer DirectionLight : register(b1)
     float DirectionLightPad1;
 }
 
-cbuffer Material : register(b2)
+cbuffer Material : register(b3)
 {
     float4 MaterialAmbient;
     float4 MaterialDiffuse;
@@ -42,7 +47,7 @@ cbuffer Material : register(b2)
     float2 MaterialPad0;
 }
 
-cbuffer MatrixPalette : register(b3)
+cbuffer MatrixPalette : register(b4)
 {
     matrix MatrixPaletteArray[128];
 }

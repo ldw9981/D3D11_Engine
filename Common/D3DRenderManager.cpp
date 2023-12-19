@@ -178,13 +178,21 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 
 	// 6. Render() 에서 파이프라인에 바인딩할 상수 버퍼 생성
 	// Create the constant buffer
+
 	D3D11_BUFFER_DESC bd = {};
 	bd = {};
 	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(CB_Transform);
+	bd.ByteWidth = sizeof(CB_TransformW);
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bd.CPUAccessFlags = 0;
-	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, &m_pCBTransform));
+	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, &m_pCBTransformW));
+
+	bd = {};
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof(CB_TransformVP);
+	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bd.CPUAccessFlags = 0;
+	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, &m_pCBTransformVP));
 
 	bd.Usage = D3D11_USAGE_DEFAULT;
 	bd.ByteWidth = sizeof(CB_DirectionLight);
@@ -232,7 +240,8 @@ void D3DRenderManager::Uninitialize()
 
 	//	SAFE_RELEASE(m_cbMatrixPallete.GetBuffer()); //ComPtr
 	SAFE_RELEASE(m_pCBDirectionLight);
-	SAFE_RELEASE(m_pCBTransform);
+	SAFE_RELEASE(m_pCBTransformW);
+	SAFE_RELEASE(m_pCBTransformVP);
 	SAFE_RELEASE(m_pGpuCbMaterial);
 	SAFE_RELEASE(m_pAlphaBlendState);
 	SAFE_RELEASE(m_pSamplerLinear);
@@ -282,25 +291,31 @@ void D3DRenderManager::Render()
 
 	// 버텍스셰이더 설정 (StaticMesh-SkeletalMesh에 따라 Render직전에 바뀐다)
 	// 버텍스 셰이더 상수 설정
-	m_pDeviceContext->VSSetConstantBuffers(0, 1, &m_pCBTransform);
-	m_pDeviceContext->VSSetConstantBuffers(1, 1, &m_pCBDirectionLight);
-
-	//m_pDeviceContext->VSSetConstantBuffers(3, 1, &m_pCBMatrixPalette);
+	m_pDeviceContext->VSSetConstantBuffers(0, 1, &m_pCBTransformW);
+	m_pDeviceContext->VSSetConstantBuffers(1, 1, &m_pCBTransformVP);
+	m_pDeviceContext->VSSetConstantBuffers(2, 1, &m_pCBDirectionLight);
+	// 3 material
 	auto buffer = m_cbMatrixPallete.GetBuffer();
-	m_pDeviceContext->VSSetConstantBuffers(3, 1, &buffer);
+	m_pDeviceContext->VSSetConstantBuffers(4, 1, &buffer);
 
 	// 픽셀셰이더 설정
 	m_pDeviceContext->PSSetShader(m_pPixelShader, nullptr, 0);
 	// 픽셀셰이더 상수설정
-	m_pDeviceContext->PSSetConstantBuffers(0, 1, &m_pCBTransform);
-	m_pDeviceContext->PSSetConstantBuffers(1, 1, &m_pCBDirectionLight);
-	m_pDeviceContext->PSSetConstantBuffers(2, 1, &m_pGpuCbMaterial);
+	m_pDeviceContext->VSSetConstantBuffers(0, 1, &m_pCBTransformW);
+	m_pDeviceContext->PSSetConstantBuffers(1, 1, &m_pCBTransformVP);
+	m_pDeviceContext->PSSetConstantBuffers(2, 1, &m_pCBDirectionLight);
+	m_pDeviceContext->PSSetConstantBuffers(3, 1, &m_pGpuCbMaterial);
 
 	m_pDeviceContext->PSSetSamplers(0, 1, &m_pSamplerLinear);
 
+	//라이트 업데이트
 	m_Light.Direction.Normalize();
 	m_pDeviceContext->UpdateSubresource(m_pCBDirectionLight, 0, nullptr, &m_Light, 0, 0);
 
+	// 뷰프로젝션 업데이트
+	m_TransformVP.mView = m_View.Transpose();
+	m_TransformVP.mProjection = m_Projection.Transpose();
+	m_pDeviceContext->UpdateSubresource(m_pCBTransformVP, 0, nullptr, &m_TransformVP, 0, 0);
 
 	for (const auto& ModelPtr : m_Models) 
 	{
@@ -317,9 +332,7 @@ void D3DRenderManager::Render()
 			// 스켈레탈 메쉬(본이있으면) 행렬팔레트 업데이트						
 			meshInstance.UpdateMatrixPallete(&m_MatrixPalette, &ModelPtr->m_SceneResource->m_Skeleton);
 			m_cbMatrixPallete.SetData(m_pDeviceContext, m_MatrixPalette);
-			m_Transform.mView = m_View.Transpose();
-			m_Transform.mProjection = m_Projection.Transpose();
-			m_pDeviceContext->UpdateSubresource(m_pCBTransform, 0, nullptr, &m_Transform, 0, 0);
+
 
 			// Draw
 			meshInstance.Render(m_pDeviceContext);
@@ -339,10 +352,8 @@ void D3DRenderManager::Render()
 			assert(meshInstance.m_pMaterial != nullptr);
 			ApplyMaterial(meshInstance.m_pMaterial);			
 				
-			m_Transform.mWorld = meshInstance.m_pNodeWorldTransform->Transpose();			
-			m_Transform.mView = m_View.Transpose();
-			m_Transform.mProjection = m_Projection.Transpose();
-			m_pDeviceContext->UpdateSubresource(m_pCBTransform, 0, nullptr, &m_Transform, 0, 0);
+			m_TransformW.mWorld = meshInstance.m_pNodeWorldTransform->Transpose();			
+			m_pDeviceContext->UpdateSubresource(m_pCBTransformW, 0, nullptr, &m_TransformW, 0, 0);
 
 			// Draw
 			meshInstance.Render(m_pDeviceContext);
