@@ -35,6 +35,7 @@ std::shared_ptr<MaterialTexture> ResourceManager::CreateMaterialTexture(std::wst
 
 ResourceManager::ResourceManager()
 {
+	assert(Instance == nullptr);
 	Instance = this;
 }
 
