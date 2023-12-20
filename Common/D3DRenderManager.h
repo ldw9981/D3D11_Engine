@@ -1,10 +1,11 @@
 #pragma once
-#include <dxgi.h>
-
+#include <dxgi1_4.h>
 #include <DirectXtk/BufferHelpers.h>
+
 
 using namespace DirectX::SimpleMath;
 using namespace DirectX;
+using namespace Microsoft::WRL;
 
 struct CB_TransformW
 {
@@ -73,6 +74,8 @@ public:
 	~D3DRenderManager();
 
 	static D3DRenderManager* Instance;
+	ComPtr<IDXGIFactory4> m_pDXGIFactory;		// DXGI팩토리
+	ComPtr<IDXGIAdapter3> m_pDXGIAdapter;		// 비디오카드 정보에 접근 가능한 인터페이스
 	// 렌더링 파이프라인을 구성하는 필수 객체의 인터페이스
 	static ID3D11Device* m_pDevice;						// 디바이스
 	ID3D11DeviceContext* m_pDeviceContext = nullptr;		// 즉시 디바이스 컨텍스트
@@ -138,6 +141,9 @@ public:
 	void CreateStaticMesh_VS_IL();
 	void CreatePS();
 	void ApplyMaterial(Material* pMaterial);
+
+	void GetVideoMemoryInfo(std::string& out);
+	void GetSystemMemoryInfo(std::string& out);
 private:
 	IImGuiRenderable* m_pImGuiRender = nullptr;
 };

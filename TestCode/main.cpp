@@ -1,7 +1,7 @@
 ﻿#include <iostream>
 #include <vector>
 
-#include "TestButton.h"
+#include "DelegateInterface.h"
 
 using namespace std;
 

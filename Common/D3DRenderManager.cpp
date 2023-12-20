@@ -9,6 +9,7 @@
 #include <imgui_impl_dx11.h>
 #include <winerror.h>
 #include <dxgidebug.h>
+#include <Psapi.h>
 
 #include "SkeletalMeshComponent.h"
 #include "StaticMeshComponent.h"
@@ -21,9 +22,9 @@
 #include "SkeletalMeshResource.h"
 
 
-
 #pragma comment(lib,"d3d11.lib")
 #pragma comment(lib,"d3dcompiler.lib")
+#pragma comment(lib,"dxgi.lib")
 
 
 
@@ -65,6 +66,12 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 {
 	m_hWnd = Handle;
 	HRESULT hr = 0;	// 결과값.
+
+	// Create DXGI factory
+	HR_T(CreateDXGIFactory1(__uuidof(IDXGIFactory4), (void**)m_pDXGIFactory.GetAddressOf()));
+	HR_T(m_pDXGIFactory->EnumAdapters(0, reinterpret_cast<IDXGIAdapter**>(m_pDXGIAdapter.GetAddressOf())));
+	
+
 
 	// 스왑체인 속성 설정 구조체 생성.
 	DXGI_SWAP_CHAIN_DESC swapDesc = {};
@@ -368,6 +375,14 @@ void D3DRenderManager::Render()
 	{
 		ImGui::Begin("Properties");
 
+		
+		ImGui::Text("Frame average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+		std::string str;
+		GetVideoMemoryInfo(str);
+		ImGui::Text("VideoMemory: %s",str.c_str() );
+		GetSystemMemoryInfo(str);
+		ImGui::Text("SystemMemory: %s", str.c_str());
+
 		ImGui::Text("Cube");
 		ImGui::SliderFloat("Scale", (float*)&m_MeshScale, 1, 100);
 		ImGui::SliderFloat3("Rotation", (float*)&m_Rotation, 0, 360);
@@ -518,5 +533,20 @@ void D3DRenderManager::ApplyMaterial(Material* pMaterial)
 	m_pDeviceContext->UpdateSubresource(m_pGpuCbMaterial, 0, nullptr, &m_CpuCbMaterial, 0, 0);
 }
 
+void  D3DRenderManager::GetVideoMemoryInfo(std::string& out)
+{
+	DXGI_QUERY_VIDEO_MEMORY_INFO videoMemoryInfo;
+	m_pDXGIAdapter->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &videoMemoryInfo);
 
+	out = std::to_string(videoMemoryInfo.CurrentUsage / 1024 / 1024) + " MB" + "/" + std::to_string(videoMemoryInfo.Budget / 1024 / 1024) + " MB";
+}
+
+void D3DRenderManager::GetSystemMemoryInfo(std::string& out)
+{
+	HANDLE hProcess = GetCurrentProcess();	
+	PROCESS_MEMORY_COUNTERS_EX pmc;
+	pmc.cb = sizeof(PROCESS_MEMORY_COUNTERS_EX);
+	GetProcessMemoryInfo(hProcess, (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc));
+	out = std::to_string( (pmc.PagefileUsage) / 1024 / 1024) + " MB";	
+}
 
