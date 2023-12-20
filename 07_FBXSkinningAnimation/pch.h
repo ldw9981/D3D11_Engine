@@ -21,7 +21,9 @@
 #include <filesystem>
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
-
+#include <imgui.h>
+#include <imgui_impl_win32.h>
+#include <imgui_impl_dx11.h>
 
 namespace Math = DirectX::SimpleMath;
 #endif //PCH_H

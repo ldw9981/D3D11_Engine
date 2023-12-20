@@ -22,6 +22,8 @@ bool TutorialApp::Initialize(UINT Width, UINT Height)
 {
 	__super::Initialize(Width, Height);
 
+	D3DRenderManager::Instance->SetImGuiRender(this);
+
 	Math::Vector3 RotationAngle;
 	//Math::Quaternion rotQuaternion;
 	//rotQuaternion = Math::Quaternion::CreateFromYawPitchRoll(RotationAngle.x, RotationAngle.y, RotationAngle.z);
@@ -122,6 +124,7 @@ void TutorialApp::DecreaseModel()
 
 void TutorialApp::ImGuiRender()
 {
-
+	ImGui::Text("다른곳에서도 ImGUI를 사용하는테스트 English Only");
+	
 }
 
