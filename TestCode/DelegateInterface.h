@@ -72,7 +72,7 @@ public:
 
     // 재정의
     virtual void onClick()
-    {		
+    {	
         // 등록된 모든 리스너에게 알림
         for (auto it = m_listeners.begin(); it != m_listeners.end(); )
         {
