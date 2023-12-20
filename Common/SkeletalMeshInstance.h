@@ -1,12 +1,12 @@
 #pragma once
-#include "D3DRenderManager.h"
+
 
 class SkeletalMeshResource;
 class Material;
 class Node;
 struct CB_MatrixPalette;
 struct SkeletonResource;
-class SkeletalMeshInstance : public IRenderable
+class SkeletalMeshInstance 
 {
 public:
 	SkeletalMeshInstance();
