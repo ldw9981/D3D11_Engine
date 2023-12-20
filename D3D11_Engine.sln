@@ -13,8 +13,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TextRendering", "TextRender
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KeyboardMouseTest", "KeyboardMouseTest\KeyboardMouseTest.vcxproj", "{C7F788FF-A37E-447D-AF76-5B757DA75C68}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Collision", "Collision\Collision_Desktop_2019_Win10.vcxproj", "{AB182E14-E51A-40AB-985E-0C8C885871A5}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -85,18 +83,6 @@ Global
 		{C7F788FF-A37E-447D-AF76-5B757DA75C68}.Release|x64.Build.0 = Release|x64
 		{C7F788FF-A37E-447D-AF76-5B757DA75C68}.Release|x86.ActiveCfg = Release|Win32
 		{C7F788FF-A37E-447D-AF76-5B757DA75C68}.Release|x86.Build.0 = Release|Win32
-		{AB182E14-E51A-40AB-985E-0C8C885871A5}.Debug|x64.ActiveCfg = Debug|x64
-		{AB182E14-E51A-40AB-985E-0C8C885871A5}.Debug|x64.Build.0 = Debug|x64
-		{AB182E14-E51A-40AB-985E-0C8C885871A5}.Debug|x86.ActiveCfg = Debug|Win32
-		{AB182E14-E51A-40AB-985E-0C8C885871A5}.Debug|x86.Build.0 = Debug|Win32
-		{AB182E14-E51A-40AB-985E-0C8C885871A5}.Profile|x64.ActiveCfg = Profile|x64
-		{AB182E14-E51A-40AB-985E-0C8C885871A5}.Profile|x64.Build.0 = Profile|x64
-		{AB182E14-E51A-40AB-985E-0C8C885871A5}.Profile|x86.ActiveCfg = Profile|Win32
-		{AB182E14-E51A-40AB-985E-0C8C885871A5}.Profile|x86.Build.0 = Profile|Win32
-		{AB182E14-E51A-40AB-985E-0C8C885871A5}.Release|x64.ActiveCfg = Release|x64
-		{AB182E14-E51A-40AB-985E-0C8C885871A5}.Release|x64.Build.0 = Release|x64
-		{AB182E14-E51A-40AB-985E-0C8C885871A5}.Release|x86.ActiveCfg = Release|Win32
-		{AB182E14-E51A-40AB-985E-0C8C885871A5}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
