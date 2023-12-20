@@ -98,7 +98,7 @@ void TutorialApp::IncreaseModel()
 		model.PlayAnimation(playindex);
 	}
 	
-
+	/*
 	{
 		StaticMeshModel& model = m_StaticMeshModelList.emplace_back();
 
@@ -107,6 +107,7 @@ void TutorialApp::IncreaseModel()
 		model.m_Local = Matrix::CreateTranslation(pos, 0, 0);
 		model.ReadSceneResourceFromFBX("../Resource/ZeldaPosed001.fbx");	
 	}
+	*/
 }
 
 void TutorialApp::DecreaseModel()
@@ -115,11 +116,12 @@ void TutorialApp::DecreaseModel()
 	{
 		m_SkeletalMeshModelList.pop_back();
 	}
-
+	/*
 	if (!m_StaticMeshModelList.empty())
 	{
 		m_StaticMeshModelList.pop_back();
 	}
+	*/
 }
 
 void TutorialApp::ImGuiRender()

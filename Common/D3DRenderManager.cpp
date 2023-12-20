@@ -330,12 +330,20 @@ void D3DRenderManager::Render()
 	// m_SkeletalMeshInstance
 	m_pDeviceContext->IASetInputLayout(m_pSkeletalMeshInputLayout);
 	m_pDeviceContext->VSSetShader(m_pSkeletalMeshVertexShader, nullptr, 0);
-	for (const auto& meshInstance : m_SkeletalMeshInstance)
-	{	
-		// 머터리얼 적용
-		assert(meshInstance->m_pMaterial!=nullptr);
-		ApplyMaterial(meshInstance->m_pMaterial);
 
+	m_SkeletalMeshInstance.sort([](const SkeletalMeshInstance* lhs, const SkeletalMeshInstance* rhs)
+	{
+		return lhs->m_pMaterial < rhs->m_pMaterial;
+	});
+
+	Material* pPrevMaterial = nullptr;
+	for (const auto& meshInstance : m_SkeletalMeshInstance)
+	{			
+		if (pPrevMaterial != meshInstance->m_pMaterial)
+		{
+			ApplyMaterial(meshInstance->m_pMaterial);	// 머터리얼 적용
+			pPrevMaterial = meshInstance->m_pMaterial;
+		}	
 		// 행렬팔레트 업데이트						
 		meshInstance->UpdateMatrixPallete(&m_MatrixPalette);
 		m_cbMatrixPallete.SetData(m_pDeviceContext, m_MatrixPalette);
@@ -349,11 +357,18 @@ void D3DRenderManager::Render()
 	// m_StaticMeshInstance
 	m_pDeviceContext->IASetInputLayout(m_pStaticMeshInputLayout);
 	m_pDeviceContext->VSSetShader(m_pStaticMeshVertexShader, nullptr, 0);
+
+	m_StaticMeshInstance.sort([](const StaticMeshInstance* lhs, const StaticMeshInstance* rhs)
+		{
+			return lhs->m_pMaterial < rhs->m_pMaterial;
+		});
 	for (const auto& meshInstance : m_StaticMeshInstance)
 	{		
-		// 머터리얼 적용
-		assert(meshInstance->m_pMaterial != nullptr);
-		ApplyMaterial(meshInstance->m_pMaterial);
+		if (pPrevMaterial != meshInstance->m_pMaterial)
+		{
+			ApplyMaterial(meshInstance->m_pMaterial);	// 머터리얼 적용
+			pPrevMaterial = meshInstance->m_pMaterial;
+		}
 				
 		m_TransformW.mWorld = meshInstance->m_pNodeWorldTransform->Transpose();
 		m_pDeviceContext->UpdateSubresource(m_pCBTransformW, 0, nullptr, &m_TransformW, 0, 0);
