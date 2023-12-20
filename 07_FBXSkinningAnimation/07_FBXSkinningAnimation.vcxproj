@@ -24,6 +24,7 @@
     <ProjectGuid>{8854444a-c4fa-4b82-94ba-18ee4862673a}</ProjectGuid>
     <RootNamespace>My07FBXSkinningAnimation</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>TestGameApp</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
