@@ -113,11 +113,7 @@ void Animation::Create(const std::string strFBXFilePath)
 		// 채널수는 aiAnimation 안에서 애니메이션 정보를  표현하는 aiNode의 개수이다.
 	assert(pAiAnimation->mNumChannels > 1); // 애니메이션이 있다면 aiNode 는 하나 이상 있어야한다.
 		
-	//shared_ptr<Animation> ret = m_Animations.emplace_back();
-	//ret->Create(pAiAnimation);
-	
-
-
+	Create(strFBXFilePath, pAiAnimation);
 
 	importer.FreeScene();
 	LOG_MESSAGEA("Complete file: %s", strFBXFilePath.c_str());
