@@ -90,9 +90,12 @@ void TutorialApp::IncreaseModel()
 		float pos = (float)(rand() % range) - range * 0.5f;
 		model.m_Local = Matrix::CreateTranslation(pos, 0, 0);
 
-		model.ReadSceneResourceFromFBX("../Resource/Zombie.fbx");
-		model.ReadAnimationOnlyFromFBX("../Resource/Zombie_Run.fbx");
-		model.ReadAnimationOnlyFromFBX("../Resource/SkinningTest.fbx");
+		// Mesh,Material,T pose animation이 있는 캐릭터 FBX
+		model.ReadSceneResourceFromFBX("../Resource/Zombie.fbx");     
+
+		// 본이름과 개수가 같은 구조의 FBX파일을 읽어 Animation을 추가한다. (mixamo캐릭터는 전부 같다)
+		model.ReadAnimationOnlyFromFBX("../Resource/Zombie_Run.fbx"); 
+		model.ReadAnimationOnlyFromFBX("../Resource/SkinningTest.fbx"); 
 
 		int playindex = rand() % model.m_SceneResource->m_Animations.size();
 		model.PlayAnimation(playindex);
