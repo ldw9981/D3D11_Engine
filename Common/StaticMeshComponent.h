@@ -29,7 +29,7 @@ public:
 	std::shared_ptr<StaticMeshSceneResource>  m_SceneResource;
 	std::vector<StaticMeshInstance> m_MeshInstances;
 
-
+	void SetSceneResource(std::shared_ptr<StaticMeshSceneResource> val);
 	bool ReadSceneResourceFromFBX(std::string filePath);
 	Material* GetMaterial(UINT index);
 

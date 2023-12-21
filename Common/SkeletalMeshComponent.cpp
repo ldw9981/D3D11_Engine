@@ -27,18 +27,9 @@ SkeletalMeshComponent::~SkeletalMeshComponent()
 
 
 
-bool SkeletalMeshModel::ReadSceneResourceFromFBX(std::string filePath)
+void SkeletalMeshModel::SetSceneResource(std::shared_ptr<SkeletalMeshSceneResource> val)
 {
-	std::filesystem::path path = ToWString(string(filePath));
-	LOG_MESSAGEA("Loading file: %s", filePath.c_str());
-
-	GameTimer timer;
-	timer.Tick();
-	// 리소스 매니저에서 가져온다.
-	m_SceneResource = ResourceManager::Instance->CreateSkeletalMeshSceneResource(filePath);
-	if (!m_SceneResource) {
-		return false;
-	}
+	m_SceneResource = val;
 
 	// 리소스로 인스턴스 처리한다.
 	CreateHierachy(&m_SceneResource->m_Skeleton);	//계층구조 생성	
@@ -52,24 +43,28 @@ bool SkeletalMeshModel::ReadSceneResourceFromFBX(std::string filePath)
 			m_SceneResource->GetMeshMaterial(i));		//material resource 
 	}
 	UpdateNodeAnimationReference(0);	// 각 노드의 애니메이션 정보참조 연결	
+}
+
+bool SkeletalMeshModel::ReadSceneResourceFromFBX(std::string filePath)
+{
+	std::filesystem::path path = ToWString(string(filePath));
+	LOG_MESSAGEA("Loading file: %s", filePath.c_str());
+
+	GameTimer timer;
+	timer.Tick();
+	// 리소스 매니저에서 가져온다.
+	SetSceneResource(ResourceManager::Instance->CreateSkeletalMeshSceneResource(filePath));
+	if (!m_SceneResource) {
+		return false;
+	}
+
+	
 	timer.Tick();
 	LOG_MESSAGEA("Complete file: %s %f", filePath.c_str(), timer.DeltaTime());
 	return true;
 }
 
-bool SkeletalMeshModel::ReadAnimationOnlyFromFBX(std::string filePath)
-{
-	auto it = std::find_if(m_SceneResource->m_Animations.begin(), m_SceneResource->m_Animations.end(),
-		[filePath](const Animation& node) {
-			return node.FilePath == filePath;
-		});
 
-	if (it != m_SceneResource->m_Animations.end())
-	{
-		return false;
-	}
-	return m_SceneResource->AddAnimation(filePath);
-}
 
 Material* SkeletalMeshModel::GetMaterial(UINT index)
 {
@@ -81,7 +76,7 @@ void SkeletalMeshModel::Update(float deltaTime)
 	if (!m_SceneResource->m_Animations.empty())
 	{
 		m_AnimationProressTime += deltaTime;
-		m_AnimationProressTime = fmod(m_AnimationProressTime, m_SceneResource->m_Animations[m_AnimationIndex].Duration);
+		m_AnimationProressTime = (float)fmod(m_AnimationProressTime, m_SceneResource->m_Animations[m_AnimationIndex]->Duration);
 
 	}
 	__super::Update(deltaTime);
@@ -90,13 +85,13 @@ void SkeletalMeshModel::Update(float deltaTime)
 void SkeletalMeshModel::UpdateNodeAnimationReference(UINT index)
 {
 	assert(index < m_SceneResource->m_Animations.size());
-	Animation& animation = m_SceneResource->m_Animations[index];
-	for (size_t i = 0; i < animation.NodeAnimations.size(); i++)
+	auto animation = m_SceneResource->m_Animations[index];
+	for (size_t i = 0; i < animation->NodeAnimations.size(); i++)
 	{
-		NodeAnimation& nodeAnimation = animation.NodeAnimations[i];
+		NodeAnimation& nodeAnimation = animation->NodeAnimations[i];
 		Node* pNode = FindNode(nodeAnimation.NodeName);
 		assert(pNode != nullptr);
-		pNode->m_pNodeAnimation = &animation.NodeAnimations[i];
+		pNode->m_pNodeAnimation = &animation->NodeAnimations[i];
 	}
 }
 

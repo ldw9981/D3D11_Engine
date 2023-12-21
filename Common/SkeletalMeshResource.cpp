@@ -181,8 +181,9 @@ bool SkeletalMeshSceneResource::Create(std::string filePath)
 		// 채널수는 aiAnimation 안에서 애니메이션 정보를  표현하는 aiNode의 개수이다.
 		assert(pAiAnimation->mNumChannels > 1); // 애니메이션이 있다면 aiNode 는 하나 이상 있어야한다.
 
-		Animation& ret = m_Animations.emplace_back();
-		ret.Create(filePath, pAiAnimation);
+		shared_ptr<Animation> anim = make_shared<Animation>();		
+		anim->Create(filePath, pAiAnimation);
+		m_Animations.push_back(anim);
 	}
 	importer.FreeScene();
 	LOG_MESSAGEA("Complete file: %s", filePath.c_str());
@@ -190,35 +191,10 @@ bool SkeletalMeshSceneResource::Create(std::string filePath)
 }
 
 
-bool SkeletalMeshSceneResource::AddAnimation(std::string filePath)
+
+void SkeletalMeshSceneResource::AddAnimation(std::shared_ptr<Animation> animation)
 {
-	std::filesystem::path path = ToWString(string(filePath));
-	LOG_MESSAGEA("Loading file: %s", filePath.c_str());
-	Assimp::Importer importer;
-
-	importer.SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, 0);	// $assimp_fbx$ 노드 생성안함
-	unsigned int importFlags = aiProcess_ConvertToLeftHanded;	// 왼손 좌표계로 변환
-
-	const aiScene* scene = importer.ReadFile(filePath, importFlags);
-	if (!scene) {
-		LOG_ERRORA("Error loading file: %s", importer.GetErrorString());
-		return false;
-	}
-
-	assert(scene->mNumAnimations < 2); // 애니메이션은 없거나 1개여야한다. 
-	// 노드의 애니메이션을 하나로 합치는 방법은 FBX export에서 NLA스트립,모든 액션 옵션을 끕니다.
-	if (scene->HasAnimations())
-	{
-		const aiAnimation* pAiAnimation = scene->mAnimations[0];
-		// 채널수는 aiAnimation 안에서 애니메이션 정보를  표현하는 aiNode의 개수이다.
-		assert(pAiAnimation->mNumChannels > 1); // 애니메이션이 있다면 aiNode 는 하나 이상 있어야한다.
-
-		Animation& ret = m_Animations.emplace_back();	// Vector라 파괴후 복사한다. 최적화는 나중에하자
-		ret.Create(filePath, pAiAnimation);
-	}
-	importer.FreeScene();
-	LOG_MESSAGEA("Complete file: %s", filePath.c_str());
-	return true;
+	m_Animations.push_back(animation);
 }
 
 Material* SkeletalMeshSceneResource::GetMeshMaterial(UINT index)

@@ -26,13 +26,15 @@ public:
 	~SkeletalMeshModel() {}
 
 	std::shared_ptr<SkeletalMeshSceneResource>  m_SceneResource;
+
+	void SetSceneResource(std::shared_ptr<SkeletalMeshSceneResource> val);
 	std::vector<SkeletalMeshInstance> m_MeshInstances;
 
 	float m_AnimationProressTime = 0.0f;
 	UINT  m_AnimationIndex = 0;
 
 	bool ReadSceneResourceFromFBX(std::string filePath);
-	bool ReadAnimationOnlyFromFBX(std::string filePath);
+
 
 	Material* GetMaterial(UINT index);
 

@@ -28,20 +28,10 @@ bool StaticMeshComponent::LoadFBX(const std::string& FileName)
 
 
 
-bool StaticMeshModel::ReadSceneResourceFromFBX(std::string filePath)
+void StaticMeshModel::SetSceneResource(std::shared_ptr<StaticMeshSceneResource> val)
 {
-	std::filesystem::path path = ToWString(string(filePath));
-	LOG_MESSAGEA("Loading file: %s", filePath.c_str());
-	GameTimer timer;
-	timer.Tick();
-	// 리소스 매니저에서 가져온다.
-	m_SceneResource = ResourceManager::Instance->CreateStaticMeshSceneResource(filePath);
-	if (!m_SceneResource) {
-		return false;
-	}
-
-	//CreateHierachy(&m_SceneResource->m_Skeleton);	//StaticMesh는 계층구조는 사용 안하기로 한다.
-
+	assert(val);
+	m_SceneResource = val;
 	// 인스턴스 생성
 	m_MeshInstances.resize(m_SceneResource->m_StaticMeshResources.size());
 	for (UINT i = 0; i < m_SceneResource->m_StaticMeshResources.size(); i++)
@@ -50,11 +40,9 @@ bool StaticMeshModel::ReadSceneResourceFromFBX(std::string filePath)
 			this,	// root node
 			m_SceneResource->GetMeshMaterial(i));		//material resource 
 	}
-
-	timer.Tick();
-	LOG_MESSAGEA("Complete file: %s %f", filePath.c_str(), timer.DeltaTime());
-	return true;
 }
+
+
 
 Material* StaticMeshModel::GetMaterial(UINT index)
 {
