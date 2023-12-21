@@ -85,24 +85,15 @@ void Game::Update(DX::StepTimer const&)
     auto mouse = m_mouse->GetState();
     m_mouseButtons.Update(mouse);
 
-#ifdef ORBIT_STYLE
-    m_radius -= float(mouse.scrollWheelValue) * ROTATION_GAIN;
-    m_mouse->ResetScrollWheelValue();
-    m_radius = std::max(c_minRadius, std::min(c_maxRadius, m_radius));
-#endif
-
     if (mouse.positionMode == Mouse::MODE_RELATIVE)
     {
         Vector3 delta = Vector3(float(mouse.x), float(mouse.y), 0.f)
             * ROTATION_GAIN;
 
-#ifdef ORBIT_STYLE
-        m_phi -= delta.y;
-        m_theta -= delta.x;
-#else
+
         m_pitch -= delta.y;
         m_yaw -= delta.x;
-#endif
+
     }
 
     m_mouse->SetMode(mouse.leftButton ? Mouse::MODE_RELATIVE : Mouse::MODE_ABSOLUTE);
@@ -118,14 +109,8 @@ void Game::Update(DX::StepTimer const&)
 
     if (kb.Home)
     {
-#ifdef ORBIT_STYLE
-        m_theta = 0.f;
-        m_phi = c_defaultPhi;
-        m_radius = c_defaultRadius;
-#else
         m_cameraPos = START_POSITION.v;
         m_yaw = m_pitch = 0.f;
-#endif
     }
 
     Vector3 move = Vector3::Zero;
@@ -152,27 +137,9 @@ void Game::Update(DX::StepTimer const&)
     if (kb.PageDown || kb.X)
         upScale = -1.f;
 
-#ifdef ORBIT_STYLE
-    move *= MOVEMENT_GAIN;
+    Vector3 forward,right;
+    GetForwardAndRightVector(forward, right);
 
-    m_phi -= move.y;
-    m_theta -= move.x;
-    m_radius += move.z;
-#else
-/*
-    Quaternion q = Quaternion::CreateFromYawPitchRoll(m_yaw, m_pitch, 0.f);
-    move = Vector3::Transform(move, q);
-    move *= MOVEMENT_GAIN;
-    m_cameraPos += move;
-    */
-
-	float dy = sinf(m_pitch);
-	float dr = cosf(m_pitch);
-	float dz = dr * cosf(m_yaw);
-	float dx = dr * sinf(m_yaw);
-
-    Vector3 forward = Vector3(dx, dy, dz);      // 회전 상태 기준 정면벡터
-    Vector3 right = forward.Cross(Vector3::Up); // 회전 상태 기준 오른쪽벡터
     float speed = MOVEMENT_GAIN;       
     Vector3 worldDirection = forward * fowardScale + right * rightScale + Vector3::Up * upScale; // 회전상태와 키를 고려한 월드에서의 이동방향
     worldDirection.Normalize(); //  순수 크기1로  정규화
@@ -186,30 +153,8 @@ void Game::Update(DX::StepTimer const&)
 
     m_cameraPos = Vector3::Min(m_cameraPos, halfBound);
     m_cameraPos = Vector3::Max(m_cameraPos, -halfBound);
-#endif
 
-#ifdef ORBIT_STYLE
-    // limit pitch to straight up or straight down
-    constexpr float limit = XM_PIDIV2 - 0.01f;
-    m_phi = std::max(1e-2f, std::min(limit, m_phi));
 
-    if (m_theta > XM_PI)
-    {
-        m_theta -= XM_2PI;
-    }
-    else if (m_theta < -XM_PI)
-    {
-        m_theta += XM_2PI;
-    }
-
-    XMVECTOR lookFrom = XMVectorSet(
-        m_radius * sinf(m_phi) * cosf(m_theta),
-        m_radius * cosf(m_phi),
-        m_radius * sinf(m_phi) * sinf(m_theta),
-        0);
-
-    m_view = XMMatrixLookAtRH(lookFrom, g_XMZero, Vector3::Up);
-#else
     // limit pitch to straight up or straight down
     constexpr float limit = XM_PIDIV2 - 0.01f;
     m_pitch = std::max(-limit, m_pitch);
@@ -224,16 +169,11 @@ void Game::Update(DX::StepTimer const&)
     {
         m_yaw += XM_2PI;
     }
+       
 
-    float y = sinf(m_pitch);
-    float r = cosf(m_pitch);
-    float z = r * cosf(m_yaw);
-    float x = r * sinf(m_yaw);
-
-    XMVECTOR lookAt = m_cameraPos + Vector3(x, y, z);   // 정면벡터
-
+    XMVECTOR lookAt = m_cameraPos + forward;   // 정면벡터
     m_view = XMMatrixLookAtRH(m_cameraPos, lookAt, Vector3::Up);
-#endif
+
 
     if (m_keys.pressed.Tab || m_mouseButtons.rightButton == Mouse::ButtonStateTracker::PRESSED)
     {
@@ -375,6 +315,17 @@ void Game::CreateWindowSizeDependentResources()
     auto size = m_deviceResources->GetOutputSize();
     m_proj = Matrix::CreatePerspectiveFieldOfView(XMConvertToRadians(70.f),
         float(size.right) / float(size.bottom), 0.01f, 100.f);
+}
+
+void Game::GetForwardAndRightVector(DirectX::SimpleMath::Vector3& forward, DirectX::SimpleMath::Vector3& right)
+{
+	float y = sinf(m_pitch);
+	float r = cosf(m_pitch);
+	float z = r * cosf(m_yaw);
+	float x = r * sinf(m_yaw);
+
+	forward = Vector3(x, y, z);      // 회전 상태 기준 정면벡터
+	right = forward.Cross(Vector3::Up); // 회전 상태 기준 오른쪽벡터
 }
 
 void Game::OnDeviceLost()
