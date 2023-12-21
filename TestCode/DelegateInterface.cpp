@@ -10,6 +10,8 @@ int TestButton()
 	button.AddListener(ptr1.get(), ptr1);
 	button.AddListener(ptr2.get(), ptr2);
 
+	ptr2 = nullptr;
+
 	button.Click();
 
 	return 0;

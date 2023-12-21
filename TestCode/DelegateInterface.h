@@ -93,6 +93,11 @@ public:
 class Light1 : public IButtonNotify
 {
 public:
+	Light1() {};
+	~Light1()
+	{
+        std::cout << __FUNCTION__ << std::endl;
+	}
     virtual void onClick() {
         std::cout << "Light1 OnClick" << std::endl;
     }
@@ -101,6 +106,11 @@ public:
 class Light2 : public IButtonNotify
 {
 public:
+    Light2() {};
+    ~Light2()
+    {
+        std::cout << __FUNCTION__ << std::endl;
+    }
 	virtual void onClick() {
 		std::cout << "Light2 OnClick" << std::endl;
 	}
