@@ -137,10 +137,12 @@ void Game::Update(DX::StepTimer const&)
     if (kb.PageDown || kb.X)
         upScale = -1.f;
 
+    // 원래 있던 사인-코사인 어쩌고 함수는 전방벡터를 얻는 최적화된 코드
     Vector3 forward,right;
-    GetForwardAndRightVector(forward, right);
+	forward = Vector3::Transform(Vector3(0.0f, 0.0f, 1.0f), Matrix::CreateFromYawPitchRoll(m_yaw, -m_pitch, 0.0f));
+	right = forward.Cross(Vector3::Up); // 회전 상태 기준 오른쪽벡터   
 
-    float speed = MOVEMENT_GAIN;       
+    float speed = MOVEMENT_GAIN;       // 이동속도
     Vector3 worldDirection = forward * fowardScale + right * rightScale + Vector3::Up * upScale; // 회전상태와 키를 고려한 월드에서의 이동방향
     worldDirection.Normalize(); //  순수 크기1로  정규화
 
@@ -315,17 +317,6 @@ void Game::CreateWindowSizeDependentResources()
     auto size = m_deviceResources->GetOutputSize();
     m_proj = Matrix::CreatePerspectiveFieldOfView(XMConvertToRadians(70.f),
         float(size.right) / float(size.bottom), 0.01f, 100.f);
-}
-
-void Game::GetForwardAndRightVector(DirectX::SimpleMath::Vector3& forward, DirectX::SimpleMath::Vector3& right)
-{
-	float y = sinf(m_pitch);
-	float r = cosf(m_pitch);
-	float z = r * cosf(m_yaw);
-	float x = r * sinf(m_yaw);
-
-	forward = Vector3(x, y, z);      // 회전 상태 기준 정면벡터
-	right = forward.Cross(Vector3::Up); // 회전 상태 기준 오른쪽벡터
 }
 
 void Game::OnDeviceLost()

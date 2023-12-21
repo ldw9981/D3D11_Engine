@@ -54,7 +54,7 @@ private:
     void CreateDeviceDependentResources();
     void CreateWindowSizeDependentResources();
 
-    void GetForwardAndRightVector(DirectX::SimpleMath::Vector3& forward, DirectX::SimpleMath::Vector3& right);
+   
 
     // Device resources.
     std::unique_ptr<DX::DeviceResources>    m_deviceResources;
