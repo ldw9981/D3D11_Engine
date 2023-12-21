@@ -101,9 +101,8 @@ void StaticMeshResource::GetAABB(Math::Vector3& min, Math::Vector3& max)
 bool StaticMeshSceneResource::Create(std::string filePath)
 {
 	std::filesystem::path path = ToWString(string(filePath));
-	LOG_MESSAGEA("Loading file: %s", filePath.c_str());
-	Assimp::Importer importer;
 
+	Assimp::Importer importer;
 	importer.SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, 0);	// $assimp_fbx$ 노드 생성안함
 
 	unsigned int importFlags = aiProcess_Triangulate | // 삼각형으로 변환
@@ -156,8 +155,7 @@ bool StaticMeshSceneResource::Create(std::string filePath)
 		m_AABBmax = Math::Vector3::Max(m_AABBmax, meshMax);
 	}
 
-	importer.FreeScene();
-	LOG_MESSAGEA("Complete file: %s", filePath.c_str());
+	importer.FreeScene();	
 	return true;
 }
 

@@ -96,7 +96,7 @@ void Animation::Create(const std::string strFBXFilePath,const aiAnimation* pAiAn
 void Animation::Create(const std::string strFBXFilePath)
 {
 	std::filesystem::path path = ToWString(string(strFBXFilePath));
-	LOG_MESSAGEA("Loading Animation FBX File: %s", strFBXFilePath.c_str());
+	
 	Assimp::Importer importer;
 
 	importer.SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, 0);	// $assimp_fbx$ 노드 생성안함
@@ -115,6 +115,5 @@ void Animation::Create(const std::string strFBXFilePath)
 		
 	Create(strFBXFilePath, pAiAnimation);
 
-	importer.FreeScene();
-	LOG_MESSAGEA("Complete file: %s", strFBXFilePath.c_str());
+	importer.FreeScene();	
 }

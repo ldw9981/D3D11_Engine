@@ -50,7 +50,7 @@ std::shared_ptr<Animation> ResourceManager::CreateAnimation(std::string filePath
 			// 리턴하지 않고 아래에서 새로 만들어서 리턴한다.
 		}
 	}
-	LOG_MESSAGEA("Loading file: %s", filePath.c_str());
+	
 	GameTimer timer;
 	timer.Tick();
 	std::shared_ptr<Animation> pAnimation = std::make_shared<Animation>();
@@ -92,7 +92,7 @@ std::shared_ptr<SkeletalMeshSceneResource> ResourceManager::CreateSkeletalMeshSc
 		}
 	}
 
-	LOG_MESSAGEA("Loading file: %s", filePath.c_str());
+	
 	GameTimer timer;
 	timer.Tick();
 	std::shared_ptr<SkeletalMeshSceneResource> pSceneResource = std::make_shared<SkeletalMeshSceneResource>();
@@ -122,7 +122,7 @@ std::shared_ptr<StaticMeshSceneResource> ResourceManager::CreateStaticMeshSceneR
 		}
 	}
 
-	LOG_MESSAGEA("Loading file: %s", filePath.c_str());
+	
 	GameTimer timer;
 	timer.Tick();
 	std::shared_ptr<StaticMeshSceneResource> pSceneResource = std::make_shared<StaticMeshSceneResource>();

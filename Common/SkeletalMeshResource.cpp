@@ -112,7 +112,7 @@ void SkeletalMeshResource::CreateIndexBuffer(WORD* indices, UINT indexCount)
 bool SkeletalMeshSceneResource::Create(std::string filePath)
 {
 	std::filesystem::path path = ToWString(string(filePath));
-	LOG_MESSAGEA("Loading file: %s", filePath.c_str());
+	
 	Assimp::Importer importer;
 
 	importer.SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, 0);	// $assimp_fbx$ 노드 생성안함
@@ -186,7 +186,6 @@ bool SkeletalMeshSceneResource::Create(std::string filePath)
 		m_Animations.push_back(anim);
 	}
 	importer.FreeScene();
-	LOG_MESSAGEA("Complete file: %s", filePath.c_str());
 	return true;
 }
 
