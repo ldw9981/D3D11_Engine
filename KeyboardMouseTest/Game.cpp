@@ -130,23 +130,27 @@ void Game::Update(DX::StepTimer const&)
 
     Vector3 move = Vector3::Zero;
 
+
+    float fowardScale = 0.0f;
+    float rightScale = 0.0f;
+    float upScale = 0.0f;
     if (kb.Up || kb.W)
-        move.y += 1.f;
+        fowardScale = 1.f;
 
     if (kb.Down || kb.S)
-        move.y -= 1.f;
+        fowardScale = -1.f;
 
     if (kb.Left || kb.A)
-        move.x += 1.f;
+        rightScale = -1.f;
 
     if (kb.Right || kb.D)
-        move.x -= 1.f;
+        rightScale = 1.f;
 
     if (kb.PageUp || kb.Space)
-        move.z += 1.f;
+        upScale = 1.f;
 
     if (kb.PageDown || kb.X)
-        move.z -= 1.f;
+        upScale = -1.f;
 
 #ifdef ORBIT_STYLE
     move *= MOVEMENT_GAIN;
@@ -155,14 +159,28 @@ void Game::Update(DX::StepTimer const&)
     m_theta -= move.x;
     m_radius += move.z;
 #else
+/*
     Quaternion q = Quaternion::CreateFromYawPitchRoll(m_yaw, m_pitch, 0.f);
-
     move = Vector3::Transform(move, q);
-
     move *= MOVEMENT_GAIN;
-
     m_cameraPos += move;
+    */
 
+	float dy = sinf(m_pitch);
+	float dr = cosf(m_pitch);
+	float dz = dr * cosf(m_yaw);
+	float dx = dr * sinf(m_yaw);
+
+    Vector3 forward = Vector3(dx, dy, dz);      // 회전 상태 기준 정면벡터
+    Vector3 right = forward.Cross(Vector3::Up); // 회전 상태 기준 오른쪽벡터
+    float speed = MOVEMENT_GAIN;       
+    Vector3 worldDirection = forward * fowardScale + right * rightScale + Vector3::Up * upScale; // 회전상태와 키를 고려한 월드에서의 이동방향
+    worldDirection.Normalize(); //  순수 크기1로  정규화
+
+    m_cameraPos = m_cameraPos + worldDirection * speed;   // 정면벡터
+
+
+    // 방크기 제한
     Vector3 halfBound = (Vector3(ROOM_BOUNDS.v) / Vector3(2.f))
         - Vector3(0.1f, 0.1f, 0.1f);
 
@@ -212,7 +230,7 @@ void Game::Update(DX::StepTimer const&)
     float z = r * cosf(m_yaw);
     float x = r * sinf(m_yaw);
 
-    XMVECTOR lookAt = m_cameraPos + Vector3(x, y, z);
+    XMVECTOR lookAt = m_cameraPos + Vector3(x, y, z);   // 정면벡터
 
     m_view = XMMatrixLookAtRH(m_cameraPos, lookAt, Vector3::Up);
 #endif
