@@ -93,7 +93,6 @@ void TutorialApp::IncreaseModel()
 		int range = 500;
 		float pos = (float)(rand() % range) - range * 0.5f;
 		model.m_Local = Matrix::CreateTranslation(pos, 0, 0);	
-
 		int playindex = rand() % model.m_SceneResource->m_Animations.size();
 		model.PlayAnimation(playindex);
 	}	
