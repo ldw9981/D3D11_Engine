@@ -91,8 +91,8 @@ void Game::Update(DX::StepTimer const&)
             * ROTATION_GAIN;
 
 
-        m_pitch -= delta.y;
-        m_yaw -= delta.x;
+        m_pitch += delta.y;
+        m_yaw += delta.x;
 
     }
 
@@ -139,8 +139,9 @@ void Game::Update(DX::StepTimer const&)
 
     // 원래 있던 사인-코사인 어쩌고 함수는 전방벡터를 얻는 최적화된 코드
     Vector3 forward,right;
-	forward = Vector3::Transform(Vector3(0.0f, 0.0f, 1.0f), Matrix::CreateFromYawPitchRoll(m_yaw, -m_pitch, 0.0f));
-	right = forward.Cross(Vector3::Up); // 회전 상태 기준 오른쪽벡터   
+    Matrix rotMatrix = Matrix::CreateFromYawPitchRoll(m_yaw, m_pitch, 0.0f);
+	forward = -rotMatrix.Forward(); // Matrix가 오른손 좌표계라서 -를 붙여줘야 한다.
+	right = rotMatrix.Right();
 
     float speed = MOVEMENT_GAIN;       // 이동속도
     Vector3 worldDirection = forward * fowardScale + right * rightScale + Vector3::Up * upScale; // 회전상태와 키를 고려한 월드에서의 이동방향
@@ -174,7 +175,7 @@ void Game::Update(DX::StepTimer const&)
        
 
     XMVECTOR lookAt = m_cameraPos + forward;   // 정면벡터
-    m_view = XMMatrixLookAtRH(m_cameraPos, lookAt, Vector3::Up);
+    m_view = XMMatrixLookAtLH(m_cameraPos, lookAt, Vector3::Up);
 
 
     if (m_keys.pressed.Tab || m_mouseButtons.rightButton == Mouse::ButtonStateTracker::PRESSED)
