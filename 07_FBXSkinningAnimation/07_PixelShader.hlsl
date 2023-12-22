@@ -58,7 +58,7 @@ float4 main(PS_INPUT input) : SV_Target
 		vNormal = normalize(vNormal);
 	}
 	// Sample input textures to get shading model params.
-	float3 albedo = txColor.Sample(samLinear, input.TexCoord).rgb;
+    float3 albedo = txBaseColor.Sample(samLinear, input.TexCoord).rgb;
 	float metalness = txMetalness.Sample(samLinear, input.TexCoord).r;
 	float roughness = txRoughness.Sample(samLinear, input.TexCoord).r;
 
@@ -116,6 +116,9 @@ float4 main(PS_INPUT input) : SV_Target
 	directLighting += (diffuseBRDF + specularBRDF) * Lradiance * cosLi;
 	
 	float3 ambientLighting = 0;		
+	
+    float3 final = directLighting + ambientLighting;
+    float3 GammaCorrect = pow(final, 1.0 / 2.2);
 
-	return float4(pow(directLighting + ambientLighting, 1.0 / 2.2), 1.0);
+    return float4(GammaCorrect, 1.0);
 }

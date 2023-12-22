@@ -42,7 +42,7 @@ struct CB_Marterial
 	int UseOpacityMap = true;					// 4
 	int UseMetalnessMap = true;					// 4
 	int UseRoughnessMap = true;					// 4
-	float pad6;							// 8  16byte
+	int pad6;							// 8  16byte
 };
 
 class StaticMeshModel;
@@ -105,8 +105,8 @@ public:
 	Matrix  m_Projection;			// 단위장치좌표계( Normalized Device Coordinate) 공간으로 변환을 위한 행렬.
 
 	Vector3 m_ClearColor = { 0.0f, 0.0f, 0.0f };
-	Vector3 m_Rotation = Vector3(0.0f, 0.0f,0.0f);
-	Vector3 m_CameraPos = Vector3(0.0f, 100.0f, -1000.0f);
+	Vector3 m_Rotation = Vector3(90.f, 90.f,0.0f);
+	Vector3 m_CameraPos = Vector3(0.0f, 0, -1000.0f);
 
 	CB_TransformW m_TransformW;
 	CB_TransformVP m_TransformVP;

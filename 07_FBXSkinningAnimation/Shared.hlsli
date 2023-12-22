@@ -1,7 +1,7 @@
 //--------------------------------------------------------------------------------------
 // Constant Buffer Variables
 //--------------------------------------------------------------------------------------
-Texture2D txColor : register(t0);
+Texture2D txBaseColor : register(t0);
 Texture2D txNormal : register(t1);
 Texture2D txSpecular : register(t2);
 Texture2D txEmissive : register(t3);
@@ -35,17 +35,14 @@ cbuffer DirectionLight : register(b2)
 
 cbuffer Material : register(b3)
 {
-    float4 MaterialAmbient;
-    float4 MaterialDiffuse;
-    float4 MaterialSpecular;
-    float4 MaterialEmissive;
-    float MaterialSpecularPower;
-    bool UseDiffuseMap;
-    bool UseNormalMap;
-    bool UseSpecularMap;    
-    bool UseEmissiveMap;
-    bool UseOpacityMap;
-    float2 MaterialPad0;
+    int UseBaseColorMap;
+    int UseNormalMap;
+    int UseSpecularMap;
+    int UseEmissiveMap;
+    int UseOpacityMap;
+    int UseMetalnessMap;
+    int UseRoughnessMap;
+    int MaterialPad0;
 }
 
 cbuffer MatrixPalette : register(b4)

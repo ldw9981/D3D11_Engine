@@ -370,9 +370,9 @@ void D3DRenderManager::Render()
 			pPrevMaterial = meshInstance->m_pMaterial;
 		}
 		
-		Math::Matrix rot = Math::Matrix::CreateFromYawPitchRoll(m_Rotation.y, m_Rotation.x, m_Rotation.z);
+	
 
-		m_TransformW.mWorld = rot.Transpose();// meshInstance->m_pNodeWorldTransform->Transpose();
+		m_TransformW.mWorld = m_World.Transpose();// meshInstance->m_pNodeWorldTransform->Transpose();
 		m_pDeviceContext->UpdateSubresource(m_pCBTransformW, 0, nullptr, &m_TransformW, 0, 0);
 		
 		// Draw

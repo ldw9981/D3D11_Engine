@@ -99,10 +99,11 @@ void TutorialApp::IncreaseModel()
 	}
 	*/
 	
+	
 	{
 		StaticMeshModel& model = m_StaticMeshModelList.emplace_back();
 
-		auto SceneResource = ResourceManager::Instance->CreateStaticMeshSceneResource("../Resource/cerberus.fbx");
+		auto SceneResource = ResourceManager::Instance->CreateStaticMeshSceneResource("../Resource/box.fbx");
 		model.SetSceneResource(SceneResource);
 
 		int range = 0;
