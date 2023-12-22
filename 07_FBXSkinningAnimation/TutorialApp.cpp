@@ -106,8 +106,8 @@ void TutorialApp::IncreaseModel()
 		model.SetSceneResource(SceneResource);
 
 		int range = 0;
-		float pos = (float)(rand() % range) - range * 0.5f;
-		model.m_Local = Matrix::CreateTranslation(pos, 0, 0);
+//		float pos = (float)(rand() % range) - range * 0.5f;
+		model.m_Local = Matrix::CreateTranslation(0, 0, 0);
 		
 	}
 	

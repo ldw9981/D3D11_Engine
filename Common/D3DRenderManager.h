@@ -37,12 +37,12 @@ struct CB_Marterial
 {
 	int UseBaseColorMap = true;					// 4
 	int UseNormalMap = true;					// 4
-	int UseSpecularMap = true;                  // 4 16byte			
-	int UseEmissiveMap = true;					// 4
+	int UseSpecularMap = true;                  // 4 		
+	int UseEmissiveMap = true;					// 4 16byte	
 	int UseOpacityMap = true;					// 4
 	int UseMetalnessMap = true;					// 4
 	int UseRoughnessMap = true;					// 4
-	Math::Vector2 pad6;							// 8  16byte
+	float pad6;							// 8  16byte
 };
 
 class StaticMeshModel;
