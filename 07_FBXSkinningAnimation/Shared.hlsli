@@ -1,11 +1,13 @@
 //--------------------------------------------------------------------------------------
 // Constant Buffer Variables
 //--------------------------------------------------------------------------------------
-Texture2D txDiffuse : register(t0);
+Texture2D txColor : register(t0);
 Texture2D txNormal : register(t1);
 Texture2D txSpecular : register(t2);
 Texture2D txEmissive : register(t3);
 Texture2D txOpacity : register(t4);
+Texture2D txMetalness : register(t5);
+Texture2D txRoughness : register(t6);
 
 SamplerState samLinear : register(s0);
 
@@ -25,11 +27,10 @@ cbuffer DirectionLight : register(b2)
 {
     float3 LightDirection;
     float DirectionLightPad0;
-    float4 LightAmbient;
-    float4 LightDiffuse;
-    float4 LightSpecular;
-    float3 EyePosition;
+    float3 LightRadiance;
     float DirectionLightPad1;
+    float3 EyePosition;
+    float DirectionLightPad2;
 }
 
 cbuffer Material : register(b3)

@@ -20,13 +20,12 @@ struct CB_TransformVP
 
 struct CB_DirectionLight
 {
-	Vector3 Direction = { 0.5f, 0.0f, 0.8f };
+	Vector3 Direction = { 0.0f, 0.0f, 1.0f };
 	float pad0 = 0.0f;
-	Vector4 Ambient = { 0.1f,0.1f,0.1f,0.1f };
-	Vector4 Diffuse = { 1.0f,1.0f,1.0f,1.0f };
-	Vector4 Specular = { 1.0f,1.0f,1.0f,1.0f };
-	Vector3 EyePosition = {};
+	Vector3 Radiance = { 0.1f,0.1f,0.1f };
 	float pad1 = 0.0f;
+	Vector3 EyePosition = {};
+	float pad2 = 0.0f;
 };
 
 struct CB_MatrixPalette
@@ -36,16 +35,13 @@ struct CB_MatrixPalette
 
 struct CB_Marterial
 {
-	Math::Vector4 Ambient = { 1.0f,1.0f,1.0f,1.0f };	// 16byte
-	Math::Vector4 Diffuse = { 1.0f,1.0f,1.0f,1.0f };	// 16byte
-	Math::Vector4 Specular = { 1.0f,1.0f,1.0f,1.0f };  // 16byte
-	Math::Vector4 Emissive = { 1.0f,1.0f,1.0f,1.0f };  // 16byte
-	float  SpecularPower = 80;					// 4
-	int UseDiffuseMap = true;					// 4
+	int UseBaseColorMap = true;					// 4
 	int UseNormalMap = true;					// 4
 	int UseSpecularMap = true;                  // 4 16byte			
 	int UseEmissiveMap = true;					// 4
 	int UseOpacityMap = true;					// 4
+	int UseMetalnessMap = true;					// 4
+	int UseRoughnessMap = true;					// 4
 	Math::Vector2 pad6;							// 8  16byte
 };
 

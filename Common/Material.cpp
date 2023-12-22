@@ -95,7 +95,7 @@ void Material::Create(const aiMaterial* pMaterial)
 	aiColor3D color(1.f, 1.f, 1.f);
 	if(AI_SUCCESS == pMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, color))
 	{
-		m_Color ={ color.r, color.g, color.b , 1};
+		//m_Color ={ color.r, color.g, color.b , 1};
 	}	
 
 	if (AI_SUCCESS == pMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &texturePath)) 
@@ -132,6 +132,20 @@ void Material::Create(const aiMaterial* pMaterial)
 		path = ToWString(string(texturePath.C_Str()));
 		finalPath = basePath + path.filename().wstring();
 		m_pOpacity = ResourceManager::Instance->CreateMaterialTexture(finalPath);		
+	}
+
+	if (AI_SUCCESS == pMaterial->GetTexture(aiTextureType_SHININESS, 0, &texturePath))
+	{
+		path = ToWString(string(texturePath.C_Str()));
+		finalPath = basePath + path.filename().wstring();
+		m_pMetalness = ResourceManager::Instance->CreateMaterialTexture(finalPath);
+	}
+
+	if (AI_SUCCESS == pMaterial->GetTexture(aiTextureType_DIFFUSE_ROUGHNESS, 0, &texturePath))
+	{
+		path = ToWString(string(texturePath.C_Str()));
+		finalPath = basePath + path.filename().wstring();
+		m_pRoughness = ResourceManager::Instance->CreateMaterialTexture(finalPath);
 	}
 }
 

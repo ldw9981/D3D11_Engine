@@ -82,10 +82,11 @@ LRESULT CALLBACK TutorialApp::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 
 void TutorialApp::IncreaseModel()
 {	
+	/*
 	{
 		SkeletalMeshModel& model = m_SkeletalMeshModelList.emplace_back();
 
-		auto SceneResource = ResourceManager::Instance->CreateSkeletalMeshSceneResource("../Resource/Zombie.fbx");
+		auto SceneResource = ResourceManager::Instance->CreateSkeletalMeshSceneResource("../Resource/Vampire.fbx");
 		SceneResource->AddAnimation(ResourceManager::Instance->CreateAnimation("../Resource/Zombie_Run.fbx"));
 		SceneResource->AddAnimation(ResourceManager::Instance->CreateAnimation("../Resource/SkinningTest.fbx"));
 		model.SetSceneResource(SceneResource);
@@ -95,15 +96,16 @@ void TutorialApp::IncreaseModel()
 		model.m_Local = Matrix::CreateTranslation(pos, 0, 0);	
 		int playindex = rand() % model.m_SceneResource->m_Animations.size();
 		model.PlayAnimation(playindex);
-	}	
+	}
+	*/
 	
 	{
 		StaticMeshModel& model = m_StaticMeshModelList.emplace_back();
 
-		auto SceneResource = ResourceManager::Instance->CreateStaticMeshSceneResource("../Resource/ZeldaPosed001.fbx");
+		auto SceneResource = ResourceManager::Instance->CreateStaticMeshSceneResource("../Resource/cerberus.fbx");
 		model.SetSceneResource(SceneResource);
 
-		int range = 500;
+		int range = 0;
 		float pos = (float)(rand() % range) - range * 0.5f;
 		model.m_Local = Matrix::CreateTranslation(pos, 0, 0);
 		

@@ -404,17 +404,8 @@ void D3DRenderManager::Render()
 
 		ImGui::Text("Light");
 		ImGui::SliderFloat3("LightDirection", (float*)&m_Light.Direction, -1.0f, 1.0f);
-		ImGui::ColorEdit4("LightAmbient", (float*)&m_Light.Ambient);
-		ImGui::ColorEdit4("LightDiffuse", (float*)&m_Light.Diffuse);
-		ImGui::ColorEdit4("LightSpecular", (float*)&m_Light.Specular);
-
-		ImGui::Text("Material");
-		ImGui::ColorEdit4("MaterialAmbient", (float*)&m_CpuCbMaterial.Ambient);
-		ImGui::ColorEdit4("MaterialDiffuse", (float*)&m_CpuCbMaterial.Diffuse);
-		ImGui::ColorEdit4("MaterialSpecular", (float*)&m_CpuCbMaterial.Specular);
-		ImGui::ColorEdit4("MaterialEmissive", (float*)&m_CpuCbMaterial.Emissive);
-		ImGui::SliderFloat("MaterialSpecularPower", (float*)&m_CpuCbMaterial.SpecularPower, 2.0f, 4096.0f);
-
+		ImGui::ColorEdit3("LightAmbient", (float*)&m_Light.Radiance);
+	
 		ImGui::Text("Camera");
 		ImGui::SliderFloat3("Position", (float*)&m_CameraPos, -2000.0f, 2000.0f);
 
@@ -522,8 +513,7 @@ void D3DRenderManager::CreatePS()
 void D3DRenderManager::ApplyMaterial(Material* pMaterial)
 {
 	if(pMaterial->m_pBaseColor)
-		m_pDeviceContext->PSSetShaderResources(0, 1, pMaterial->m_pBaseColor->m_pTextureSRV.GetAddressOf());
-	
+		m_pDeviceContext->PSSetShaderResources(0, 1, pMaterial->m_pBaseColor->m_pTextureSRV.GetAddressOf());	
 	if (pMaterial->m_pNormal)
 		m_pDeviceContext->PSSetShaderResources(1, 1, pMaterial->m_pNormal->m_pTextureSRV.GetAddressOf());
 	if (pMaterial->m_pSpecular)
@@ -532,13 +522,19 @@ void D3DRenderManager::ApplyMaterial(Material* pMaterial)
 		m_pDeviceContext->PSSetShaderResources(3, 1, pMaterial->m_pEmissive->m_pTextureSRV.GetAddressOf());
 	if (pMaterial->m_pOpacity)
 		m_pDeviceContext->PSSetShaderResources(4, 1, pMaterial->m_pOpacity->m_pTextureSRV.GetAddressOf());
+	if (pMaterial->m_pMetalness)
+		m_pDeviceContext->PSSetShaderResources(5, 1, pMaterial->m_pMetalness->m_pTextureSRV.GetAddressOf());
+	if (pMaterial->m_pRoughness)
+		m_pDeviceContext->PSSetShaderResources(6, 1, pMaterial->m_pRoughness->m_pTextureSRV.GetAddressOf());
 
-	m_CpuCbMaterial.Diffuse = pMaterial->m_Color;
-	m_CpuCbMaterial.UseDiffuseMap = pMaterial->m_pBaseColor != nullptr ? true : false;
+		
+	m_CpuCbMaterial.UseBaseColorMap = pMaterial->m_pBaseColor != nullptr ? true : false;
 	m_CpuCbMaterial.UseNormalMap = pMaterial->m_pNormal != nullptr ? true : false;
 	m_CpuCbMaterial.UseSpecularMap = pMaterial->m_pSpecular != nullptr ? true : false;
 	m_CpuCbMaterial.UseEmissiveMap = pMaterial->m_pEmissive != nullptr ? true : false;
 	m_CpuCbMaterial.UseOpacityMap = pMaterial->m_pOpacity != nullptr ? true : false;
+	m_CpuCbMaterial.UseMetalnessMap = pMaterial->m_pMetalness != nullptr ? true : false;
+	m_CpuCbMaterial.UseRoughnessMap = pMaterial->m_pRoughness != nullptr ? true : false;
 
 	if (m_CpuCbMaterial.UseOpacityMap && m_pAlphaBlendState != nullptr)
 		m_pDeviceContext->OMSetBlendState(m_pAlphaBlendState, nullptr, 0xffffffff); // 알파블렌드 상태설정 , 다른옵션은 기본값 
