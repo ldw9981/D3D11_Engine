@@ -36,7 +36,9 @@ public:
 	float                                           m_pitch;
 	float                                           m_yaw;
 	DirectX::SimpleMath::Vector3                    m_cameraPos;
-	Vector3 m_worldDirection = { 0.0f, 0.0f, 0.0f };
+	Vector3 m_forward, m_right;
+	Matrix m_rotMatrix;
+	Vector3 m_MoveDirection = { 0.0f, 0.0f, 0.0f };
 
 	DirectX::Keyboard::KeyboardStateTracker         m_keys;
 	DirectX::Mouse::ButtonStateTracker              m_mouseButtons;

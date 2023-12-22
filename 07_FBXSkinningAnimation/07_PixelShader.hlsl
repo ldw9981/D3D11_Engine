@@ -61,7 +61,8 @@ float4 main(PS_INPUT input) : SV_Target
 	float3 albedo = txBaseColor.Sample(samLinear, input.TexCoord).rgb;
 	float metalness = txMetalness.Sample(samLinear, input.TexCoord).r;
 	float roughness = txRoughness.Sample(samLinear, input.TexCoord).r;
-
+	float emissive = txEmissive.Sample(samLinear, input.TexCoord).r;
+		
 	// Outgoing light direction (vector from world-space fragment position to the "eye").
 	float3 Lo = normalize(EyePosition - input.PositionWorld);
 
@@ -117,7 +118,7 @@ float4 main(PS_INPUT input) : SV_Target
 	
 	float3 ambientLighting = 0;		
 	
-    float3 final = directLighting + ambientLighting;
+    float3 final = directLighting + ambientLighting + emissive;
     float3 GammaCorrect = pow(final, 1.0 / 2.2);
 
     return float4(GammaCorrect, 1.0);

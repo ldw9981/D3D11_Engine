@@ -43,7 +43,7 @@ bool TutorialApp::Initialize(UINT Width, UINT Height)
 	m_mouse = std::make_unique<Mouse>();
 	m_mouse->SetWindow(m_hWnd);
 
-	m_cameraPos = Math::Vector3(0.0f, 0.0f, 0.0f);
+	m_cameraPos = START_POSITION;
 	m_yaw = m_pitch = 0.f;
 	return true;
 }
@@ -70,8 +70,8 @@ void TutorialApp::Update()
 			* ROTATION_GAIN;
 
 
-		m_pitch -= delta.y;
-		m_yaw -= delta.x;
+		m_pitch += delta.y;
+		m_yaw += delta.x;
 
 	}
 
@@ -114,15 +114,16 @@ void TutorialApp::Update()
 		upScale = -1.f;
 
 	// 원래 있던 사인-코사인 어쩌고 함수는 전방벡터를 얻는 최적화된 코드
-	Vector3 forward, right;
-	forward = Vector3::Transform(Vector3(0.0f, 0.0f, 1.0f), Matrix::CreateFromYawPitchRoll(m_yaw, -m_pitch, 0.0f));
-	right = forward.Cross(Vector3::Up); // 회전 상태 기준 오른쪽벡터   
+	
+	m_rotMatrix = Matrix::CreateFromYawPitchRoll(m_yaw, m_pitch, 0.0f);
+	m_forward = -m_rotMatrix.Forward();
+	m_right = m_rotMatrix.Right();
 
 	float speed = MOVEMENT_GAIN;       // 이동속도
-	m_worldDirection = forward * fowardScale + right * rightScale + Vector3::Up * upScale; // 회전상태와 키를 고려한 월드에서의 이동방향
-	m_worldDirection.Normalize(); //  순수 크기1로  정규화
+	m_MoveDirection = m_forward * fowardScale + m_right * rightScale + Vector3::Up * upScale; // 회전상태와 키를 고려한 월드에서의 이동방향
+	m_MoveDirection.Normalize(); //  순수 크기1로  정규화
 
-	m_cameraPos = m_cameraPos + m_worldDirection * speed;   // 정면벡터
+	m_cameraPos = m_cameraPos + m_MoveDirection * speed;   // 정면벡터
 
 	
 
@@ -143,7 +144,7 @@ void TutorialApp::Update()
 	}
 
 
-	XMVECTOR lookAt = m_cameraPos + forward;   // 정면벡터
+	XMVECTOR lookAt = m_cameraPos + m_forward;   // 정면벡터
 	D3DRenderManager::Instance->m_CameraPos = m_cameraPos;
 	D3DRenderManager::Instance->m_View = XMMatrixLookAtLH(m_cameraPos, lookAt, Vector3::Up);
 	
@@ -266,7 +267,17 @@ void TutorialApp::ImGuiRender()
 	D3DRenderManager::Instance->AddDebugFloatToImGuiWindow("Control Yaw", m_yaw);
 	D3DRenderManager::Instance->AddDebugFloatToImGuiWindow("Control Pitch", m_pitch);
 	D3DRenderManager::Instance->AddDebugVector3ToImGuiWindow("CameraPos", m_cameraPos);
-	D3DRenderManager::Instance->AddDebugVector3ToImGuiWindow("WorldDirection", m_worldDirection);
+	
+	D3DRenderManager::Instance->AddDebugMatrixToImGuiWindow("rotMatrix", m_rotMatrix);
+	D3DRenderManager::Instance->AddDebugVector3ToImGuiWindow("Forward", m_forward);
+	D3DRenderManager::Instance->AddDebugVector3ToImGuiWindow("Right", m_right);
+	D3DRenderManager::Instance->AddDebugVector3ToImGuiWindow("MoveDirection", m_MoveDirection);
+	
+
+	
+
+
+	
 	D3DRenderManager::Instance->AddDebugMatrixToImGuiWindow("ViewMat",D3DRenderManager::Instance->m_View);
 }
 
