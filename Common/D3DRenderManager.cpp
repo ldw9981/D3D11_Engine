@@ -286,9 +286,9 @@ void D3DRenderManager::Update()
 									XMConvertToRadians(m_Rotation.y),
 									XMConvertToRadians(m_Rotation.z)));
 
-	m_View = XMMatrixLookToLH(m_CameraPos, Vector3(0, 0, 1), Vector3(0, 1, 0));
+	//m_View = XMMatrixLookToLH(m_CameraPos, Vector3(0, 0, 1), Vector3(0, 1, 0));
 
-	m_Light.EyePosition = m_CameraPos;
+	//m_Light.EyePosition = m_CameraPos;
 }
 
 void D3DRenderManager::Render()
@@ -407,12 +407,10 @@ void D3DRenderManager::Render()
 		ImGui::Text("Light");
 		ImGui::SliderFloat3("LightDirection", (float*)&m_Light.Direction, -1.0f, 1.0f);
 		ImGui::ColorEdit3("LightAmbient", (float*)&m_Light.Radiance);
-	
-		ImGui::Text("Camera");
-		ImGui::SliderFloat3("Position", (float*)&m_CameraPos, -2000.0f, 2000.0f);
+		
 
 		ImGui::Text("BackBuffer");
-		ImGui::ColorEdit4("clear color", (float*)&m_ClearColor); // Edit 3 floats representing a color	
+		ImGui::ColorEdit3("clear color", (float*)&m_ClearColor); // Edit 3 floats representing a color	
 
 		if(m_pImGuiRender)
 			m_pImGuiRender->ImGuiRender();
@@ -561,5 +559,51 @@ void D3DRenderManager::GetSystemMemoryInfo(std::string& out)
 	pmc.cb = sizeof(PROCESS_MEMORY_COUNTERS_EX);
 	GetProcessMemoryInfo(hProcess, (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc));
 	out = std::to_string( (pmc.PagefileUsage) / 1024 / 1024) + " MB";	
+}
+
+void D3DRenderManager::AddDebugStringToImGuiWindow(const std::string& header,const std::string& str)
+{
+	ImGui::Text(" ");
+	ImGui::Text(header.c_str());
+	ImGui::Text(str.c_str());	
+}
+
+void D3DRenderManager::AddDebugMatrixToImGuiWindow(const std::string& header, const Matrix& mat)
+{
+	ImGui::Text(" ");
+	ImGui::Text(header.c_str());
+	ImGui::Text("%f, %f, %f, %f", mat._11, mat._12, mat._13, mat._14);
+	ImGui::Text("%f, %f, %f, %f", mat._21, mat._22, mat._23, mat._24);
+	ImGui::Text("%f, %f, %f, %f", mat._31, mat._32, mat._33, mat._34);
+	ImGui::Text("%f, %f, %f, %f", mat._41, mat._42, mat._43, mat._44);	
+}	
+
+void D3DRenderManager::AddDebugFloatToImGuiWindow(const std::string& header, const float& value)
+{
+	ImGui::Text(" ");
+	ImGui::Text(header.c_str());
+	ImGui::Text("%f", value);
+}
+
+void D3DRenderManager::AddDebugVector4ToImGuiWindow(const std::string& header, const Vector4& value)
+{
+	ImGui::Text(" ");
+	ImGui::Text(header.c_str());
+	ImGui::Text("%f, %f, %f, %f", value.x, value.y, value.z, value.w);
+
+}
+
+void D3DRenderManager::AddDebugVector3ToImGuiWindow(const std::string& header, const Vector3& value)
+{
+	ImGui::Text(" ");
+	ImGui::Text(header.c_str());
+	ImGui::Text("%f, %f, %f", value.x, value.y, value.z);
+}
+
+void D3DRenderManager::AddDebugVector2ToImGuiWindow(const std::string& header, const Vector2& value)
+{
+	ImGui::Text(" ");
+	ImGui::Text(header.c_str());
+	ImGui::Text("%f, %f", value.x, value.y);
 }
 

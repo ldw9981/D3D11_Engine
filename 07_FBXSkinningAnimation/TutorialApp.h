@@ -9,6 +9,9 @@
 #include "../Common/StaticMeshComponent.h"
 #include "../Common/SkeletalMeshComponent.h"
 
+#include <directXTK/Mouse.h>
+#include <directXTK/Keyboard.h>
+
 using namespace DirectX::SimpleMath;
 using namespace DirectX;
 
@@ -25,6 +28,19 @@ public:
 
 	std::list<StaticMeshModel>		m_StaticMeshModelList;
 	std::list<SkeletalMeshModel>	m_SkeletalMeshModelList;
+
+
+	std::unique_ptr<DirectX::Keyboard>              m_keyboard;
+	std::unique_ptr<DirectX::Mouse>                 m_mouse;
+	// FPS-style
+	float                                           m_pitch;
+	float                                           m_yaw;
+	DirectX::SimpleMath::Vector3                    m_cameraPos;
+	Vector3 m_worldDirection = { 0.0f, 0.0f, 0.0f };
+
+	DirectX::Keyboard::KeyboardStateTracker         m_keys;
+	DirectX::Mouse::ButtonStateTracker              m_mouseButtons;
+
 
 
 	virtual bool Initialize(UINT Width, UINT Height);

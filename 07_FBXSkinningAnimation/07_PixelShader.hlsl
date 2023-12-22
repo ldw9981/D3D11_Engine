@@ -58,7 +58,7 @@ float4 main(PS_INPUT input) : SV_Target
 		vNormal = normalize(vNormal);
 	}
 	// Sample input textures to get shading model params.
-    float3 albedo = txBaseColor.Sample(samLinear, input.TexCoord).rgb;
+	float3 albedo = txBaseColor.Sample(samLinear, input.TexCoord).rgb;
 	float metalness = txMetalness.Sample(samLinear, input.TexCoord).r;
 	float roughness = txRoughness.Sample(samLinear, input.TexCoord).r;
 

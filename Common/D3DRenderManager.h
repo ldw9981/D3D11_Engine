@@ -22,7 +22,7 @@ struct CB_DirectionLight
 {
 	Vector3 Direction = { 0.0f, 0.0f, 1.0f };
 	float pad0 = 0.0f;
-	Vector3 Radiance = { 0.1f,0.1f,0.1f };
+	Vector3 Radiance = { 1.0f,1.0f,1.0f };
 	float pad1 = 0.0f;
 	Vector3 EyePosition = {};
 	float pad2 = 0.0f;
@@ -105,8 +105,8 @@ public:
 	Matrix  m_Projection;			// 단위장치좌표계( Normalized Device Coordinate) 공간으로 변환을 위한 행렬.
 
 	Vector3 m_ClearColor = { 0.0f, 0.0f, 0.0f };
-	Vector3 m_Rotation = Vector3(90.f, 90.f,0.0f);
-	Vector3 m_CameraPos = Vector3(0.0f, 0, -1000.0f);
+	Vector3 m_Rotation = Vector3(0.f, 0.f,0.0f);
+	Vector3 m_CameraPos = Vector3(0.0f, 0, 0.0f);
 
 	CB_TransformW m_TransformW;
 	CB_TransformVP m_TransformVP;
@@ -122,6 +122,7 @@ public:
 
 	std::list<StaticMeshInstance*> m_StaticMeshInstance;		//  렌더링할 모델들의 포인터 저장해둔다. 
 	std::list<SkeletalMeshInstance*> m_SkeletalMeshInstance;		//  렌더링할 모델들의 포인터 저장해둔다. 
+
 
 	// 렌더링 이후에 목록은 사라진다.
 	void AddMeshInstance(SkeletalMeshModel* pModel);
@@ -140,6 +141,13 @@ public:
 
 	void GetVideoMemoryInfo(std::string& out);
 	void GetSystemMemoryInfo(std::string& out);
+
+	void AddDebugStringToImGuiWindow(const std::string& header, const std::string& str);
+	void AddDebugMatrixToImGuiWindow(const std::string& header,const Matrix& mat);
+	void AddDebugVector4ToImGuiWindow(const std::string& header, const Vector4& value);
+	void AddDebugVector3ToImGuiWindow(const std::string& header, const Vector3& value);
+	void AddDebugVector2ToImGuiWindow(const std::string& header, const Vector2& value);
+	void AddDebugFloatToImGuiWindow(const std::string& header, const float& value);
 private:
 	IImGuiRenderable* m_pImGuiRender = nullptr;
 };
