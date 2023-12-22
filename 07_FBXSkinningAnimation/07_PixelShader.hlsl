@@ -115,7 +115,7 @@ float4 main(PS_INPUT input) : SV_Target
 	// Total contribution for this light.
 	directLighting += (diffuseBRDF + specularBRDF) * Lradiance * cosLi;
 	
-	float3 ambientLighting = 0;
-	
-	return float4(directLighting + ambientLighting, 1.0);
+	float3 ambientLighting = 0;		
+
+	return float4(pow(directLighting + ambientLighting, 1.0 / 2.2), 1.0);
 }

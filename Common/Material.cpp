@@ -134,14 +134,14 @@ void Material::Create(const aiMaterial* pMaterial)
 		m_pOpacity = ResourceManager::Instance->CreateMaterialTexture(finalPath);		
 	}
 
-	if (AI_SUCCESS == pMaterial->GetTexture(aiTextureType_SHININESS, 0, &texturePath))
+	if (AI_SUCCESS == pMaterial->GetTexture(aiTextureType_METALNESS, 0, &texturePath))
 	{
 		path = ToWString(string(texturePath.C_Str()));
 		finalPath = basePath + path.filename().wstring();
 		m_pMetalness = ResourceManager::Instance->CreateMaterialTexture(finalPath);
 	}
 
-	if (AI_SUCCESS == pMaterial->GetTexture(aiTextureType_DIFFUSE_ROUGHNESS, 0, &texturePath))
+	if (AI_SUCCESS == pMaterial->GetTexture(aiTextureType_SHININESS, 0, &texturePath))
 	{
 		path = ToWString(string(texturePath.C_Str()));
 		finalPath = basePath + path.filename().wstring();
