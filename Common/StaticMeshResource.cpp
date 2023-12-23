@@ -51,9 +51,6 @@ void StaticMeshResource::Create(aiMesh* mesh)
 		m_Indices[i * 3 + 2] = mesh->mFaces[i].mIndices[2];
 	}
 	CreateIndexBuffer(&m_Indices[0], (UINT)m_Indices.size());
-
-	m_AABBmin = Vector3(mesh->mAABB.mMin.x, mesh->mAABB.mMin.y, mesh->mAABB.mMin.z);
-	m_AABBmax = Vector3(mesh->mAABB.mMax.x, mesh->mAABB.mMax.y, mesh->mAABB.mMax.z);
 }
 
 void StaticMeshResource::CreateVertexBuffer(Vertex* vertices, UINT vertexCount)
@@ -90,14 +87,6 @@ void StaticMeshResource::CreateIndexBuffer(WORD* indices, UINT indexCount)
 	HR_T(D3DRenderManager::m_pDevice->CreateBuffer(&bd, &ibData, &m_pIndexBuffer));
 }
 
-void StaticMeshResource::GetAABB(Math::Vector3& min, Math::Vector3& max)
-{
-	min = m_AABBmin;
-	max = m_AABBmax;
-}
-
-
-
 bool StaticMeshSceneResource::Create(std::string filePath)
 {
 	std::filesystem::path path = ToWString(string(filePath));
@@ -110,6 +99,11 @@ bool StaticMeshSceneResource::Create(std::string filePath)
 		aiProcess_GenUVCoords |		// UV 생성
 		aiProcess_CalcTangentSpace |  // 탄젠트 생성	
 		aiProcess_GenBoundingBoxes | // 바운딩 박스 생성
+		aiProcess_PreTransformVertices | // 노드의 변환행렬을 적용한 버텍스 생성
+		aiProcess_OptimizeMeshes |	// 메쉬 최적화
+		aiProcess_Debone |		// 본이 없는 메쉬는 본 인덱스를 0으로 설정
+		aiProcess_ValidateDataStructure| // 데이터 구조 검증
+		aiProcess_SortByPType |	// 메쉬, 라이트, 카메라 등의 노드를 분리해서 정렬
 		aiProcess_ConvertToLeftHanded;	// 왼손 좌표계로 변환
 
 	const aiScene* scene = importer.ReadFile(filePath, importFlags);

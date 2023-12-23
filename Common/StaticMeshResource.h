@@ -31,13 +31,9 @@ public:
 	UINT m_MaterialIndex = 0;			// 메테리얼 인덱스.
 	std::string m_Name;					// 메쉬 이름.	
 
-	Math::Vector3 m_AABBmin;
-	Math::Vector3 m_AABBmax;
-
 	void Create(aiMesh* mesh);
 	void CreateVertexBuffer(Vertex* vertices, UINT vertexCount);
 	void CreateIndexBuffer(WORD* indies, UINT indexCount);
-	void GetAABB(Math::Vector3& min, Math::Vector3& max);
 };
 
 // 하나의 StaticMesh FBX를 의미하는 공유데이터, 여러 메쉬를 가질 수 있다.
