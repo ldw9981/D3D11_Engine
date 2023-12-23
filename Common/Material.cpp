@@ -78,6 +78,8 @@ void Material::TestTextureProperty(const aiMaterial* pMaterial, std::vector<std:
 	}	
 }
 
+
+
 void Material::Create(const aiMaterial* pMaterial)
 {
 	// Diffuse
@@ -85,8 +87,7 @@ void Material::Create(const aiMaterial* pMaterial)
 	wstring basePath=L"../Resource/";
 	std::filesystem::path path;
 	wstring finalPath;
-	string name = pMaterial->GetName().C_Str();
-	
+	string name = pMaterial->GetName().C_Str();	
 	//TestMaterialPropery(pMaterial);
 
 	std::vector<std::pair<aiTextureType, std::string>> textureProperties;	
@@ -98,52 +99,51 @@ void Material::Create(const aiMaterial* pMaterial)
 		//m_Color ={ color.r, color.g, color.b , 1};
 	}	
 
-	if (AI_SUCCESS == pMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &texturePath)) 
-	{
-		path = ToWString(string(texturePath.C_Str()));		
-		finalPath = basePath + path.filename().wstring();
-		
-		m_pBaseColor = ResourceManager::Instance->CreateMaterialTexture(finalPath);		
-	}
-
-	if (AI_SUCCESS == pMaterial->GetTexture(aiTextureType_NORMALS, 0, &texturePath))
-	{
-		path = ToWString(string(texturePath.C_Str()));
-		finalPath = basePath + path.filename().wstring();
-		m_pNormal = ResourceManager::Instance->CreateMaterialTexture(finalPath);	
-	}
-
-	if (AI_SUCCESS == pMaterial->GetTexture(aiTextureType_SPECULAR, 0, &texturePath))
-	{
-		path = ToWString(string(texturePath.C_Str()));
+	path = ToWString(textureProperties[aiTextureType_DIFFUSE].second);
+	if (!path.empty())
+	{	
 		finalPath = basePath + path.filename().wstring();		
-		m_pSpecular = ResourceManager::Instance->CreateMaterialTexture(finalPath);			
+		m_pBaseColor = ResourceManager::Instance->CreateMaterialTexture(finalPath);		
+	}	
+
+	path = ToWString(textureProperties[aiTextureType_NORMALS].second);
+	if (!path.empty())
+	{
+		finalPath = basePath + path.filename().wstring();
+		m_pNormal = ResourceManager::Instance->CreateMaterialTexture(finalPath);
 	}
 
-	if (AI_SUCCESS == pMaterial->GetTexture(aiTextureType_EMISSIVE, 0, &texturePath))
+	path = ToWString(textureProperties[aiTextureType_SPECULAR].second);
+	if (!path.empty())
 	{
-		path = ToWString(string(texturePath.C_Str()));
+		finalPath = basePath + path.filename().wstring();
+		m_pSpecular = ResourceManager::Instance->CreateMaterialTexture(finalPath);
+	}
+
+	path = ToWString(textureProperties[aiTextureType_EMISSIVE].second);
+	if (!path.empty())
+	{
 		finalPath = basePath + path.filename().wstring();
 		m_pEmissive = ResourceManager::Instance->CreateMaterialTexture(finalPath);
 	}
 
-	if (AI_SUCCESS == pMaterial->GetTexture(aiTextureType_OPACITY, 0, &texturePath))
+	path = ToWString(textureProperties[aiTextureType_OPACITY].second);
+	if (!path.empty())
 	{
-		path = ToWString(string(texturePath.C_Str()));
 		finalPath = basePath + path.filename().wstring();
-		m_pOpacity = ResourceManager::Instance->CreateMaterialTexture(finalPath);		
+		m_pOpacity = ResourceManager::Instance->CreateMaterialTexture(finalPath);
 	}
 
-	if (AI_SUCCESS == pMaterial->GetTexture(aiTextureType_METALNESS, 0, &texturePath))
+	path = ToWString(textureProperties[aiTextureType_METALNESS].second);
+	if (!path.empty())
 	{
-		path = ToWString(string(texturePath.C_Str()));
 		finalPath = basePath + path.filename().wstring();
 		m_pMetalness = ResourceManager::Instance->CreateMaterialTexture(finalPath);
 	}
 
-	if (AI_SUCCESS == pMaterial->GetTexture(aiTextureType_SHININESS, 0, &texturePath))
+	path = ToWString(textureProperties[aiTextureType_SHININESS].second);
+	if (!path.empty())
 	{
-		path = ToWString(string(texturePath.C_Str()));
 		finalPath = basePath + path.filename().wstring();
 		m_pRoughness = ResourceManager::Instance->CreateMaterialTexture(finalPath);
 	}

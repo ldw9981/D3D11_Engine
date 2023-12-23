@@ -514,16 +514,22 @@ void D3DRenderManager::ApplyMaterial(Material* pMaterial)
 {
 	if(pMaterial->m_pBaseColor)
 		m_pDeviceContext->PSSetShaderResources(0, 1, pMaterial->m_pBaseColor->m_pTextureSRV.GetAddressOf());	
+
 	if (pMaterial->m_pNormal)
 		m_pDeviceContext->PSSetShaderResources(1, 1, pMaterial->m_pNormal->m_pTextureSRV.GetAddressOf());
+
 	if (pMaterial->m_pSpecular)
 		m_pDeviceContext->PSSetShaderResources(2, 1, pMaterial->m_pSpecular->m_pTextureSRV.GetAddressOf());
+
 	if (pMaterial->m_pEmissive)
 		m_pDeviceContext->PSSetShaderResources(3, 1, pMaterial->m_pEmissive->m_pTextureSRV.GetAddressOf());
+
 	if (pMaterial->m_pOpacity)
 		m_pDeviceContext->PSSetShaderResources(4, 1, pMaterial->m_pOpacity->m_pTextureSRV.GetAddressOf());
+
 	if (pMaterial->m_pMetalness)
 		m_pDeviceContext->PSSetShaderResources(5, 1, pMaterial->m_pMetalness->m_pTextureSRV.GetAddressOf());
+
 	if (pMaterial->m_pRoughness)
 		m_pDeviceContext->PSSetShaderResources(6, 1, pMaterial->m_pRoughness->m_pTextureSRV.GetAddressOf());
 

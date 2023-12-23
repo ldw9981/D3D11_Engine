@@ -45,6 +45,15 @@ bool TutorialApp::Initialize(UINT Width, UINT Height)
 
 	m_cameraPos = START_POSITION;
 	m_yaw = m_pitch = 0.f;
+
+	StaticMeshModel& model = m_StaticMeshModelList.emplace_back();
+
+	auto SceneResource = ResourceManager::Instance->CreateStaticMeshSceneResource("../Resource/Arissa.fbx"); //cerberus
+	model.SetSceneResource(SceneResource);
+
+	int range = 0;
+	//float pos = (float)(rand() % range) - range * 0.5f;
+	model.m_Local = Matrix::CreateTranslation(0, 0, 0);
 	return true;
 }
 
@@ -199,9 +208,9 @@ void TutorialApp::IncreaseModel()
 	{
 		SkeletalMeshModel& model = m_SkeletalMeshModelList.emplace_back();
 
-		auto SceneResource = ResourceManager::Instance->CreateSkeletalMeshSceneResource("../Resource/Zombie.fbx");
-		SceneResource->AddAnimation(ResourceManager::Instance->CreateAnimation("../Resource/Zombie_Run.fbx"));
-		SceneResource->AddAnimation(ResourceManager::Instance->CreateAnimation("../Resource/SkinningTest.fbx"));
+		auto SceneResource = ResourceManager::Instance->CreateSkeletalMeshSceneResource("../Resource/cerberus.fbx");
+		//SceneResource->AddAnimation(ResourceManager::Instance->CreateAnimation("../Resource/Zombie_Run.fbx"));
+		//SceneResource->AddAnimation(ResourceManager::Instance->CreateAnimation("../Resource/SkinningTest.fbx"));
 		model.SetSceneResource(SceneResource);
 
 		int range = 500;
@@ -212,18 +221,6 @@ void TutorialApp::IncreaseModel()
 	}
 	*/
 	
-	
-	{
-		StaticMeshModel& model = m_StaticMeshModelList.emplace_back();
-
-		auto SceneResource = ResourceManager::Instance->CreateStaticMeshSceneResource("../Resource/vampire.fbx");
-		model.SetSceneResource(SceneResource);
-
-		int range = 0;
-//		float pos = (float)(rand() % range) - range * 0.5f;
-		model.m_Local = Matrix::CreateTranslation(0, 0, 0);
-		
-	}
 	
 }
 

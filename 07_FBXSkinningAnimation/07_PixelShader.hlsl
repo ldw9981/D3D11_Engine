@@ -61,8 +61,16 @@ float4 main(PS_INPUT input) : SV_Target
 	float3 albedo = txBaseColor.Sample(samLinear, input.TexCoord).rgb;
 	float metalness = txMetalness.Sample(samLinear, input.TexCoord).r;
 	float roughness = txRoughness.Sample(samLinear, input.TexCoord).r;
-	float emissive = txEmissive.Sample(samLinear, input.TexCoord).r;
-		
+    float3 emissive = 0.0f;
+    if (UseEmissiveMap)
+    {
+        emissive = txEmissive.Sample(samLinear, input.TexCoord).rgb;
+    }
+    if (UseOpacityMap)
+    {	
+		Opacity = txOpacity.Sample(samLinear, input.TexCoord).a;
+    }
+	
 	// Outgoing light direction (vector from world-space fragment position to the "eye").
 	float3 Lo = normalize(EyePosition - input.PositionWorld);
 
@@ -112,14 +120,14 @@ float4 main(PS_INPUT input) : SV_Target
 
 	// Cook-Torrance specular microfacet BRDF.
 	float3 specularBRDF = (F * D * G) / max(Epsilon, 4.0 * cosLi * cosLo);
-
+    	
 	// Total contribution for this light.
 	directLighting += (diffuseBRDF + specularBRDF) * Lradiance * cosLi;
 	
 	float3 ambientLighting = 0;		
 	
-    float3 final = directLighting + ambientLighting + emissive;
+    float3 final = directLighting + ambientLighting + emissive ;
     float3 GammaCorrect = pow(final, 1.0 / 2.2);
 
-    return float4(GammaCorrect, 1.0);
+    return float4(GammaCorrect, Opacity);
 }
