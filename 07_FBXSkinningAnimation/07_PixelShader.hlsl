@@ -47,9 +47,9 @@ float4 main(PS_INPUT input) : SV_Target
 {
 	float3 vNormal = normalize(input.NormalWorld);
 	float3 vTangent = normalize(input.TangentWorld);
-	float3 vBiTanget = cross(vNormal, vTangent);
+	float3 vBiTanget = normalize(input.BiTangentWorld);
 	float Opacity = 1.0f;
-
+	
 	if (UseNormalMap)
 	{
 		float3 vNormalTangentSpace = txNormal.Sample(samLinear, input.TexCoord).rgb * 2.0f - 1.0f;
@@ -57,6 +57,7 @@ float4 main(PS_INPUT input) : SV_Target
 		vNormal = mul(vNormalTangentSpace, WorldTransform);
 		vNormal = normalize(vNormal);
 	}
+	
 	// Sample input textures to get shading model params.
 	float3 albedo = txBaseColor.Sample(samLinear, input.TexCoord).rgb;
 	float metalness = txMetalness.Sample(samLinear, input.TexCoord).r;
@@ -76,8 +77,8 @@ float4 main(PS_INPUT input) : SV_Target
 
 	// Get current fragment's normal and transform to world space.
 	float3 N = normalize(2.0 * txNormal.Sample(samLinear, input.TexCoord).rgb - 1.0);
-	//N = normalize(mul(pin.tangentBasis, N));
-	N = vNormal;
+    N = normalize(mul(input.TangentBasis, N));
+    N = vNormal;
 
 	// Angle between surface normal and outgoing light direction.
 	float cosLo = max(0.0, dot(N, Lo));
@@ -127,7 +128,8 @@ float4 main(PS_INPUT input) : SV_Target
 	float3 ambientLighting = 0;		
 	
     float3 final = directLighting + ambientLighting + emissive ;
-    float3 GammaCorrect = pow(final, 1.0 / 2.2);
+    float3 GammaCorrect = pow(final, float(1.0 / 2.2).rrr);
+    float3 output = GammaCorrect;
 
-    return float4(GammaCorrect, Opacity);
+    return float4(output, Opacity);
 }

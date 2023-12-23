@@ -38,52 +38,37 @@ void StaticMeshResource::Create(aiMesh* mesh)
 		m_Vertices[i].Normal = Vector3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
 		m_Vertices[i].TexCoord = Vector2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
 		m_Vertices[i].Tangent = Vector3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z);
+		m_Vertices[i].BiTangent = Vector3(mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z);
 	}
 	CreateVertexBuffer(&m_Vertices[0], (UINT)m_Vertices.size());
 
 
 	// 인덱스 정보 생성
-	m_Indices.resize(mesh->mNumFaces * 3);
+	m_Faces.resize(mesh->mNumFaces);
 	for (UINT i = 0; i < mesh->mNumFaces; ++i)
 	{
-		m_Indices[i * 3 + 0] = mesh->mFaces[i].mIndices[0];
-		m_Indices[i * 3 + 1] = mesh->mFaces[i].mIndices[1];
-		m_Indices[i * 3 + 2] = mesh->mFaces[i].mIndices[2];
+		assert(mesh->mFaces[i].mNumIndices == 3);
+		m_Faces[i].i0 = mesh->mFaces[i].mIndices[0];
+		m_Faces[i].i1 = mesh->mFaces[i].mIndices[1];
+		m_Faces[i].i2 = mesh->mFaces[i].mIndices[2];
 	}
-	CreateIndexBuffer(&m_Indices[0], (UINT)m_Indices.size());
+	CreateIndexBuffer(&m_Faces[0], (UINT)m_Faces.size());
 }
 
-void StaticMeshResource::CreateVertexBuffer(Vertex* vertices, UINT vertexCount)
-{
-	D3D11_BUFFER_DESC bd = {};
-	bd.ByteWidth = sizeof(Vertex) * vertexCount;
-	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.CPUAccessFlags = 0;
 
-	D3D11_SUBRESOURCE_DATA vbData = {};
-	vbData.pSysMem = vertices;
-	HR_T(D3DRenderManager::m_pDevice->CreateBuffer(&bd, &vbData, &m_pVertexBuffer));
-
-	// 버텍스 버퍼 정보
-	m_VertexCount = vertexCount;
-	m_VertexBufferStride = sizeof(Vertex);
-	m_VertexBufferOffset = 0;
-}
-
-void StaticMeshResource::CreateIndexBuffer(WORD* indices, UINT indexCount)
+void StaticMeshResource::CreateIndexBuffer(Face* faces, UINT faceCount)
 {
 	// 인덱스 개수 저장.
-	m_IndexCount = indexCount;
+	m_FaceCount = faceCount;
 
 	D3D11_BUFFER_DESC bd = {};
-	bd.ByteWidth = sizeof(WORD) * indexCount;
+	bd.ByteWidth = sizeof(Face) * faceCount;
 	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	bd.Usage = D3D11_USAGE_DEFAULT;
 	bd.CPUAccessFlags = 0;
 
 	D3D11_SUBRESOURCE_DATA ibData = {};
-	ibData.pSysMem = indices;
+	ibData.pSysMem = faces;
 	HR_T(D3DRenderManager::m_pDevice->CreateBuffer(&bd, &ibData, &m_pIndexBuffer));
 }
 
@@ -97,13 +82,9 @@ bool StaticMeshSceneResource::Create(std::string filePath)
 	unsigned int importFlags = aiProcess_Triangulate | // 삼각형으로 변환
 		aiProcess_GenNormals |	// 노말 생성/
 		aiProcess_GenUVCoords |		// UV 생성
-		aiProcess_CalcTangentSpace |  // 탄젠트 생성	
+		aiProcess_CalcTangentSpace |  // 탄젠트 생성			
 		aiProcess_GenBoundingBoxes | // 바운딩 박스 생성
-		aiProcess_PreTransformVertices | // 노드의 변환행렬을 적용한 버텍스 생성
-		aiProcess_OptimizeMeshes |	// 메쉬 최적화
-		aiProcess_Debone |		// 본이 없는 메쉬는 본 인덱스를 0으로 설정
-		aiProcess_ValidateDataStructure| // 데이터 구조 검증
-		aiProcess_SortByPType |	// 메쉬, 라이트, 카메라 등의 노드를 분리해서 정렬
+		aiProcess_PreTransformVertices | // 노드의 변환행렬을 적용한 버텍스 생성	
 		aiProcess_ConvertToLeftHanded;	// 왼손 좌표계로 변환
 
 	const aiScene* scene = importer.ReadFile(filePath, importFlags);

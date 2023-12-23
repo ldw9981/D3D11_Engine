@@ -284,11 +284,9 @@ void D3DRenderManager::Update()
 	m_World = Matrix::CreateScale(m_MeshScale) * 
 		Matrix::CreateFromYawPitchRoll(Vector3(XMConvertToRadians(m_Rotation.x),
 									XMConvertToRadians(m_Rotation.y),
-									XMConvertToRadians(m_Rotation.z)));
+									XMConvertToRadians(m_Rotation.z)));									
 
-	//m_View = XMMatrixLookToLH(m_CameraPos, Vector3(0, 0, 1), Vector3(0, 1, 0));
-
-	//m_Light.EyePosition = m_CameraPos;
+	m_Light.EyePosition = m_CameraPos;
 }
 
 void D3DRenderManager::Render()
@@ -406,7 +404,7 @@ void D3DRenderManager::Render()
 
 		ImGui::Text("Light");
 		ImGui::SliderFloat3("LightDirection", (float*)&m_Light.Direction, -1.0f, 1.0f);
-		ImGui::ColorEdit3("LightAmbient", (float*)&m_Light.Radiance);
+		ImGui::ColorEdit3("LightRadiance", (float*)&m_Light.Radiance);
 		
 
 		ImGui::Text("BackBuffer");
@@ -449,6 +447,7 @@ void D3DRenderManager::CreateSkeletalMesh_VS_IL()
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "NORMAL" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "TANGENT" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "BITANGENT" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "BLENDINDICES" , 0, DXGI_FORMAT_R32G32B32A32_SINT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "BLENDWEIGHTS" , 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
@@ -471,7 +470,7 @@ void D3DRenderManager::CreateStaticMesh_VS_IL()
 		{nullptr, nullptr}    // 배열의 끝을 나타내기 위해 nullptr로 끝낸다.
 	};
 	ID3D10Blob* vertexShaderBuffer = nullptr;
-	hr = CompileShaderFromFile(L"07_VertexShader.hlsl", defines, "main", "vs_5_0", &vertexShaderBuffer);
+	hr = CompileShaderFromFile(L"07_VertexShader.hlsl", nullptr, "main", "vs_5_0", &vertexShaderBuffer);
 	if (FAILED(hr))
 	{
 		hr = D3DReadFileToBlob(L"07_VertexShader.cso", &vertexShaderBuffer);
@@ -484,6 +483,7 @@ void D3DRenderManager::CreateStaticMesh_VS_IL()
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "NORMAL" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "TANGENT" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },	
+		{ "BITANGENT" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 	hr = m_pDevice->CreateInputLayout(layout, ARRAYSIZE(layout),
 		vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &m_pStaticMeshInputLayout);

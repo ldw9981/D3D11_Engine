@@ -26,5 +26,9 @@ PS_INPUT main(VS_INPUT input)
     output.TexCoord = input.TexCoord;    
     output.NormalWorld = normalize(mul(input.NormalModel, (float3x3) matWorld)); // scale 있을수 있으므로 normalize필요
     output.TangentWorld = normalize(mul(input.TangentModel, (float3x3) matWorld)); // scale 있을수 있으므로 normalize필요
+    output.BiTangentWorld = normalize(mul(input.BiTangent, (float3x3) matWorld)); // scale 있을수 있으므로 normalize필요
+    
+    float3x3 TBN = float3x3(input.TangentModel, input.BiTangent, input.NormalModel);
+    output.TangentBasis = mul((float3x3) matWorld, transpose(TBN));
     return output;
 }

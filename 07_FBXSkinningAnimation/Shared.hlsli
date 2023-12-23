@@ -42,7 +42,7 @@ cbuffer Material : register(b3)
     int UseOpacityMap;
     int UseMetalnessMap;
     int UseRoughnessMap;
-    int MaterialPad0;
+    int Select;
 }
 
 cbuffer MatrixPalette : register(b4)
@@ -58,6 +58,7 @@ struct VS_INPUT
     float2 TexCoord : TEXCOORD0;
     float3 NormalModel : NORMAL;
     float3 TangentModel : TANGENT; 
+    float3 BiTangent : BITANGENT;
 #ifdef VERTEX_SKINNING 
     int4 BlendIndices : BLENDINDICES;
     float4 BlendWeights : BLENDWEIGHTS;
@@ -69,6 +70,9 @@ struct PS_INPUT
     float4 PositionProj : SV_POSITION;   
     float3 PositionWorld : POSITION;
     float2 TexCoord : TEXCOORD0;
+    float3x3 TangentBasis : TBASIS;
+    
     float3 NormalWorld : NORMAL;
     float3 TangentWorld : TANGENT;
+    float3 BiTangentWorld : BITANGENT;
 };
