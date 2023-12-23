@@ -51,7 +51,6 @@ bool TutorialApp::Initialize(UINT Width, UINT Height)
 void TutorialApp::Update()
 {
 	__super::Update();
-
 	for (auto& model : m_SkeletalMeshModelList)
 	{
 		model.Update(m_Timer.DeltaTime());
@@ -63,26 +62,16 @@ void TutorialApp::Update()
 
 	auto mouse = m_mouse->GetState();
 	m_mouseButtons.Update(mouse);
-
 	if (mouse.positionMode == Mouse::MODE_RELATIVE)
 	{
-		Vector3 delta = Vector3(float(mouse.x), float(mouse.y), 0.f)
-			* ROTATION_GAIN;
-
-
+		Vector3 delta = Vector3(float(mouse.x), float(mouse.y), 0.f) * ROTATION_GAIN;
 		m_pitch += delta.y;
 		m_yaw += delta.x;
-
 	}
 
 	m_mouse->SetMode(mouse.rightButton ? Mouse::MODE_RELATIVE : Mouse::MODE_ABSOLUTE);
-
 	auto kb = m_keyboard->GetState();
-
 	m_keys.Update(kb);
-
-	
-
 	if (kb.Home)
 	{
 		m_cameraPos = START_POSITION;
@@ -90,8 +79,6 @@ void TutorialApp::Update()
 	}
 
 	Vector3 move = Vector3::Zero;
-
-
 	float fowardScale = 0.0f;
 	float rightScale = 0.0f;
 	float upScale = 0.0f;
@@ -125,9 +112,6 @@ void TutorialApp::Update()
 
 	m_cameraPos = m_cameraPos + m_MoveDirection * speed;   // Á¤¸éº¤ÅÍ
 
-	
-
-
 	// limit pitch to straight up or straight down
 	constexpr float limit = XM_PIDIV2 - 0.01f;
 	m_pitch = max( -limit, m_pitch);
@@ -143,12 +127,9 @@ void TutorialApp::Update()
 		m_yaw += XM_2PI;
 	}
 
-
 	XMVECTOR lookAt = m_cameraPos + m_forward;   // Á¤¸éº¤ÅÍ
 	D3DRenderManager::Instance->m_CameraPos = m_cameraPos;
 	D3DRenderManager::Instance->m_View = XMMatrixLookAtLH(m_cameraPos, lookAt, Vector3::Up);
-	
-	
 }
 
 void TutorialApp::Render()

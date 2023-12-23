@@ -16,7 +16,7 @@ using Microsoft::WRL::ComPtr;
 
 namespace
 {
-    const XMVECTORF32 START_POSITION = { 0.f, -1.5f, 0.f, 0.f };
+    const XMVECTORF32 START_POSITION = { 0.f, 0.f, 0.f, 0.f };
     const XMVECTORF32 ROOM_BOUNDS = { 8.f, 6.f, 12.f, 0.f };
     constexpr float ROTATION_GAIN = 0.004f;
     constexpr float MOVEMENT_GAIN = 0.07f;
@@ -61,11 +61,14 @@ void Game::Initialize(HWND window, int width, int height)
     m_timer.SetTargetElapsedSeconds(1.0 / 60);
     */
 
+	AllocConsole();
+	freopen("CONOUT$", "wb", stdout);//출력의 핸들에 따라 옵션이 달라집니다. 옵션은 아래 출처 확인.
+
     m_keyboard = std::make_unique<Keyboard>();
     m_mouse = std::make_unique<Mouse>();
     m_mouse->SetWindow(window);
 }
-
+ 
 #pragma region Frame Update
 // Executes the basic game loop.
 void Game::Tick()
@@ -154,10 +157,6 @@ void Game::Update(DX::StepTimer const&)
     Vector3 halfBound = (Vector3(ROOM_BOUNDS.v) / Vector3(2.f))
         - Vector3(0.1f, 0.1f, 0.1f);
 
-    m_cameraPos = Vector3::Min(m_cameraPos, halfBound);
-    m_cameraPos = Vector3::Max(m_cameraPos, -halfBound);
-
-
     // limit pitch to straight up or straight down
     constexpr float limit = XM_PIDIV2 - 0.01f;
     m_pitch = std::max(-limit, m_pitch);
@@ -171,10 +170,9 @@ void Game::Update(DX::StepTimer const&)
     else if (m_yaw < -XM_PI)
     {
         m_yaw += XM_2PI;
-    }
-       
+    }       
 
-    XMVECTOR lookAt = m_cameraPos + forward;   // 정면벡터
+    Vector3 lookAt = m_cameraPos + forward;//forward;   // 정면벡터
     m_view = XMMatrixLookAtLH(m_cameraPos, lookAt, Vector3::Up);
 
 
@@ -189,6 +187,8 @@ void Game::Update(DX::StepTimer const&)
         else
             m_roomColor = Colors::Red;
     }
+
+    printf("pos: %f, %f, %f  ,   lookAt : %f, %f, %f \n", m_cameraPos.x, m_cameraPos.y, m_cameraPos.z, lookAt.x, lookAt.y, lookAt.z );
 }
 #pragma endregion
 
@@ -209,7 +209,8 @@ void Game::Render()
     context;
 
     // TODO: Add your rendering code here.
-    m_room->Draw(Matrix::Identity, m_view, m_proj, m_roomColor, m_roomTex.Get());
+    Matrix world = Matrix::CreateTranslation(Vector3(0.f, 0.f, 20.f));
+    m_room->Draw(world, m_view, m_proj, m_roomColor, m_roomTex.Get());
 
     m_deviceResources->PIXEndEvent();
 
@@ -316,8 +317,7 @@ void Game::CreateWindowSizeDependentResources()
     // TODO: Initialize windows-size dependent objects here.
 
     auto size = m_deviceResources->GetOutputSize();
-    m_proj = Matrix::CreatePerspectiveFieldOfView(XMConvertToRadians(70.f),
-        float(size.right) / float(size.bottom), 0.01f, 100.f);
+    m_proj = XMMatrixPerspectiveFovLH( XMConvertToRadians(70.f),float(size.right) / float(size.bottom), 0.01f, 100.f);
 }
 
 void Game::OnDeviceLost()
