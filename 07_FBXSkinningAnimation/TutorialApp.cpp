@@ -103,7 +103,7 @@ void TutorialApp::Update()
 	// 원래 있던 사인-코사인 어쩌고 함수는 전방벡터를 얻는 최적화된 코드
 	
 	m_rotMatrix = Matrix::CreateFromYawPitchRoll(m_yaw, m_pitch, 0.0f);
-	m_forward = -m_rotMatrix.Forward();
+	m_forward = Vector3(m_rotMatrix._31, m_rotMatrix._32, m_rotMatrix._33);
 	m_right = m_rotMatrix.Right();
 
 	float speed = MOVEMENT_GAIN;       // 이동속도

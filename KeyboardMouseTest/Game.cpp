@@ -143,7 +143,7 @@ void Game::Update(DX::StepTimer const&)
     // 원래 있던 사인-코사인 어쩌고 함수는 전방벡터를 얻는 최적화된 코드
     Vector3 forward,right;
     Matrix rotMatrix = Matrix::CreateFromYawPitchRoll(m_yaw, m_pitch, 0.0f);
-	forward = -rotMatrix.Forward(); // Matrix가 오른손 좌표계라서 -를 붙여줘야 한다.
+	forward = Vector3(rotMatrix._31, rotMatrix._32, rotMatrix._33);// -rotMatrix.Forward(); // Matrix가 오른손 좌표계라서 -를 붙여줘야 한다.
 	right = rotMatrix.Right();
 
     float speed = MOVEMENT_GAIN;       // 이동속도
