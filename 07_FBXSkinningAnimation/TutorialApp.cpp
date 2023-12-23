@@ -46,10 +46,7 @@ bool TutorialApp::Initialize(UINT Width, UINT Height)
 	m_cameraPos = START_POSITION;
 	m_yaw = m_pitch = 0.f;
 
-	StaticMeshComponent& model = m_StaticMeshModelList.emplace_back();
-
-	auto SceneResource = ResourceManager::Instance->CreateStaticMeshSceneResource("../Resource/Vampire.fbx"); //cerberus
-	model.SetSceneResource(SceneResource);
+	
 	
 	return true;
 }
@@ -202,11 +199,11 @@ LRESULT CALLBACK TutorialApp::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 
 void TutorialApp::IncreaseModel()
 {	
-	/*
+	
 	{
 		SkeletalMeshModel& model = m_SkeletalMeshModelList.emplace_back();
 
-		auto SceneResource = ResourceManager::Instance->CreateSkeletalMeshSceneResource("../Resource/cerberus.fbx");
+		auto SceneResource = ResourceManager::Instance->CreateSkeletalMeshSceneResource("../Resource/Zombie.fbx");
 		//SceneResource->AddAnimation(ResourceManager::Instance->CreateAnimation("../Resource/Zombie_Run.fbx"));
 		//SceneResource->AddAnimation(ResourceManager::Instance->CreateAnimation("../Resource/SkinningTest.fbx"));
 		model.SetSceneResource(SceneResource);
@@ -217,8 +214,14 @@ void TutorialApp::IncreaseModel()
 		int playindex = rand() % model.m_SceneResource->m_Animations.size();
 		model.PlayAnimation(playindex);
 	}
+	/*
+	{
+		StaticMeshComponent& model = m_StaticMeshModelList.emplace_back();
+
+		auto SceneResource = ResourceManager::Instance->CreateStaticMeshSceneResource("../Resource/Vampire.fbx"); //cerberus
+		model.SetSceneResource(SceneResource);
+	}
 	*/
-	
 	
 }
 

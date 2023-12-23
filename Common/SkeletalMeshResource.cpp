@@ -18,8 +18,7 @@ SkeletalMeshResource::SkeletalMeshResource()
 
 SkeletalMeshResource::~SkeletalMeshResource()
 {
-	SAFE_RELEASE(m_pVertexBuffer);
-	SAFE_RELEASE(m_pIndexBuffer);
+	
 }
 
 void SkeletalMeshResource::Create(aiMesh* mesh, SkeletonResource* skeleton)

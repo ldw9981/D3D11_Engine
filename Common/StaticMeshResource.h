@@ -23,7 +23,7 @@ class StaticMeshResource
 {
 public:
 	StaticMeshResource();
-	~StaticMeshResource();
+	virtual ~StaticMeshResource();
 
 	std::vector<Vertex>		m_Vertices;
 	std::vector<Face>		m_Faces;

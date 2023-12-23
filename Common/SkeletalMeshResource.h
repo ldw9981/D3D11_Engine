@@ -53,8 +53,6 @@ public:
 
 	std::vector<BoneWeightVertex>	m_Vertices;
 	std::vector<BoneReference>		m_BoneReferences;
-
-
 	void Create(aiMesh* mesh, SkeletonResource* skeleton);
 };
 
