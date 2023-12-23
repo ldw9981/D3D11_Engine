@@ -48,7 +48,7 @@ bool TutorialApp::Initialize(UINT Width, UINT Height)
 
 	StaticMeshModel& model = m_StaticMeshModelList.emplace_back();
 
-	auto SceneResource = ResourceManager::Instance->CreateStaticMeshSceneResource("../Resource/cerberus.fbx"); //cerberus
+	auto SceneResource = ResourceManager::Instance->CreateStaticMeshSceneResource("../Resource/Vampire.fbx"); //cerberus
 	model.SetSceneResource(SceneResource);
 	
 	return true;

@@ -84,7 +84,7 @@ bool StaticMeshSceneResource::Create(std::string filePath)
 		aiProcess_GenUVCoords |		// UV 생성
 		aiProcess_CalcTangentSpace |  // 탄젠트 생성			
 		aiProcess_GenBoundingBoxes | // 바운딩 박스 생성
-		aiProcess_PreTransformVertices | // 노드의 변환행렬을 적용한 버텍스 생성	
+		//aiProcess_PreTransformVertices | // 노드의 변환행렬을 적용한 버텍스 생성	
 		aiProcess_ConvertToLeftHanded;	// 왼손 좌표계로 변환
 
 	const aiScene* scene = importer.ReadFile(filePath, importFlags);
