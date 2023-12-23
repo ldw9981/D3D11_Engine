@@ -26,7 +26,7 @@ public:
 
 	World m_World;
 
-	std::list<StaticMeshModel>		m_StaticMeshModelList;
+	std::list<StaticMeshComponent>		m_StaticMeshModelList;
 	std::list<SkeletalMeshModel>	m_SkeletalMeshModelList;
 
 

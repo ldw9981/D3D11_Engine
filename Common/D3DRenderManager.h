@@ -45,7 +45,7 @@ struct CB_Marterial
 	int Select;							// 8  16byte
 };
 
-class StaticMeshModel;
+class StaticMeshComponent;
 class SkeletalMeshModel;
 class Material;
 
@@ -123,7 +123,7 @@ public:
 
 	// 렌더링 이후에 목록은 사라진다.
 	void AddMeshInstance(SkeletalMeshModel* pModel);
-	void AddMeshInstance(StaticMeshModel* pModel);
+	void AddMeshInstance(StaticMeshComponent* pModel);
 public:
 	bool Initialize(HWND Handle,UINT Width, UINT Height);
 	void Uninitialize();

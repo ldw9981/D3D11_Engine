@@ -54,7 +54,7 @@ void D3DRenderManager::AddMeshInstance(SkeletalMeshModel* pModel)
 	}
 }
 
-void D3DRenderManager::AddMeshInstance(StaticMeshModel* pModel)
+void D3DRenderManager::AddMeshInstance(StaticMeshComponent* pModel)
 {
 	for (size_t i = 0; i < pModel->m_MeshInstances.size(); i++)
 	{

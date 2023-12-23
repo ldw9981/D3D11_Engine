@@ -14,11 +14,11 @@ StaticMeshInstance::~StaticMeshInstance()
 }
 
 
-void StaticMeshInstance::Create(StaticMeshResource* pMeshResource, Node* pRootNode, Material* pMaterial)
+void StaticMeshInstance::Create(StaticMeshResource* pMeshResource, Math::Matrix* pWorld, Material* pMaterial)
 {
 	m_pMeshResource = pMeshResource;
 	m_pMaterial = pMaterial;
-	m_pNodeWorldTransform = &pRootNode->m_World;
+	m_pNodeWorldTransform = pWorld;
 }
 
 void StaticMeshInstance::Render(ID3D11DeviceContext* deviceContext)

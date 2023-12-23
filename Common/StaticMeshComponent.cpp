@@ -19,6 +19,7 @@ StaticMeshComponent::~StaticMeshComponent()
 
 void StaticMeshComponent::Update(float DeltaTime)
 {
+	__super::Update(DeltaTime);
 }
 
 bool StaticMeshComponent::LoadFBX(const std::string& FileName)
@@ -28,7 +29,7 @@ bool StaticMeshComponent::LoadFBX(const std::string& FileName)
 
 
 
-void StaticMeshModel::SetSceneResource(std::shared_ptr<StaticMeshSceneResource> val)
+void StaticMeshComponent::SetSceneResource(std::shared_ptr<StaticMeshSceneResource> val)
 {
 	assert(val);
 	m_SceneResource = val;
@@ -37,25 +38,15 @@ void StaticMeshModel::SetSceneResource(std::shared_ptr<StaticMeshSceneResource> 
 	for (UINT i = 0; i < m_SceneResource->m_StaticMeshResources.size(); i++)
 	{
 		m_MeshInstances[i].Create(&m_SceneResource->m_StaticMeshResources[i], // mesh resource		
-			this,	// root node
+			&m_World,	// root node
 			m_SceneResource->GetMeshMaterial(i));		//material resource 
 	}
 }
 
 
 
-Material* StaticMeshModel::GetMaterial(UINT index)
+Material* StaticMeshComponent::GetMaterial(UINT index)
 {
 	assert(index < m_SceneResource->m_Materials.size());
 	return &m_SceneResource->m_Materials[index];
-}
-
-void StaticMeshModel::Update(float deltaTime)
-{
-	__super::Update(deltaTime);
-}
-
-void StaticMeshModel::SetWorldTransform(const Math::Matrix& transform)
-{
-	m_Local = transform;
 }
