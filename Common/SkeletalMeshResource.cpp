@@ -31,7 +31,7 @@ void SkeletalMeshResource::Create(aiMesh* mesh, SkeletonResource* skeleton)
 		m_Vertices[i].Normal = Vector3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
 		m_Vertices[i].TexCoord = Vector2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
 		m_Vertices[i].Tangent = Vector3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z);
-
+		m_Vertices[i].BiTangent = Vector3(mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z);
 	}
 	UINT meshBoneCount = mesh->mNumBones;	// 메쉬와 연결된 본개수
 	m_BoneReferences.resize(meshBoneCount); // 본 연결 정보 컨테이너 크기 조절
@@ -75,13 +75,9 @@ void SkeletalMeshResource::Create(aiMesh* mesh, SkeletonResource* skeleton)
 
 bool SkeletalMeshSceneResource::Create(std::string filePath)
 {
-	std::filesystem::path path = ToWString(string(filePath));
-	
+	std::filesystem::path path = ToWString(string(filePath));	
 	Assimp::Importer importer;
-
 	importer.SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, 0);	// $assimp_fbx$ 노드 생성안함
-
-
 	unsigned int importFlags = aiProcess_Triangulate | // 삼각형으로 변환
 		aiProcess_GenNormals |	// 노말 생성/
 		aiProcess_GenUVCoords |		// UV 생성

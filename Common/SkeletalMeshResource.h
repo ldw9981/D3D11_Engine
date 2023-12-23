@@ -10,7 +10,7 @@ struct BoneWeightVertex
 	Math::Vector2 TexCoord;
 	Math::Vector3 Normal;
 	Math::Vector3 Tangent;
-	Math::Vector3 Binormal;
+	Math::Vector3 BiTangent;
 
 	// 영향받는 본수는 최대4개로 제한한다.
 	int BlendIndeces[4] = {};		// 참조하는 본의 인덱스의 범위는 최대128개로 일단처리하자
