@@ -50,10 +50,7 @@ bool TutorialApp::Initialize(UINT Width, UINT Height)
 
 	auto SceneResource = ResourceManager::Instance->CreateStaticMeshSceneResource("../Resource/cerberus.fbx"); //cerberus
 	model.SetSceneResource(SceneResource);
-
-	int range = 0;
-	//float pos = (float)(rand() % range) - range * 0.5f;
-	model.m_Local = Matrix::CreateTranslation(0, 0, 0);
+	
 	return true;
 }
 
@@ -137,7 +134,8 @@ void TutorialApp::Update()
 	}
 
 	XMVECTOR lookAt = m_cameraPos + m_forward;   // Á¤¸éº¤ÅÍ
-	D3DRenderManager::Instance->m_CameraPos = m_cameraPos;
+
+	D3DRenderManager::Instance->SetEyePosition(m_cameraPos);
 	D3DRenderManager::Instance->m_View = XMMatrixLookAtLH(m_cameraPos, lookAt, Vector3::Up);
 }
 

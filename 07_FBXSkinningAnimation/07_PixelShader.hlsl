@@ -77,7 +77,7 @@ float4 main(PS_INPUT input) : SV_Target
 
 	// Get current fragment's normal and transform to world space.
 	float3 N = normalize(2.0 * txNormal.Sample(samLinear, input.TexCoord).rgb - 1.0);
-    N = normalize(mul(input.TangentBasis, N));
+    //N = normalize(mul(input.TangentBasis, N));
     N = vNormal;
 
 	// Angle between surface normal and outgoing light direction.

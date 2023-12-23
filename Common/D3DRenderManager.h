@@ -20,7 +20,7 @@ struct CB_TransformVP
 
 struct CB_DirectionLight
 {
-	Vector3 Direction = { 0.0f, 0.0f, 1.0f };
+	Vector3 Direction = { 0.0f, -1.0f, 1.0f };
 	float pad0 = 0.0f;
 	Vector3 Radiance = { 1.0f,1.0f,1.0f };
 	float pad1 = 0.0f;
@@ -104,9 +104,7 @@ public:
 	Matrix  m_View;					// 뷰좌표계 공간으로 변환을 위한 행렬.
 	Matrix  m_Projection;			// 단위장치좌표계( Normalized Device Coordinate) 공간으로 변환을 위한 행렬.
 
-	Vector3 m_ClearColor = { 0.2f, 0.2f, 0.2f };
-	Vector3 m_Rotation = Vector3(0.f, 0.f,0.0f);
-	Vector3 m_CameraPos = Vector3(0.0f, 0, 0.0f);
+	Vector3 m_ClearColor = { 0.0f, 0.0f, 0.0f };
 
 	CB_TransformW m_TransformW;
 	CB_TransformVP m_TransformVP;
@@ -116,7 +114,6 @@ public:
 	D3D11_VIEWPORT m_Viewport;
 
 	HWND m_hWnd = nullptr;
-	float m_MeshScale = 1.0f;
 	
 	void SetImGuiRender(IImGuiRenderable* val) { m_pImGuiRender = val; }
 
@@ -134,6 +131,7 @@ public:
 	void Update();
 	void Render();
 
+	void SetEyePosition(const Vector3& eyePosition) { m_Light.EyePosition = eyePosition; }
 	void CreateSkeletalMesh_VS_IL();
 	void CreateStaticMesh_VS_IL();
 	void CreatePS();

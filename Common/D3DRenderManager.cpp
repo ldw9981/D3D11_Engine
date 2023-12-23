@@ -281,12 +281,7 @@ void D3DRenderManager::Uninitialize()
 
 void D3DRenderManager::Update()
 {
-	m_World = Matrix::CreateScale(m_MeshScale) * 
-		Matrix::CreateFromYawPitchRoll(Vector3(XMConvertToRadians(m_Rotation.x),
-									XMConvertToRadians(m_Rotation.y),
-									XMConvertToRadians(m_Rotation.z)));									
-
-	m_Light.EyePosition = m_CameraPos;
+	
 }
 
 void D3DRenderManager::Render()
@@ -316,7 +311,7 @@ void D3DRenderManager::Render()
 
 	m_pDeviceContext->PSSetSamplers(0, 1, &m_pSamplerLinear);
 
-	//라이트 업데이트
+	//라이트 업데이트	
 	m_Light.Direction.Normalize();
 	m_pDeviceContext->UpdateSubresource(m_pCBDirectionLight, 0, nullptr, &m_Light, 0, 0);
 
@@ -367,10 +362,8 @@ void D3DRenderManager::Render()
 			ApplyMaterial(meshInstance->m_pMaterial);	// 머터리얼 적용
 			pPrevMaterial = meshInstance->m_pMaterial;
 		}
-		
-	
 
-		m_TransformW.mWorld = m_World.Transpose();// meshInstance->m_pNodeWorldTransform->Transpose();
+		m_TransformW.mWorld = meshInstance->m_pNodeWorldTransform->Transpose();
 		m_pDeviceContext->UpdateSubresource(m_pCBTransformW, 0, nullptr, &m_TransformW, 0, 0);
 		
 		// Draw
@@ -396,16 +389,11 @@ void D3DRenderManager::Render()
 		GetVideoMemoryInfo(str);
 		ImGui::Text("VideoMemory: %s",str.c_str() );
 		GetSystemMemoryInfo(str);
-		ImGui::Text("SystemMemory: %s", str.c_str());
-
-		ImGui::Text("Cube");
-		ImGui::SliderFloat("Scale", (float*)&m_MeshScale, 1, 100);
-		ImGui::SliderFloat3("Rotation", (float*)&m_Rotation, 0, 360);
+		ImGui::Text("SystemMemory: %s", str.c_str());	
 
 		ImGui::Text("Light");
 		ImGui::SliderFloat3("LightDirection", (float*)&m_Light.Direction, -1.0f, 1.0f);
-		ImGui::ColorEdit3("LightRadiance", (float*)&m_Light.Radiance);
-		
+		ImGui::ColorEdit3("LightRadiance", (float*)&m_Light.Radiance);		
 
 		ImGui::Text("BackBuffer");
 		ImGui::ColorEdit3("clear color", (float*)&m_ClearColor); // Edit 3 floats representing a color	
