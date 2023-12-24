@@ -9,7 +9,6 @@ class SceneComponent: public Component, public Transform
 {
 public:
 	SceneComponent() {};
-	SceneComponent(Actor* pOwner, const std::string& Name);
 	~SceneComponent();
 
 		

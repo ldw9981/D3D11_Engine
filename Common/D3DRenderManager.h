@@ -63,6 +63,7 @@ public:
 
 class StaticMeshInstance;
 class SkeletalMeshInstance;
+class SkeletalMeshComponent;
 class D3DRenderManager
 {
 public:
@@ -121,9 +122,14 @@ public:
 	std::list<SkeletalMeshInstance*> m_SkeletalMeshInstance;		//  렌더링할 모델들의 포인터 저장해둔다. 
 
 
+	std::list<SkeletalMeshComponent*> m_SkeletalMeshComponents;		//  렌더링할 모델들의 포인터 저장해둔다.
+	std::list<StaticMeshComponent*> m_StaticMeshComponents;		//  렌더링할 모델들의 포인터 저장해둔다.
+
 	// 렌더링 이후에 목록은 사라진다.
 	void AddMeshInstance(SkeletalMeshComponent* pModel);
 	void AddMeshInstance(StaticMeshComponent* pModel);
+
+
 public:
 	bool Initialize(HWND Handle,UINT Width, UINT Height);
 	void Uninitialize();

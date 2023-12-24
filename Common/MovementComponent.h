@@ -7,7 +7,6 @@ class MovementComponent: public Component
 {
 public:
 	MovementComponent();
-	MovementComponent(Actor* pOwner, const std::string& Name);
 	~MovementComponent();
 
 	Math::Vector3 m_InputVector;

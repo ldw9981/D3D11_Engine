@@ -16,9 +16,8 @@ class SkeletalMeshComponent : public SceneComponent
 public:
 	friend class D3DRenderManager;		// D3DRenderManager는 멤버에 제한없이 접근가능하게 한다.
 
-	SkeletalMeshComponent() {}
-	SkeletalMeshComponent(Actor* pOwner, const std::string& Name);
-	~SkeletalMeshComponent() {}
+	SkeletalMeshComponent();
+	~SkeletalMeshComponent();
 protected:
 	std::shared_ptr<SkeletalMeshSceneResource>  m_SceneResource;
 	std::vector<SkeletalMeshInstance> m_MeshInstances;
@@ -27,6 +26,9 @@ protected:
 	Bone m_RootBone;
 	std::string m_SceneFilePath;				// BeginPlay에서 로딩	
 	std::list<std::string> m_AnimationFilePath; // BeginPlay에서 로딩	
+
+	std::list< SkeletalMeshComponent*>::iterator m_iterator;
+
 public:
 	void SetSceneResource(std::shared_ptr<SkeletalMeshSceneResource> val);
 	std::shared_ptr<SkeletalMeshSceneResource> GetSceneResource() const;

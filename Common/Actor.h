@@ -34,8 +34,8 @@ public:
 		bool bIsBase = std::is_base_of<Component, T>::value;
 		assert(bIsBase == true);
 		std::shared_ptr<T> pComponent = std::make_shared<T>();
-		pComponent->SetOwner(this);
-		pComponent->SetName(Name);
+		pComponent->m_pOwner = this;
+		pComponent->SetName( Name);
 		m_OwnedComponents.push_back(pComponent);
 		return pComponent;
 	}

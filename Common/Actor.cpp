@@ -3,6 +3,10 @@
 
 void Actor::Update(float DeltaTime)
 {
+	for(auto& pComponent : m_OwnedComponents)
+	{
+		pComponent->Update(DeltaTime);
+	}
 }
 
 void Actor::Render(ID3D11DeviceContext* pDeviceContext)

@@ -6,9 +6,6 @@ class Component
 public:
 	friend class Actor;
 	Component() {};
-	Component(Actor* pOwner, const std::string& Name) : m_pOwner(pOwner), m_Name(Name)
-	{
-	}
 	virtual ~Component() {};
 
 	

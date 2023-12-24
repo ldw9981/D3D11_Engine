@@ -21,6 +21,8 @@
 #include "SkeletalMeshInstance.h"
 #include "SkeletalMeshResource.h"
 
+#include "SkeletalMeshComponent.h"
+
 
 #pragma comment(lib,"d3d11.lib")
 #pragma comment(lib,"d3dcompiler.lib")
@@ -61,6 +63,7 @@ void D3DRenderManager::AddMeshInstance(StaticMeshComponent* pModel)
 		m_StaticMeshInstance.push_back(&pModel->m_MeshInstances[i]);
 	}
 }
+
 
 bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 {
@@ -281,7 +284,15 @@ void D3DRenderManager::Uninitialize()
 
 void D3DRenderManager::Update()
 {
-	
+	for (auto& SkeletalMeshComponent : m_SkeletalMeshComponents)
+	{
+		AddMeshInstance(SkeletalMeshComponent);
+	}
+
+	for (auto& StaticMeshComponent : m_StaticMeshComponents)
+	{
+		AddMeshInstance(StaticMeshComponent);
+	}
 }
 
 void D3DRenderManager::Render()

@@ -11,13 +11,14 @@ class StaticMeshComponent :
     public SceneComponent
 {
 public:
-	StaticMeshComponent() {}
-	StaticMeshComponent(Actor* pOwner, const std::string& Name);
+	StaticMeshComponent();
 	~StaticMeshComponent();
 
 	std::string m_SceneFilePath; // BeginPlay에서 로딩
 	std::shared_ptr<StaticMeshSceneResource>  m_SceneResource;
 	std::vector<StaticMeshInstance> m_MeshInstances;
+	
+	std::list< StaticMeshComponent*>::iterator m_iterator;
 
 	virtual void Update(float DeltaTime) override;
 	

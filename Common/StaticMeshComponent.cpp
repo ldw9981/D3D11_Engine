@@ -6,15 +6,15 @@
 #include "Helper.h"
 
 
-StaticMeshComponent::StaticMeshComponent(Actor* pOwner, const std::string& Name)
-	:SceneComponent(pOwner,Name)
+StaticMeshComponent::StaticMeshComponent()
 {
-
+	D3DRenderManager::Instance->m_StaticMeshComponents.push_back(this);
+	m_iterator = --D3DRenderManager::Instance->m_StaticMeshComponents.end();
 }
-
 
 StaticMeshComponent::~StaticMeshComponent()
 {
+	D3DRenderManager::Instance->m_StaticMeshComponents.erase(m_iterator);
 }
 
 void StaticMeshComponent::Update(float DeltaTime)

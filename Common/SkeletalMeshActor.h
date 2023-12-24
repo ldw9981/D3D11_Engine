@@ -9,5 +9,7 @@ public:
 	~SkeletalMeshActor() {};
 
 	std::shared_ptr<SkeletalMeshComponent> m_pSkeletalMeshComponent;
+
+	virtual void Update(float DeltaTime);
 };
 

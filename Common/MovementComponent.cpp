@@ -8,12 +8,6 @@ MovementComponent::MovementComponent()
 
 }
 
-MovementComponent::MovementComponent(Actor* pOwner, const std::string& Name)
-:Component(pOwner, Name)
-{
-
-}
-
 MovementComponent::~MovementComponent()
 {
 }

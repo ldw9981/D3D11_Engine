@@ -8,3 +8,8 @@ SkeletalMeshActor::SkeletalMeshActor()
 	m_pSkeletalMeshComponent = CreateComponent<SkeletalMeshComponent>("SkeletalMeshComponent");
 	SetRootComponent(m_pSkeletalMeshComponent);	
 }
+
+void SkeletalMeshActor::Update(float DeltaTime)
+{
+	__super::Update(DeltaTime);
+}
