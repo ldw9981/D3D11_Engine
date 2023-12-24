@@ -31,7 +31,7 @@ void SkeletalMeshComponent::SetSceneResource(std::shared_ptr<SkeletalMeshSceneRe
 			&m_RootBone,	// root node
 			m_SceneResource->GetMeshMaterial(i));		//material resource 
 	}
-	UpdateNodeAnimationReference(0);	// 각 노드의 애니메이션 정보참조 연결	
+	UpdateBoneAnimationReference(0);	// 각 노드의 애니메이션 정보참조 연결	
 }
 
 std::shared_ptr<SkeletalMeshSceneResource> SkeletalMeshComponent::GetSceneResource() const
@@ -79,7 +79,7 @@ void SkeletalMeshComponent::Update(float deltaTime)
 	m_RootBone.Update(deltaTime);
 }
 
-void SkeletalMeshComponent::UpdateNodeAnimationReference(UINT index)
+void SkeletalMeshComponent::UpdateBoneAnimationReference(UINT index)
 {
 	assert(index < m_SceneResource->m_Animations.size());
 	auto animation = m_SceneResource->m_Animations[index];
@@ -98,7 +98,7 @@ void SkeletalMeshComponent::PlayAnimation(UINT index)
 	assert(index < m_SceneResource->m_Animations.size());
 	m_AnimationIndex = index;
 	m_AnimationProressTime = 0.0f;
-	UpdateNodeAnimationReference(index);
+	UpdateBoneAnimationReference(index);
 }
 
 void SkeletalMeshComponent::CreateHierachy(SkeletonResource* skeleton)

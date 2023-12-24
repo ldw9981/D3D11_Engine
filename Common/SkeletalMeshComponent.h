@@ -34,7 +34,7 @@ public:
 	bool AddSceneAnimationFromFBX(std::string filePath);
 	Material* GetMaterial(UINT index);
 	virtual void Update(float deltaTime);
-	void UpdateNodeAnimationReference(UINT index);
+	void UpdateBoneAnimationReference(UINT index);
 	void PlayAnimation(UINT index);
 	void CreateHierachy(SkeletonResource* skeleton);
 	virtual void OnBeginPlay();
