@@ -65,8 +65,17 @@ float4 main(PS_INPUT input) : SV_Target
 	
 	// Sample input textures to get shading model params.
 	float3 albedo = txBaseColor.Sample(samLinear, input.TexCoord).rgb;
-	float metalness = txMetalness.Sample(samLinear, input.TexCoord).r;
-	float roughness = txRoughness.Sample(samLinear, input.TexCoord).r;
+    float metalness = 0.0f;
+	if (UseMetalnessMap)
+    {
+        metalness = txMetalness.Sample(samLinear, input.TexCoord).r;
+    }    
+	
+    float roughness = 0.0f;
+	if (UseRoughnessMap)
+    {
+        roughness = txRoughness.Sample(samLinear, input.TexCoord).r;
+    }   
     float3 emissive = 0.0f;
     if (UseEmissiveMap)
     {
@@ -82,8 +91,8 @@ float4 main(PS_INPUT input) : SV_Target
 
 	// Get current fragment's normal and transform to world space.
 	float3 N = normalize(2.0 * txNormal.Sample(samLinear, input.TexCoord).rgb - 1.0);
-    //N = normalize(mul(input.TangentBasis, N));
-    N = vNormal;
+    N = normalize(mul(input.TangentBasis, N));
+    //N = vNormal;
 
 	// Angle between surface normal and outgoing light direction.
 	float cosLo = max(0.0, dot(N, Lo));
@@ -93,7 +102,6 @@ float4 main(PS_INPUT input) : SV_Target
 
 	// Fresnel reflectance at normal incidence (for metals use albedo color).
 	float3 F0 = lerp(Fdielectric, albedo, metalness);
-
 	// Direct lighting calculation for analytical lights.
 	float3 directLighting = 0.0;
 	
@@ -108,7 +116,8 @@ float4 main(PS_INPUT input) : SV_Target
 	float cosLh = max(0.0, dot(N, Lh));
 
 	// Calculate Fresnel term for direct lighting. 
-	float3 F = fresnelSchlick(F0, max(0.0, dot(Lh, Lo)));  //최소값 F0 , 최대값은 1.0,1.0,1.0
+	float3 F = fresnelSchlick(F0, max(0.0, dot(Lh, Lo)));  //최소값 F0 , 최대값은 1.0,1.0,1.0  
+	
 	// Calculate normal distribution for specular BRDF.
 	float D = ndfGGX(cosLh, max(0.01, roughness));		// 러프니스 0 이되면 값이0이 되므로 0이면 최소값사용
 	// Calculate geometric attenuation for specular BRDF.
@@ -125,8 +134,10 @@ float4 main(PS_INPUT input) : SV_Target
 	float3 diffuseBRDF = kd * albedo / PI;
 
 	// Cook-Torrance specular microfacet BRDF.
-	float3 specularBRDF = (F * D * G) / max(Epsilon, 4.0 * cosLi * cosLo);
-    	
+	float3 specularBRDF = (F * D * G) / max(Epsilon, 4.0 * cosLi * cosLo);  
+ 
+	
+	
 	// Total contribution for this light.
 	directLighting += (diffuseBRDF + specularBRDF) * Lradiance * cosLi;
 	
