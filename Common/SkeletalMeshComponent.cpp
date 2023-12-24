@@ -36,24 +36,22 @@ void SkeletalMeshComponent::SetSceneResource(std::shared_ptr<SkeletalMeshSceneRe
 
 bool SkeletalMeshComponent::ReadSceneResourceFromFBX(std::string filePath)
 {
-	std::filesystem::path path = ToWString(string(filePath));
-	LOG_MESSAGEA("Loading file: %s", filePath.c_str());
-
-	GameTimer timer;
-	timer.Tick();
 	// 리소스 매니저에서 가져온다.
-	SetSceneResource(ResourceManager::Instance->CreateSkeletalMeshSceneResource(filePath));
+	auto resource = ResourceManager::Instance->CreateSkeletalMeshSceneResource(filePath);	
 	if (!m_SceneResource) {
 		return false;
 	}
-
-	
-	timer.Tick();
-	LOG_MESSAGEA("Complete file: %s %f", filePath.c_str(), timer.DeltaTime());
+	SetSceneResource(resource);
+	m_SceneFilePath = filePath;
 	return true;
 }
 
 
+
+bool SkeletalMeshComponent::AddSceneAnimationFromFBX(std::string filePath)
+{
+
+}
 
 Material* SkeletalMeshComponent::GetMaterial(UINT index)
 {

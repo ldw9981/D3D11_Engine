@@ -18,16 +18,18 @@ public:
 	SkeletalMeshComponent(Actor* pOwner, const std::string& Name);
 	~SkeletalMeshComponent() {}
 
+protected:
 	std::shared_ptr<SkeletalMeshSceneResource>  m_SceneResource;
 	std::vector<SkeletalMeshInstance> m_MeshInstances;
-
 	float m_AnimationProressTime = 0.0f;
 	UINT  m_AnimationIndex = 0;
-
 	Bone m_RootBone;
-
+	std::string m_SceneFilePath;
+	std::list<std::string> m_AnimationFilePath;
+public:
 	void SetSceneResource(std::shared_ptr<SkeletalMeshSceneResource> val);
-	bool ReadSceneResourceFromFBX(std::string filePath);
+	bool ReadSceneResourceFromFBX(std::string filePath);	
+	bool AddSceneAnimationFromFBX(std::string filePath);
 	Material* GetMaterial(UINT index);
 	virtual void Update(float deltaTime);
 	void UpdateNodeAnimationReference(UINT index);

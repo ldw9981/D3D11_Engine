@@ -27,6 +27,12 @@ std::shared_ptr<MaterialTexture> ResourceManager::CreateMaterialTexture(std::wst
 		}
 	}
 
+	std::filesystem::path path = filePath;
+	if (!std::filesystem::exists(path)) {
+		LOG_MESSAGEA("Erorr file not found: %s", path.string().c_str());
+		return nullptr;
+	};
+
 	std::shared_ptr<MaterialTexture> pTextureRV = std::make_shared<MaterialTexture>();
 	pTextureRV->Create(filePath);
 	m_MaterialTextureMap[filePath] = pTextureRV;	
@@ -51,6 +57,12 @@ std::shared_ptr<Animation> ResourceManager::CreateAnimation(std::string filePath
 		}
 	}
 	
+	std::filesystem::path path = ToWString(string(filePath));
+	if (!std::filesystem::exists(path)) {
+		LOG_MESSAGEA("Erorr file not found: %s", filePath.c_str());
+		return nullptr;
+	};
+
 	GameTimer timer;
 	timer.Tick();
 	std::shared_ptr<Animation> pAnimation = std::make_shared<Animation>();
@@ -92,6 +104,11 @@ std::shared_ptr<SkeletalMeshSceneResource> ResourceManager::CreateSkeletalMeshSc
 		}
 	}
 
+	std::filesystem::path path = ToWString(string(filePath));
+	if (!std::filesystem::exists(path)) {
+		LOG_MESSAGEA("Erorr file not found: %s", filePath.c_str());
+		return nullptr;
+	};
 	
 	GameTimer timer;
 	timer.Tick();
@@ -122,6 +139,11 @@ std::shared_ptr<StaticMeshSceneResource> ResourceManager::CreateStaticMeshSceneR
 		}
 	}
 
+	std::filesystem::path path = ToWString(string(filePath));
+	if (!std::filesystem::exists(path)) {
+		LOG_MESSAGEA("Erorr file not found: %s", filePath.c_str());
+		return nullptr;
+	};
 	
 	GameTimer timer;
 	timer.Tick();
