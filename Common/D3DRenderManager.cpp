@@ -46,7 +46,7 @@ D3DRenderManager::~D3DRenderManager()
 
 
 
-void D3DRenderManager::AddMeshInstance(SkeletalMeshModel* pModel)
+void D3DRenderManager::AddMeshInstance(SkeletalMeshComponent* pModel)
 {
 	for (size_t i = 0; i < pModel->m_MeshInstances.size(); i++)
 	{

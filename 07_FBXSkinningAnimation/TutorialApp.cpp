@@ -201,7 +201,7 @@ void TutorialApp::IncreaseModel()
 {	
 	
 	{
-		SkeletalMeshModel& model = m_SkeletalMeshModelList.emplace_back();
+		SkeletalMeshComponent& model = m_SkeletalMeshModelList.emplace_back();
 
 		auto SceneResource = ResourceManager::Instance->CreateSkeletalMeshSceneResource("../Resource/Zombie.fbx");
 		//SceneResource->AddAnimation(ResourceManager::Instance->CreateAnimation("../Resource/Zombie_Run.fbx"));

@@ -24,4 +24,3 @@ public:
 	Bone* FindNode(const std::string& name);
 	Bone& CreateChild();	
 };
-

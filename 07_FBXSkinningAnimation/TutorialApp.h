@@ -27,7 +27,7 @@ public:
 	World m_World;
 
 	std::list<StaticMeshComponent>		m_StaticMeshModelList;
-	std::list<SkeletalMeshModel>	m_SkeletalMeshModelList;
+	std::list<SkeletalMeshComponent>	m_SkeletalMeshModelList;
 
 
 	std::unique_ptr<DirectX::Keyboard>              m_keyboard;

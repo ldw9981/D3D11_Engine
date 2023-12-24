@@ -16,18 +16,7 @@ SkeletalMeshComponent::SkeletalMeshComponent(Actor* pOwner, const std::string& N
 {
 }
 
-
-SkeletalMeshComponent::~SkeletalMeshComponent()
-{
-}
-
-
-
-
-
-
-
-void SkeletalMeshModel::SetSceneResource(std::shared_ptr<SkeletalMeshSceneResource> val)
+void SkeletalMeshComponent::SetSceneResource(std::shared_ptr<SkeletalMeshSceneResource> val)
 {
 	m_SceneResource = val;
 
@@ -39,13 +28,13 @@ void SkeletalMeshModel::SetSceneResource(std::shared_ptr<SkeletalMeshSceneResour
 	{
 		m_MeshInstances[i].Create(&m_SceneResource->m_SkeletalMeshResources[i], // mesh resource
 			&m_SceneResource->m_Skeleton,	 // skeleton resource
-			this,	// root node
+			&m_RootBone,	// root node
 			m_SceneResource->GetMeshMaterial(i));		//material resource 
 	}
 	UpdateNodeAnimationReference(0);	// 각 노드의 애니메이션 정보참조 연결	
 }
 
-bool SkeletalMeshModel::ReadSceneResourceFromFBX(std::string filePath)
+bool SkeletalMeshComponent::ReadSceneResourceFromFBX(std::string filePath)
 {
 	std::filesystem::path path = ToWString(string(filePath));
 	LOG_MESSAGEA("Loading file: %s", filePath.c_str());
@@ -66,41 +55,38 @@ bool SkeletalMeshModel::ReadSceneResourceFromFBX(std::string filePath)
 
 
 
-Material* SkeletalMeshModel::GetMaterial(UINT index)
+Material* SkeletalMeshComponent::GetMaterial(UINT index)
 {
 	assert(index < m_SceneResource->m_Materials.size());
 	return &m_SceneResource->m_Materials[index];
 }
-void SkeletalMeshModel::Update(float deltaTime)
+void SkeletalMeshComponent::Update(float deltaTime)
 {
+	__super::Update(deltaTime);
 	if (!m_SceneResource->m_Animations.empty())
 	{
 		m_AnimationProressTime += deltaTime;
 		m_AnimationProressTime = (float)fmod(m_AnimationProressTime, m_SceneResource->m_Animations[m_AnimationIndex]->Duration);
 
-	}
-	__super::Update(deltaTime);
+	}	
+	m_RootBone.Update(deltaTime);
 }
 
-void SkeletalMeshModel::UpdateNodeAnimationReference(UINT index)
+void SkeletalMeshComponent::UpdateNodeAnimationReference(UINT index)
 {
 	assert(index < m_SceneResource->m_Animations.size());
 	auto animation = m_SceneResource->m_Animations[index];
 	for (size_t i = 0; i < animation->NodeAnimations.size(); i++)
 	{
 		NodeAnimation& nodeAnimation = animation->NodeAnimations[i];
-		Bone* pNode = FindNode(nodeAnimation.NodeName);
+		Bone* pNode = m_RootBone.FindNode(nodeAnimation.NodeName);
 		assert(pNode != nullptr);
 		pNode->m_pNodeAnimation = &animation->NodeAnimations[i];
 	}
 }
 
-void SkeletalMeshModel::SetWorldTransform(const Math::Matrix& transform)
-{
-	m_Local = transform;
-}
 
-void SkeletalMeshModel::PlayAnimation(UINT index)
+void SkeletalMeshComponent::PlayAnimation(UINT index)
 {
 	assert(index < m_SceneResource->m_Animations.size());
 	m_AnimationIndex = index;
@@ -108,13 +94,14 @@ void SkeletalMeshModel::PlayAnimation(UINT index)
 	UpdateNodeAnimationReference(index);
 }
 
-void SkeletalMeshModel::CreateHierachy(SkeletonResource* skeleton)
+void SkeletalMeshComponent::CreateHierachy(SkeletonResource* skeleton)
 {
 	UINT count = skeleton->GetBoneCount();
 
 	BoneInfo* pRootBone = skeleton->GetBone(0);
-	m_Name = pRootBone->Name;
-	m_Children.reserve(pRootBone->NumChildren);
+	m_RootBone.m_Name = pRootBone->Name;
+	m_RootBone.m_Children.reserve(pRootBone->NumChildren);
+	m_RootBone.SetParent(this);
 
 	// 0번 루트는 컨테이너이므로 현재 Node와 같다 그러므로 1번부터 시작한다.
 	for (UINT i = 1; i < count; i++)
@@ -123,7 +110,7 @@ void SkeletalMeshModel::CreateHierachy(SkeletonResource* skeleton)
 		assert(pBone != nullptr);
 		assert(pBone->ParentBoneIndex != -1);
 
-		Bone* pParentNode = FindNode(skeleton->GetBoneName(pBone->ParentBoneIndex));
+		Bone* pParentNode = m_RootBone.FindNode(skeleton->GetBoneName(pBone->ParentBoneIndex));
 		assert(pParentNode != nullptr);
 
 		auto& node = pParentNode->CreateChild();

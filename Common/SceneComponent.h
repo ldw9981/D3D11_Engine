@@ -18,6 +18,7 @@ public:
 	Math::Vector3 m_Scale;
 
 
+
 	virtual void Update(float DeltaTime);
 };
 

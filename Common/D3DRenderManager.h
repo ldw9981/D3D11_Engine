@@ -46,7 +46,7 @@ struct CB_Marterial
 };
 
 class StaticMeshComponent;
-class SkeletalMeshModel;
+class SkeletalMeshComponent;
 class Material;
 
 class IRenderable
@@ -122,7 +122,7 @@ public:
 
 
 	// 렌더링 이후에 목록은 사라진다.
-	void AddMeshInstance(SkeletalMeshModel* pModel);
+	void AddMeshInstance(SkeletalMeshComponent* pModel);
 	void AddMeshInstance(StaticMeshComponent* pModel);
 public:
 	bool Initialize(HWND Handle,UINT Width, UINT Height);
