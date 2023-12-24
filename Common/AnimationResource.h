@@ -26,7 +26,7 @@ struct NodeAnimation
 };
 
 // 모든 노드의 각 시간에서의 Transform
-struct Animation
+struct AnimationResource
 {
 	string FilePath;
 	string Name;

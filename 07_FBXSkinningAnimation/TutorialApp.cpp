@@ -47,6 +47,7 @@ bool TutorialApp::Initialize(UINT Width, UINT Height)
 	m_yaw = m_pitch = 0.f;
 
 	
+	ChangeWorld(&m_World);
 	
 	return true;
 }
@@ -211,7 +212,7 @@ void TutorialApp::IncreaseModel()
 		int range = 500;
 		float pos = (float)(rand() % range) - range * 0.5f;
 		model.m_Local = Matrix::CreateTranslation(pos, 0, 0);	
-		int playindex = rand() % model.m_SceneResource->m_Animations.size();
+		int playindex = rand() % model.GetSceneResource()->m_Animations.size();
 		model.PlayAnimation(playindex);
 	}
 	/*

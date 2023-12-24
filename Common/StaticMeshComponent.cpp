@@ -22,12 +22,17 @@ void StaticMeshComponent::Update(float DeltaTime)
 	__super::Update(DeltaTime);
 }
 
-bool StaticMeshComponent::LoadFBX(const std::string& FileName)
+bool StaticMeshComponent::ReadSceneResourceFromFBX(std::string filePath)
 {
+	// FBX 파일 읽기
+	std::shared_ptr<StaticMeshSceneResource> sceneResource = ResourceManager::Instance->CreateStaticMeshSceneResource(filePath);
+	if (sceneResource == nullptr)
+	{
+		return false;
+	}
+	SetSceneResource(sceneResource);
 	return true;
 }
-
-
 
 void StaticMeshComponent::SetSceneResource(std::shared_ptr<StaticMeshSceneResource> val)
 {
@@ -49,4 +54,13 @@ Material* StaticMeshComponent::GetMaterial(UINT index)
 {
 	assert(index < m_SceneResource->m_Materials.size());
 	return &m_SceneResource->m_Materials[index];
+}
+
+void StaticMeshComponent::OnBeginPlay()
+{
+	ReadSceneResourceFromFBX(m_SceneFilePath);
+}
+
+void StaticMeshComponent::OnEndPlay()
+{
 }

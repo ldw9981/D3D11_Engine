@@ -2,7 +2,7 @@
 #include "Bone.h"
 #include "Helper.h"
 #include "SkeletonResource.h"
-#include "Animation.h"
+#include "AnimationResource.h"
 
 Bone::~Bone()
 {

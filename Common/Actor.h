@@ -32,5 +32,7 @@ public:
 		return pComponent;
 	}
 
+	virtual void OnBeginPlay() = 0;	// World에서 추가후 게임 진행할때 호출
+	virtual void OnEndPlay() = 0;  // World 제거되었을 때 호출
 };
 

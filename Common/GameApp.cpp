@@ -2,6 +2,8 @@
 #include "GameApp.h"
 #include <imgui_impl_win32.h>
 
+#include "World.h"
+
 GameApp* GameApp::m_pInstance = nullptr;
 HWND GameApp::m_hWnd;
 
@@ -30,6 +32,19 @@ GameApp::~GameApp()
 	
 }
 
+
+void GameApp::ChangeWorld(World* pNewWorld)
+{
+	if (m_pCurrentWorld)
+	{
+		m_pCurrentWorld->OnEndPlay();
+	}
+	if (pNewWorld)
+	{
+		pNewWorld->OnBeginPlay();
+	}
+	m_pCurrentWorld = pNewWorld;
+}
 
 bool GameApp::Initialize(UINT Width, UINT Height)
 {
@@ -97,6 +112,11 @@ bool GameApp::Run()
 void GameApp::Update()
 {
 	m_Timer.Tick();
+	if (m_pCurrentWorld)
+	{
+		m_pCurrentWorld->Update(m_Timer.DeltaTime());
+	}
+	
 	m_Renderer.Update();
 
 	

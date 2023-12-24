@@ -7,7 +7,7 @@
 #include "SkeletonResource.h"
 #include "SkeletalMeshResource.h"
 #include "SkeletalMeshInstance.h"
-#include "Animation.h"
+#include "AnimationResource.h"
 
 
 
@@ -34,6 +34,11 @@ void SkeletalMeshComponent::SetSceneResource(std::shared_ptr<SkeletalMeshSceneRe
 	UpdateNodeAnimationReference(0);	// 각 노드의 애니메이션 정보참조 연결	
 }
 
+std::shared_ptr<SkeletalMeshSceneResource> SkeletalMeshComponent::GetSceneResource() const
+{
+	return m_SceneResource;
+}
+
 bool SkeletalMeshComponent::ReadSceneResourceFromFBX(std::string filePath)
 {
 	// 리소스 매니저에서 가져온다.
@@ -42,7 +47,6 @@ bool SkeletalMeshComponent::ReadSceneResourceFromFBX(std::string filePath)
 		return false;
 	}
 	SetSceneResource(resource);
-	m_SceneFilePath = filePath;
 	return true;
 }
 
@@ -50,7 +54,12 @@ bool SkeletalMeshComponent::ReadSceneResourceFromFBX(std::string filePath)
 
 bool SkeletalMeshComponent::AddSceneAnimationFromFBX(std::string filePath)
 {
-
+	auto animation = ResourceManager::Instance->CreateAnimationResource(filePath);
+	if (!animation) {
+		return false;
+	}
+	m_SceneResource->m_Animations.push_back(animation);
+	return true;
 }
 
 Material* SkeletalMeshComponent::GetMaterial(UINT index)
@@ -118,4 +127,18 @@ void SkeletalMeshComponent::CreateHierachy(SkeletonResource* skeleton)
 		node.m_pParent = pParentNode;
 		node.m_pAnimationTime = &m_AnimationProressTime;
 	}
+}
+
+void SkeletalMeshComponent::OnBeginPlay()
+{
+	ReadSceneResourceFromFBX(m_SceneFilePath);	
+	for (auto& animation : m_AnimationFilePath)
+	{
+		AddSceneAnimationFromFBX(animation);
+	};
+}
+
+void SkeletalMeshComponent::OnEndPlay()
+{
+
 }

@@ -141,7 +141,7 @@ bool SkeletalMeshSceneResource::Create(std::string filePath)
 		// 채널수는 aiAnimation 안에서 애니메이션 정보를  표현하는 aiNode의 개수이다.
 		assert(pAiAnimation->mNumChannels > 1); // 애니메이션이 있다면 aiNode 는 하나 이상 있어야한다.
 
-		shared_ptr<Animation> anim = make_shared<Animation>();		
+		shared_ptr<AnimationResource> anim = make_shared<AnimationResource>();		
 		anim->Create(filePath, pAiAnimation);
 		m_Animations.push_back(anim);
 	}
@@ -151,7 +151,7 @@ bool SkeletalMeshSceneResource::Create(std::string filePath)
 
 
 
-void SkeletalMeshSceneResource::AddAnimation(std::shared_ptr<Animation> animation)
+void SkeletalMeshSceneResource::AddAnimation(std::shared_ptr<AnimationResource> animation)
 {
 	m_Animations.push_back(animation);
 }

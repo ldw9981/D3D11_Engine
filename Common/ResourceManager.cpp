@@ -5,7 +5,7 @@
 #include "Material.h"
 #include "SkeletalMeshResource.h"
 #include "StaticMeshResource.h"
-#include "Animation.h"
+#include "AnimationResource.h"
 #include "TimeSystem.h"
 
 ResourceManager* ResourceManager::Instance = nullptr;
@@ -40,12 +40,12 @@ std::shared_ptr<MaterialTexture> ResourceManager::CreateMaterialTexture(std::wst
 }
 
 
-std::shared_ptr<Animation> ResourceManager::CreateAnimation(std::string filePath)
+std::shared_ptr<AnimationResource> ResourceManager::CreateAnimationResource(std::string filePath)
 {
 	auto it = m_AnimationMap.find(filePath);
 	if (it != m_AnimationMap.end())
 	{
-		std::shared_ptr<Animation> resourcePtr = it->second.lock();
+		std::shared_ptr<AnimationResource> resourcePtr = it->second.lock();
 		if (resourcePtr)  //UseCount가 1이상이라 메모리가 아직 살아있다면 resourcePtr를 리턴한다.
 		{
 			return resourcePtr;
@@ -65,7 +65,7 @@ std::shared_ptr<Animation> ResourceManager::CreateAnimation(std::string filePath
 
 	GameTimer timer;
 	timer.Tick();
-	std::shared_ptr<Animation> pAnimation = std::make_shared<Animation>();
+	std::shared_ptr<AnimationResource> pAnimation = std::make_shared<AnimationResource>();
 	pAnimation->Create(filePath);
 	m_AnimationMap[filePath] = pAnimation;
 	timer.Tick();

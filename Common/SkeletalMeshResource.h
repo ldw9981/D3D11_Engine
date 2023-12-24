@@ -1,7 +1,7 @@
 #pragma once
 #include "SkeletonResource.h"
 #include "StaticMeshResource.h"
-#include "Animation.h"
+#include "AnimationResource.h"
 #include "Material.h"
 
 struct BoneWeightVertex
@@ -68,11 +68,11 @@ public:
 	std::vector<Material> m_Materials;
 	SkeletonResource m_Skeleton;
 
-	std::vector<std::shared_ptr<Animation>> m_Animations;
+	std::vector<std::shared_ptr<AnimationResource>> m_Animations;
 
 	bool Create(std::string filePath);
 	
 	Material* GetMeshMaterial(UINT index);
 
-	void AddAnimation(std::shared_ptr<Animation> animation);
+	void AddAnimation(std::shared_ptr<AnimationResource> animation);
 };

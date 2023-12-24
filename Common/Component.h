@@ -19,6 +19,7 @@ public:
 	void SetOwner(Actor* pOwner) { m_pOwner = pOwner; }
 	Actor* GetOwner() { return m_pOwner; }
 
-
+	virtual void OnBeginPlay() = 0;
+	virtual void OnEndPlay() = 0;
 };
 

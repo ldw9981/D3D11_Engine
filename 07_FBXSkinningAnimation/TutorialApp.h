@@ -2,7 +2,7 @@
 #include "../Common/GameApp.h"
 
 #include "../Common/Material.h"
-#include "../Common/Animation.h"
+#include "../Common/AnimationResource.h"
 #include "../Common/Bone.h"
 
 #include "../Common/World.h"

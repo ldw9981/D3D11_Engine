@@ -13,7 +13,7 @@
 
 #include "SkeletalMeshComponent.h"
 #include "StaticMeshComponent.h"
-#include "Animation.h"
+#include "AnimationResource.h"
 #include "Material.h"	
 #include "StaticMeshInstance.h"
 #include "StaticMeshResource.h"

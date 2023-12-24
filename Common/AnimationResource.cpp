@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Animation.h"
+#include "AnimationResource.h"
 #include "Helper.h"
 
 #include <assimp/Importer.hpp>
@@ -79,7 +79,7 @@ void NodeAnimation::Evaluate(float time, Vector3& position, Quaternion& rotation
 }
 
 
-void Animation::Create(const std::string strFBXFilePath,const aiAnimation* pAiAnimation)
+void AnimationResource::Create(const std::string strFBXFilePath,const aiAnimation* pAiAnimation)
 {
 	FilePath = strFBXFilePath;
 	NodeAnimations.resize(pAiAnimation->mNumChannels);
@@ -93,7 +93,7 @@ void Animation::Create(const std::string strFBXFilePath,const aiAnimation* pAiAn
 	}
 }
 
-void Animation::Create(const std::string strFBXFilePath)
+void AnimationResource::Create(const std::string strFBXFilePath)
 {
 	std::filesystem::path path = ToWString(string(strFBXFilePath));
 	

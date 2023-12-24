@@ -8,6 +8,8 @@ class Material;
 class StaticMeshInstance 
 {
 public:
+	friend class D3DRenderManager;		// D3DRenderManager는 멤버에 제한없이 접근가능하게 한다.
+
 	StaticMeshInstance();
 	~StaticMeshInstance();
 public:

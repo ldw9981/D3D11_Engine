@@ -141,7 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Animation.h" />
+    <ClInclude Include="AnimationResource.h" />
     <ClInclude Include="SkeletalMeshActor.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="D3DRenderManager.h" />
@@ -166,7 +166,7 @@
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Animation.cpp" />
+    <ClCompile Include="AnimationResource.cpp" />
     <ClCompile Include="SkeletalMeshActor.cpp" />
     <ClCompile Include="Common.cpp" />
     <ClCompile Include="Component.cpp" />

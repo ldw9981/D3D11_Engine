@@ -7,6 +7,7 @@
 
 #define MAX_LOADSTRING 100
 
+class World;
 class GameApp
 {
 public:
@@ -31,6 +32,8 @@ public:
 	UINT m_ClientHeight;
 	D3DRenderManager m_Renderer;
 	ResourceManager m_Resource;
+	World* m_pCurrentWorld=nullptr;
+	void ChangeWorld(World* pNewWorld);
 public:
 	// 윈도우 정보 등록,생성,보이기 한다.
 	virtual bool Initialize(UINT Width, UINT Height);
