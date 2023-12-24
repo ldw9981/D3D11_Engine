@@ -4,6 +4,9 @@
 #include "TimeSystem.h"
 #include "D3DRenderManager.h"
 #include "ResourceManager.h"
+#include "InputManager.h"
+
+
 
 #define MAX_LOADSTRING 100
 
@@ -34,6 +37,8 @@ public:
 	ResourceManager m_Resource;
 	World* m_pCurrentWorld=nullptr;
 	void ChangeWorld(World* pNewWorld);
+
+	InputManager m_InputManager;
 public:
 	// 윈도우 정보 등록,생성,보이기 한다.
 	virtual bool Initialize(UINT Width, UINT Height);

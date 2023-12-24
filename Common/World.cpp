@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "World.h"
 #include "Actor.h"
+#include "D3DRenderManager.h"
 
 World::World()
 {
@@ -34,4 +35,16 @@ void World::OnEndPlay()
 		actor->OnEndPlay();
 	}
 	m_actors.clear();
+}
+
+void World::Render()
+{
+/*
+	for (auto& actor : m_actors)
+	{
+		for (auto& component : actor->m_OwnedComponents)
+		{
+			
+		}
+	}*/
 }

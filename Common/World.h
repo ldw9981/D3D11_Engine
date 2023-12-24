@@ -1,5 +1,6 @@
 #pragma once
 
+
 class Actor;
 class World
 {
@@ -12,11 +13,11 @@ public:
 	bool m_bIsPlaying = false;
 	// 템플릿 함수로 GameObject를 생성한다.
 	template<typename T>
-	T* CreateGameObject()
+	std::shared_ptr<T> CreateGameObject()
 	{
 		bool bIsBase = std::is_base_of<Actor, T>::value;
 		assert(bIsBase == true);
-		T* newObject = std::make_shared<T>();
+		std::shared_ptr<T> newObject = std::make_shared<T>();
 		newObject->SetOwner(this);
 		m_actors.push_back(newObject);
 		if(m_bIsPlaying)
@@ -28,5 +29,6 @@ public:
 	void Update(float DeltaTime);
 	void OnBeginPlay();
 	void OnEndPlay();
+	void Render();
 };
 

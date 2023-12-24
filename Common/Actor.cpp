@@ -9,12 +9,12 @@ void Actor::Render(ID3D11DeviceContext* pDeviceContext)
 {
 }
 
-void Actor::SetRootComponent(std::weak_ptr<SceneComponent> pRootComponent)
+void Actor::SetRootComponent(std::shared_ptr<SceneComponent> pRootComponent)
 {
 	m_pRootComponent = pRootComponent;
 }
 
-std::weak_ptr<SceneComponent> Actor::GetRootComponent() const
+std::shared_ptr<SceneComponent> Actor::GetRootComponent() const
 {
 	return m_pRootComponent;
 }

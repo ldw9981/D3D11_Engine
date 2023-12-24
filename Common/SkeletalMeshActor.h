@@ -8,7 +8,6 @@ public:
 	SkeletalMeshActor();
 	~SkeletalMeshActor() {};
 
-	std::weak_ptr<SkeletalMeshComponent> m_pSkeletalMeshComponent;
-
+	std::shared_ptr<SkeletalMeshComponent> m_pSkeletalMeshComponent;
 };
 

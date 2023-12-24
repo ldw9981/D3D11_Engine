@@ -12,3 +12,9 @@ void Transform::Update(float DeltaTime)
 		m_World = m_Local;
 	}
 }
+
+Math::Vector3 Transform::GetWorldPosition()
+{
+	return m_World.Translation();
+}
+

@@ -43,7 +43,7 @@ bool SkeletalMeshComponent::ReadSceneResourceFromFBX(std::string filePath)
 {
 	// 리소스 매니저에서 가져온다.
 	auto resource = ResourceManager::Instance->CreateSkeletalMeshSceneResource(filePath);	
-	if (!m_SceneResource) {
+	if (!resource) {
 		return false;
 	}
 	SetSceneResource(resource);

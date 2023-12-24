@@ -6,12 +6,16 @@
 #include "../Common/SkeletalMeshResource.h"
 #include "../Common/StaticMeshResource.h"
 #include "../Common/ResourceManager.h"
+#include "../Common/PlayerController.h"
+
+#include "../Common/DefaultPawn.h"
+#include "../Common/Pawn.h"
+#include "../Common/SkeletalMeshActor.h"
 
 #include <utility>
 #include <algorithm>
 
-constexpr float ROTATION_GAIN = 0.004f;
-constexpr float MOVEMENT_GAIN = 0.07f;
+
 const Math::Vector3 START_POSITION = { 0.f, 0.f, -1000.f};
 
 using namespace std;
@@ -39,14 +43,19 @@ bool TutorialApp::Initialize(UINT Width, UINT Height)
 	//Math::Matrix rotMatrix = Math::Matrix::CreateFromQuaternion(rotQuaternion);
 
 	
-	m_keyboard = std::make_unique<Keyboard>();
-	m_mouse = std::make_unique<Mouse>();
-	m_mouse->SetWindow(m_hWnd);
+
 
 	m_cameraPos = START_POSITION;
 	m_yaw = m_pitch = 0.f;
 
 	
+	auto sk = m_World.CreateGameObject<SkeletalMeshActor>();
+	((SkeletalMeshComponent*)sk->GetRootComponent().get())->ReadSceneResourceFromFBX("../Resource/Zombie.fbx");
+
+	m_pPlayerController = m_World.CreateGameObject<PlayerController>();
+	m_pDefaultPawn = m_World.CreateGameObject<DefaultPawn>();
+	m_pPlayerController->Posess((Pawn*)m_pDefaultPawn.get());
+
 	ChangeWorld(&m_World);
 	
 	return true;
@@ -55,6 +64,7 @@ bool TutorialApp::Initialize(UINT Width, UINT Height)
 void TutorialApp::Update()
 {
 	__super::Update();
+	/*
 	for (auto& model : m_SkeletalMeshModelList)
 	{
 		model.Update(m_Timer.DeltaTime());
@@ -134,7 +144,8 @@ void TutorialApp::Update()
 	XMVECTOR lookAt = m_cameraPos + m_forward;   // Á¤¸éº¤ÅÍ
 
 	D3DRenderManager::Instance->SetEyePosition(m_cameraPos);
-	D3DRenderManager::Instance->m_View = XMMatrixLookAtLH(m_cameraPos, lookAt, Vector3::Up);
+	D3DRenderManager::Instance->m_View = XMMatrixLookAtLH(m_cameraPos, lookAt, Vector3::Up)
+	*/
 }
 
 void TutorialApp::Render()
@@ -153,48 +164,6 @@ void TutorialApp::Render()
 
 LRESULT CALLBACK TutorialApp::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	switch (message)
-	{
-	case WM_ACTIVATEAPP:
-		DirectX::Keyboard::ProcessMessage(message, wParam, lParam);
-		DirectX::Mouse::ProcessMessage(message, wParam, lParam);
-		break;
-	case WM_INPUT:
-	case WM_MOUSEMOVE:
-	case WM_LBUTTONDOWN:
-	case WM_LBUTTONUP:
-	case WM_RBUTTONDOWN:
-	case WM_RBUTTONUP:
-	case WM_MBUTTONDOWN:
-	case WM_MBUTTONUP:
-	case WM_MOUSEWHEEL:
-	case WM_XBUTTONDOWN:
-	case WM_XBUTTONUP:
-	case WM_MOUSEHOVER:
-		Mouse::ProcessMessage(message, wParam, lParam);
-		break;
-
-	case WM_KEYDOWN:
-	case WM_KEYUP:
-	case WM_SYSKEYUP:
-		Keyboard::ProcessMessage(message, wParam, lParam);
-		if (wParam == VK_UP) {
-			IncreaseModel();
-		}
-		else if (wParam == VK_DOWN) {
-			DecreaseModel();
-		}
-		break;
-
-	case WM_SYSKEYDOWN:
-		Keyboard::ProcessMessage(message, wParam, lParam);
-		if (wParam == VK_RETURN && (lParam & 0x60000000) == 0x20000000)
-		{
-			
-		}
-		break;	
-	}
-
 	return GameApp::WndProc(hWnd, message, wParam, lParam);
 }
 

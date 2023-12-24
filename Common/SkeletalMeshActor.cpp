@@ -6,5 +6,5 @@
 SkeletalMeshActor::SkeletalMeshActor()
 {
 	m_pSkeletalMeshComponent = CreateComponent<SkeletalMeshComponent>("SkeletalMeshComponent");
-	SetRootComponent(m_pSkeletalMeshComponent);
+	SetRootComponent(m_pSkeletalMeshComponent);	
 }

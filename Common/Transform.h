@@ -9,4 +9,8 @@ public:
 
 	void SetParent(Transform* pParent) { m_pParent = pParent; };
 	virtual void Update(float DeltaTime);
+		
+	
+	Math::Vector3 GetWorldPosition();
+
 };

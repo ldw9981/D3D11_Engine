@@ -142,6 +142,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AnimationResource.h" />
+    <ClInclude Include="DefaultPawn.h" />
+    <ClInclude Include="InputManager.h" />
+    <ClInclude Include="MovementComponent.h" />
+    <ClInclude Include="Pawn.h" />
+    <ClInclude Include="PlayerController.h" />
     <ClInclude Include="SkeletalMeshActor.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="D3DRenderManager.h" />
@@ -167,6 +172,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationResource.cpp" />
+    <ClCompile Include="DefaultPawn.cpp" />
+    <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="MovementComponent.cpp" />
+    <ClCompile Include="Pawn.cpp" />
+    <ClCompile Include="PlayerController.cpp" />
     <ClCompile Include="SkeletalMeshActor.cpp" />
     <ClCompile Include="Common.cpp" />
     <ClCompile Include="Component.cpp" />

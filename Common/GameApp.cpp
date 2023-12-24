@@ -76,10 +76,12 @@ bool GameApp::Initialize(UINT Width, UINT Height)
 	m_currentTime = m_previousTime = (float)GetTickCount64() / 1000.0f;
 
 
-	if(m_Renderer.Initialize(m_hWnd, m_ClientWidth, m_ClientHeight))
+	if(!m_Renderer.Initialize(m_hWnd, m_ClientWidth, m_ClientHeight))
 	{
 		return false;
 	}
+
+	m_InputManager.Initialize(m_hWnd);
 	
 	return true;
 }
@@ -112,19 +114,23 @@ bool GameApp::Run()
 void GameApp::Update()
 {
 	m_Timer.Tick();
+	m_InputManager.Update(m_Timer.DeltaTime());
 	if (m_pCurrentWorld)
 	{
 		m_pCurrentWorld->Update(m_Timer.DeltaTime());
-	}
-	
+	}	
 	m_Renderer.Update();
-
 	
 
 }
 
 void GameApp::Render()
 {
+	if (m_pCurrentWorld)
+	{
+		m_pCurrentWorld->Render();
+	}
+
 	m_Renderer.Render();
 }
 
@@ -147,6 +153,29 @@ LRESULT CALLBACK GameApp::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 	{
 	case WM_DESTROY:
 		PostQuitMessage(0);
+		break;
+	case WM_ACTIVATEAPP:
+		DirectX::Keyboard::ProcessMessage(message, wParam, lParam);
+		DirectX::Mouse::ProcessMessage(message, wParam, lParam);
+		break;
+	case WM_INPUT:
+	case WM_MOUSEMOVE:
+	case WM_LBUTTONDOWN:
+	case WM_LBUTTONUP:
+	case WM_RBUTTONDOWN:
+	case WM_RBUTTONUP:
+	case WM_MBUTTONDOWN:
+	case WM_MBUTTONUP:
+	case WM_MOUSEWHEEL:
+	case WM_XBUTTONDOWN:
+	case WM_XBUTTONUP:
+	case WM_MOUSEHOVER:
+		Mouse::ProcessMessage(message, wParam, lParam);
+		break;
+	case WM_KEYDOWN:
+	case WM_KEYUP:
+	case WM_SYSKEYUP:	
+		Keyboard::ProcessMessage(message, wParam, lParam);
 		break;
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
