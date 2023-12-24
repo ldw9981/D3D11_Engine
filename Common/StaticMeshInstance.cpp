@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "StaticMeshInstance.h"
 #include "StaticMeshResource.h"
-#include "Node.h"
+#include "Bone.h"
 
 
 StaticMeshInstance::StaticMeshInstance()

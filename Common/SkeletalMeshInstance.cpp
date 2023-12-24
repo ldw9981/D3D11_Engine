@@ -2,7 +2,7 @@
 #include "SkeletalMeshInstance.h"
 #include "SkeletonResource.h"
 #include "SkeletalMeshResource.h"
-#include "Node.h"
+#include "Bone.h"
 
 
 
@@ -16,7 +16,7 @@ SkeletalMeshInstance::~SkeletalMeshInstance()
 }
 
 
-void SkeletalMeshInstance::Create(SkeletalMeshResource* pMeshResource, SkeletonResource* pSkeleton, Node* pRootNode, Material* pMaterial)
+void SkeletalMeshInstance::Create(SkeletalMeshResource* pMeshResource, SkeletonResource* pSkeleton, Bone* pRootNode, Material* pMaterial)
 {
 	m_pMeshResource = pMeshResource;
 	m_pMaterial = pMaterial;
@@ -25,7 +25,7 @@ void SkeletalMeshInstance::Create(SkeletalMeshResource* pMeshResource, SkeletonR
 	for (size_t i = 0; i < meshBoneCount; ++i)
 	{
 		std::string& name = m_pMeshResource->m_BoneReferences[i].NodeName;
-		Node* pNode = pRootNode->FindNode(name);
+		Bone* pNode = pRootNode->FindNode(name);
 		assert(pNode != nullptr);
 		m_BoneReferences[i] = &pNode->m_World;
 	}

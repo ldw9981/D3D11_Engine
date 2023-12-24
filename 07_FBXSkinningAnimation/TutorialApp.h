@@ -3,7 +3,7 @@
 
 #include "../Common/Material.h"
 #include "../Common/Animation.h"
-#include "../Common/Node.h"
+#include "../Common/Bone.h"
 
 #include "../Common/World.h"
 #include "../Common/StaticMeshComponent.h"

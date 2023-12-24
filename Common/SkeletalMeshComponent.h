@@ -1,6 +1,6 @@
 #pragma once
 #include "SceneComponent.h"
-#include "Node.h"
+#include "Bone.h"
 #include "SkeletalMeshInstance.h"
 
 
@@ -19,7 +19,7 @@ public:
 class Material;
 class SkeletalMeshSceneResource;
 class SkeletalMeshInstance;
-class SkeletalMeshModel : public Node
+class SkeletalMeshModel : public Bone
 {
 public:
 	SkeletalMeshModel() {}

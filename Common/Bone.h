@@ -1,4 +1,5 @@
 #pragma once
+#include "Transform.h"
 
 struct aiNode;
 class StaticMeshModel;
@@ -7,24 +8,20 @@ struct SkeletonResource;
 struct BoneInfo;
 
 
-class Node
+class Bone :public Transform
 {
 public:
-	Node() {};
-	~Node();
+	Bone() {};
+	~Bone();
 
-	std::string m_Name;	
-	Math::Matrix m_Local;	
-	Math::Matrix m_World;
-	std::vector<Node> m_Children;		// 계층 구조를 이루는 자식 노드
-	Node* m_pParent = nullptr;
+	std::vector<Bone> m_Children;		// 계층 구조를 이루는 자식 노드
 	NodeAnimation* m_pNodeAnimation = nullptr; // 노드가 사용할 NodeAnimation가 있는 주소
 	float* m_pAnimationTime = nullptr;	// 현재 노드가 애니메이션에서 어느 시간에 있는지
 
 	
 	void SetAnimationTimePtr(float* val) { m_pAnimationTime = val; }
-	void Update(float DeltaTime);
-	Node* FindNode(const std::string& name);
-	Node& CreateChild();	
+	virtual void Update(float DeltaTime);
+	Bone* FindNode(const std::string& name);
+	Bone& CreateChild();	
 };
 

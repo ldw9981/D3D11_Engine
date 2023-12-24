@@ -1,17 +1,17 @@
 #include "pch.h"
-#include "Node.h"
+#include "Bone.h"
 #include "Helper.h"
 #include "SkeletonResource.h"
 #include "Animation.h"
 
-Node::~Node()
+Bone::~Bone()
 {
 	//LOG_MESSAGEA("~Node() %s", m_Name.c_str());	
 }
 
 
 
-void Node::Update(float DeltaTime)
+void Bone::Update(float DeltaTime)
 {
 	// 노드의 애니메이션이 있다면 애니메이션을 업데이트한다.
 	if (m_pNodeAnimation != nullptr)
@@ -34,14 +34,14 @@ void Node::Update(float DeltaTime)
 	}
 }
 
-Node* Node::FindNode(const std::string& name)
+Bone* Bone::FindNode(const std::string& name)
 {
 	if (m_Name == name)
 		return this;
 
 	for (auto& child : m_Children)
 	{
-		Node* found = child.FindNode(name);
+		Bone* found = child.FindNode(name);
 		if (found != nullptr)
 			return found;
 	}
@@ -49,7 +49,7 @@ Node* Node::FindNode(const std::string& name)
 	return nullptr;
 }
 
-Node& Node::CreateChild()
+Bone& Bone::CreateChild()
 {
 	return m_Children.emplace_back();	
 }

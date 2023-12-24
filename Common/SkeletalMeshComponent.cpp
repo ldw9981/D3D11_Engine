@@ -89,7 +89,7 @@ void SkeletalMeshModel::UpdateNodeAnimationReference(UINT index)
 	for (size_t i = 0; i < animation->NodeAnimations.size(); i++)
 	{
 		NodeAnimation& nodeAnimation = animation->NodeAnimations[i];
-		Node* pNode = FindNode(nodeAnimation.NodeName);
+		Bone* pNode = FindNode(nodeAnimation.NodeName);
 		assert(pNode != nullptr);
 		pNode->m_pNodeAnimation = &animation->NodeAnimations[i];
 	}
@@ -123,7 +123,7 @@ void SkeletalMeshModel::CreateHierachy(SkeletonResource* skeleton)
 		assert(pBone != nullptr);
 		assert(pBone->ParentBoneIndex != -1);
 
-		Node* pParentNode = FindNode(skeleton->GetBoneName(pBone->ParentBoneIndex));
+		Bone* pParentNode = FindNode(skeleton->GetBoneName(pBone->ParentBoneIndex));
 		assert(pParentNode != nullptr);
 
 		auto& node = pParentNode->CreateChild();

@@ -1,7 +1,7 @@
 #pragma once
 #include "SceneComponent.h"
 #include "StaticMeshInstance.h"
-#include "Node.h"
+#include "Bone.h"
 
 class Actor;
 class Material;

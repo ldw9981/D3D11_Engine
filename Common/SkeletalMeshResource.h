@@ -43,7 +43,7 @@ struct BoneReference
 
 
 struct aiMesh;
-class Node;
+class Bone;
 
 class SkeletalMeshResource : public StaticMeshResource
 {

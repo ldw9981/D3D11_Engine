@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "SkeletonResource.h"
-#include "Node.h"
+#include "Bone.h"
 
 
 

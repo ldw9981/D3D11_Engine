@@ -36,7 +36,7 @@
     <ClInclude Include="Animation.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Node.h">
+    <ClInclude Include="Bone.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SkeletonResource.h">
@@ -81,6 +81,9 @@
     <ClInclude Include="StaticMeshInstance.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Common.cpp">
@@ -104,7 +107,7 @@
     <ClCompile Include="Animation.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Node.cpp">
+    <ClCompile Include="Bone.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="SkeletonResource.cpp">
@@ -147,6 +150,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="StaticMeshInstance.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

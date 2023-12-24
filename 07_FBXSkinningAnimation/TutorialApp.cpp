@@ -204,8 +204,8 @@ void TutorialApp::IncreaseModel()
 		SkeletalMeshModel& model = m_SkeletalMeshModelList.emplace_back();
 
 		auto SceneResource = ResourceManager::Instance->CreateSkeletalMeshSceneResource("../Resource/Zombie.fbx");
-		SceneResource->AddAnimation(ResourceManager::Instance->CreateAnimation("../Resource/Zombie_Run.fbx"));
-		SceneResource->AddAnimation(ResourceManager::Instance->CreateAnimation("../Resource/SkinningTest.fbx"));
+		//SceneResource->AddAnimation(ResourceManager::Instance->CreateAnimation("../Resource/Zombie_Run.fbx"));
+		//SceneResource->AddAnimation(ResourceManager::Instance->CreateAnimation("../Resource/SkinningTest.fbx"));
 		model.SetSceneResource(SceneResource);
 
 		int range = 500;

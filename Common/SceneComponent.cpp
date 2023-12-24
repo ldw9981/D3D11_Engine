@@ -14,12 +14,6 @@ SceneComponent::~SceneComponent()
 
 void SceneComponent::Update(float DeltaTime)
 {
-	if (m_pParent)
-	{
-		m_World = m_pParent->m_World * m_Local;
-	}
-	else
-	{
-		m_World = m_Local;
-	}
+	Transform::Update(DeltaTime);
 }
+

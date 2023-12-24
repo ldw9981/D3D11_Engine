@@ -3,7 +3,7 @@
 
 // 렌더링에 필요한 정보모음, 단일 메쉬와 연결된 Transform, 연결된 머터리얼
 class StaticMeshResource;
-class Node;
+class Bone;
 class Material;
 class StaticMeshInstance 
 {
