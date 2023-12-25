@@ -48,5 +48,7 @@ public:
 	virtual void OnEndPlay();  // World 제거되었을 때 호출
 	virtual void OnInputProcess(const DirectX::Keyboard::State& KeyboardState, const DirectX::Mouse::State& MouseState) {};
 
+
+	void SetWorldPosition(const Math::Vector3& val);
 };
 

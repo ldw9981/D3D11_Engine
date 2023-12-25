@@ -38,3 +38,11 @@ void Actor::OnEndPlay()
 		pComponent->OnEndPlay();
 	}
 }
+
+void Actor::SetWorldPosition(const Math::Vector3& val)
+{
+	if (m_pRootComponent != nullptr)
+	{
+		m_pRootComponent->SetLocalPosition(val);
+	}	
+}

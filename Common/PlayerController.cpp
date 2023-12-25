@@ -71,6 +71,8 @@ void PlayerController::Update(float DeltaTime)
 
 void PlayerController::OnInputProcess(const DirectX::Keyboard::State& KeyboardState, const DirectX::Mouse::State& MouseState)
 {
+	
+
 	if (m_pPawn)
 	{
 		m_pPawn->OnInputProcess(KeyboardState,MouseState);

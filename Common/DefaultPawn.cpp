@@ -1,15 +1,18 @@
 #include "pch.h"
 #include "DefaultPawn.h"
 #include "D3DRenderManager.h"
+#include "PlayerController.h"
+
+constexpr float ROTATION_GAIN = 0.004f;
+constexpr float MOVEMENT_GAIN = 0.07f;
 
 DefaultPawn::DefaultPawn()
 {
-	m_pSceneComponent = CreateComponent<SceneComponent>("SceneComponent");
-	SetRootComponent(m_pSceneComponent);
+	m_pCameraComponent = CreateComponent<CameraComponent>("CameraComponent");
+	SetRootComponent(m_pCameraComponent);
 
 	m_pMovementComponent = CreateComponent<MovementComponent>("MovementComponent");
-	m_pCameraComponent = CreateComponent<CameraComponent>("CameraComponent");
-	m_pCameraComponent->SetParent(m_pSceneComponent.get());
+	m_pMovementComponent->m_Speed = 200.0f;
 }
 
 DefaultPawn::~DefaultPawn()
@@ -19,41 +22,6 @@ DefaultPawn::~DefaultPawn()
 void DefaultPawn::Update(float DeltaTime)
 {
 	__super::Update(DeltaTime);
-
-	/*
-	m_rotMatrix = Matrix::CreateFromYawPitchRoll(m_yaw, m_pitch, 0.0f);
-	m_forward = Vector3(m_rotMatrix._31, m_rotMatrix._32, m_rotMatrix._33);
-	m_right = m_rotMatrix.Right();
-
-	float speed = MOVEMENT_GAIN;       // 이동속도
-	m_MoveDirection = m_forward * fowardScale + m_right * rightScale + Vector3::Up * upScale; // 회전상태와 키를 고려한 월드에서의 이동방향
-	m_MoveDirection.Normalize(); //  순수 크기1로  정규화
-
-	m_cameraPos = m_cameraPos + m_MoveDirection * speed;   // 정면벡터
-
-	// limit pitch to straight up or straight down
-	constexpr float limit = XM_PIDIV2 - 0.01f;
-	m_pitch = max(-limit, m_pitch);
-	m_pitch = min(+limit, m_pitch);
-
-	// keep longitude in sane range by wrapping
-	if (m_yaw > XM_PI)
-	{
-		m_yaw -= XM_2PI;
-	}
-	else if (m_yaw < -XM_PI)
-	{
-		m_yaw += XM_2PI;
-	}
-
-	XMVECTOR lookAt = m_cameraPos + m_forward;   // 정면벡터
-
-	D3DRenderManager::Instance->SetEyePosition(m_cameraPos);
-	D3DRenderManager::Instance->m_View = XMMatrixLookAtLH(m_cameraPos, lookAt, Vector3::Up)
-	*/
-
-	//D3DRenderManager::Instance->SetEyePosition(m_pRootComponent->GetWorldPosition());
-	//D3DRenderManager::Instance->m_View = XMMatrixLookAtLH(m_pRootComponent->GetWorldPosition(), Math::Vector3(0.0f,0.0f,1.0f), Vector3::Up);
 }
 
 void DefaultPawn::OnBeginPlay()
@@ -69,15 +37,49 @@ void DefaultPawn::OnEndPlay()
 void DefaultPawn::OnInputProcess(const DirectX::Keyboard::State& KeyboardState, const DirectX::Mouse::State& MouseState)
 {
 	PlayerController* pController = GetController();
+	float fowardScale=0.0f,rightScale = 0.0f,upScale = 0.0f;
+
+	Math::Matrix rotMatrix = Matrix::CreateFromYawPitchRoll(pController->m_MouseYaw, pController->m_MousePitch, 0.0f);
+	Math::Vector3 forward = Vector3(rotMatrix._31, rotMatrix._32, rotMatrix._33);
+	Math::Vector3 right = rotMatrix.Right();
 
 	if (KeyboardState.IsKeyDown(DirectX::Keyboard::Keys::W))
 	{
-		m_pMovementComponent->AddInputVector(Math::Vector3(0.0f,0.0f,1.0f));
+		m_pMovementComponent->AddInputVector(forward);
 	}
-	if (KeyboardState.IsKeyDown(DirectX::Keyboard::Keys::S))
+	else if (KeyboardState.IsKeyDown(DirectX::Keyboard::Keys::S))
 	{
-		m_pMovementComponent->AddInputVector(Math::Vector3(0.0f, 0.0f,- 1.0f));
+		m_pMovementComponent->AddInputVector(-forward);
 	}
+
+	if (KeyboardState.IsKeyDown(DirectX::Keyboard::Keys::A))
+	{
+		m_pMovementComponent->AddInputVector(-right);
+	}
+	else if (KeyboardState.IsKeyDown(DirectX::Keyboard::Keys::D))
+	{
+		m_pMovementComponent->AddInputVector(right);
+	}
+	
+	if (KeyboardState.IsKeyDown(DirectX::Keyboard::Keys::X))
+	{
+		m_pMovementComponent->AddInputVector(-Math::Vector3::Up);
+	}
+	else if (KeyboardState.IsKeyDown(DirectX::Keyboard::Keys::Space))
+	{
+		m_pMovementComponent->AddInputVector(Math::Vector3::Up);
+	}
+
+
+	InputManager::Instance->m_Mouse->SetMode(MouseState.rightButton ? Mouse::MODE_RELATIVE : Mouse::MODE_ABSOLUTE);
+	if (MouseState.positionMode == Mouse::MODE_RELATIVE)
+	{
+		Vector3 delta = Vector3(float(MouseState.x), float(MouseState.y), 0.f) * ROTATION_GAIN;
+		pController->AddPitch(delta.y);
+		pController->AddYaw(delta.x);
+
+		m_pCameraComponent->SetLocalRotation(Math::Vector3(pController->m_MousePitch, pController->m_MouseYaw,0.0f));		
+	}	
 }
 
 void DefaultPawn::OnPossess(PlayerController* pPlayerController)
