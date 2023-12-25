@@ -1,7 +1,7 @@
 #pragma once
 #include <dxgi1_4.h>
 #include <DirectXtk/BufferHelpers.h>
-
+#include <DirectXCollision.h>
 
 using namespace DirectX::SimpleMath;
 using namespace DirectX;
@@ -127,7 +127,8 @@ public:
 
 	IImGuiRenderable* m_pImGuiRender = nullptr;
 	std::weak_ptr<CameraComponent> m_pCamera;
-
+	BoundingFrustum m_Frustum;
+	int m_nDrawComponentCount = 0;
 public:
 
 	bool Initialize(HWND Handle,UINT Width, UINT Height);

@@ -241,6 +241,7 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 	m_View = XMMatrixLookAtLH(Eye, At, Up);
 	m_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, m_Viewport.Width / (FLOAT)m_Viewport.Height, 1.0f, 10000.0f);
+	BoundingFrustum::CreateFromMatrix(m_Frustum, m_Projection);
 
 	DebugDraw::Initialize(m_pDevice, m_pDeviceContext);
 	return true;
@@ -295,16 +296,27 @@ void D3DRenderManager::Update()
 		Math::Vector3 up = pCamera->m_World.Up();
 		m_View = XMMatrixLookAtLH(eye, m_LookAt, up);
 		SetEyePosition(eye);
-	}
 
+		Math::Matrix viewProjection = m_View * m_Projection;
+		m_Frustum.Transform(m_Frustum, viewProjection);
+	}
+	m_nDrawComponentCount = 0;
 	for (auto& SkeletalMeshComponent : m_SkeletalMeshComponents)
 	{
-		AddMeshInstance(SkeletalMeshComponent);
+		if (m_Frustum.Intersects(SkeletalMeshComponent->m_BoundingBox))
+		{
+			AddMeshInstance(SkeletalMeshComponent);
+			m_nDrawComponentCount++;
+		}
 	}
 
 	for (auto& StaticMeshComponent : m_StaticMeshComponents)
 	{
-		AddMeshInstance(StaticMeshComponent);
+		if (m_Frustum.Intersects(StaticMeshComponent->m_BoundingBox))
+		{
+			AddMeshInstance(StaticMeshComponent);
+			m_nDrawComponentCount++;
+		}		
 	}
 }
 
@@ -398,6 +410,7 @@ void D3DRenderManager::RenderImGui()
 		ImGui::Text("VideoMemory: %s", str.c_str());
 		GetSystemMemoryInfo(str);
 		ImGui::Text("SystemMemory: %s", str.c_str());
+		ImGui::Text("DrawComponent: %d", m_nDrawComponentCount);
 
 		ImGui::Text("Light");
 		ImGui::SliderFloat3("LightDirection", (float*)&m_Light.Direction, -1.0f, 1.0f);
@@ -409,6 +422,7 @@ void D3DRenderManager::RenderImGui()
 		AddDebugVector3ToImGuiWindow("EyePosition", m_Light.EyePosition);
 		AddDebugVector3ToImGuiWindow("LookAt", m_LookAt);
 		AddDebugMatrixToImGuiWindow("ViewMatrix", m_View);
+		
 
 
 		if (m_pImGuiRender)
