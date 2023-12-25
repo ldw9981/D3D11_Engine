@@ -24,6 +24,8 @@
 #include "SkeletalMeshComponent.h"
 #include "CameraComponent.h"
 
+#include "DebugDraw.h"
+
 #pragma comment(lib,"d3d11.lib")
 #pragma comment(lib,"d3dcompiler.lib")
 #pragma comment(lib,"dxgi.lib")
@@ -241,11 +243,13 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	m_View = XMMatrixLookAtLH(Eye, At, Up);
 	m_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, m_Viewport.Width / (FLOAT)m_Viewport.Height, 1.0f, 10000.0f);
 
+	DebugDraw::Initialize(m_pDevice, m_pDeviceContext);
 	return true;
 }
 
 void D3DRenderManager::Uninitialize()
 {
+	DebugDraw::Uninitialize();
 	// Cleanup
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
