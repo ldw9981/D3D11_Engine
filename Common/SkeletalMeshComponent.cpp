@@ -38,6 +38,9 @@ void SkeletalMeshComponent::SetSceneResource(std::shared_ptr<SkeletalMeshSceneRe
 			m_SceneResource->GetMeshMaterial(i));		//material resource 
 	}
 	UpdateBoneAnimationReference(0);	// 각 노드의 애니메이션 정보참조 연결	
+
+	m_BoundingBox.Center = Math::Vector3(m_SceneResource->m_AABBmin + m_SceneResource->m_AABBmax) * 0.5f;	// Calculate extent
+	m_BoundingBox.Extents = Math::Vector3(m_SceneResource->m_AABBmax - m_SceneResource->m_AABBmin) * 0.5f;	// Calculate extent
 }
 
 std::shared_ptr<SkeletalMeshSceneResource> SkeletalMeshComponent::GetSceneResource() const

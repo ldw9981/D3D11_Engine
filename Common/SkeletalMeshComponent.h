@@ -2,7 +2,7 @@
 #include "SceneComponent.h"
 #include "Bone.h"
 #include "SkeletalMeshInstance.h"
-
+#include "RenderComponent.h"
 
 class Actor;
 
@@ -11,7 +11,7 @@ class Actor;
 class Material;
 class SkeletalMeshSceneResource;
 class SkeletalMeshInstance;
-class SkeletalMeshComponent : public SceneComponent
+class SkeletalMeshComponent : public RenderComponent
 {
 public:
 	friend class D3DRenderManager;		// D3DRenderManager는 멤버에 제한없이 접근가능하게 한다.

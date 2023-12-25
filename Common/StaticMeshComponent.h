@@ -1,5 +1,5 @@
 #pragma once
-#include "SceneComponent.h"
+#include "RenderComponent.h"
 #include "StaticMeshInstance.h"
 #include "Bone.h"
 
@@ -8,7 +8,7 @@ class Material;
 class StaticMeshSceneResource;
 // 이후에 Component로 변경될 예정입니다.
 class StaticMeshComponent :
-    public SceneComponent
+    public RenderComponent
 {
 public:
 	StaticMeshComponent();
