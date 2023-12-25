@@ -17,6 +17,8 @@ public:
 
 	void AddPitch(float value);
 	void AddYaw(float value);
+	float GetYaw() { return m_MouseYaw; }
+	float GetPitch() { return m_MousePitch; }
 
 	void Posess(Pawn* pPawn);
 	void UnPosess();
