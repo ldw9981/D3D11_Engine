@@ -21,7 +21,7 @@ const Math::Vector3 START_POSITION = { 0.f, 0.f, -1000.f};
 using namespace std;
 
 TutorialApp::TutorialApp(HINSTANCE hInstance)
-	:GameApp(hInstance), m_cameraPos(START_POSITION)
+	:GameApp(hInstance)
 {
 
 }
@@ -35,27 +35,15 @@ bool TutorialApp::Initialize(UINT Width, UINT Height)
 {
 	__super::Initialize(Width, Height);
 
-	D3DRenderManager::Instance->SetImGuiRender(this);
-
-	Math::Vector3 RotationAngle;
-	//Math::Quaternion rotQuaternion;
-	//rotQuaternion = Math::Quaternion::CreateFromYawPitchRoll(RotationAngle.x, RotationAngle.y, RotationAngle.z);
-	//Math::Matrix rotMatrix = Math::Matrix::CreateFromQuaternion(rotQuaternion);
+	D3DRenderManager::Instance->SetImGuiRender(this);	
 
 	
-
-
-	m_cameraPos = START_POSITION;
-	m_yaw = m_pitch = 0.f;
-
+	IncreaseModel();
 	
-	auto sk = m_World.CreateGameObject<SkeletalMeshActor>();
-	((SkeletalMeshComponent*)sk->GetRootComponent().get())->SetSceneFilePath("../Resource/Zombie.fbx");
 
 	m_pPlayerController = m_World.CreateGameObject<PlayerController>();
 	m_pDefaultPawn = m_World.CreateGameObject<DefaultPawn>();
 	m_pDefaultPawn->SetWorldPosition(Math::Vector3(0.0f,100.0f,-500.0f));
-
 	m_pPlayerController->Posess((Pawn*)m_pDefaultPawn.get());
 
 	ChangeWorld(&m_World);
@@ -66,101 +54,10 @@ bool TutorialApp::Initialize(UINT Width, UINT Height)
 void TutorialApp::Update()
 {
 	__super::Update();
-	/*
-	for (auto& model : m_SkeletalMeshModelList)
-	{
-		model.Update(m_Timer.DeltaTime());
-	}
-	for (auto& model : m_StaticMeshModelList)
-	{
-		model.Update(m_Timer.DeltaTime());
-	}
-
-	auto mouse = m_mouse->GetState();
-	m_mouseButtons.Update(mouse);
-	if (mouse.positionMode == Mouse::MODE_RELATIVE)
-	{
-		Vector3 delta = Vector3(float(mouse.x), float(mouse.y), 0.f) * ROTATION_GAIN;
-		m_pitch += delta.y;
-		m_yaw += delta.x;
-	}
-
-	m_mouse->SetMode(mouse.rightButton ? Mouse::MODE_RELATIVE : Mouse::MODE_ABSOLUTE);
-	auto kb = m_keyboard->GetState();
-	m_keys.Update(kb);
-	if (kb.Home)
-	{
-		m_cameraPos = START_POSITION;
-		m_yaw = m_pitch = 0.f;
-	}
-
-	Vector3 move = Vector3::Zero;
-	float fowardScale = 0.0f;
-	float rightScale = 0.0f;
-	float upScale = 0.0f;
-	if (kb.Up || kb.W)
-		fowardScale = 1.f;
-
-	if (kb.Down || kb.S)
-		fowardScale = -1.f;
-
-	if (kb.Left || kb.A)
-		rightScale = -1.f;
-
-	if (kb.Right || kb.D)
-		rightScale = 1.f;
-
-	if (kb.PageUp || kb.Space)
-		upScale = 1.f;
-
-	if (kb.PageDown || kb.X)
-		upScale = -1.f;
-
-	// 원래 있던 사인-코사인 어쩌고 함수는 전방벡터를 얻는 최적화된 코드
-	
-	m_rotMatrix = Matrix::CreateFromYawPitchRoll(m_yaw, m_pitch, 0.0f);
-	m_forward = Vector3(m_rotMatrix._31, m_rotMatrix._32, m_rotMatrix._33);
-	m_right = m_rotMatrix.Right();
-
-	float speed = MOVEMENT_GAIN;       // 이동속도
-	m_MoveDirection = m_forward * fowardScale + m_right * rightScale + Vector3::Up * upScale; // 회전상태와 키를 고려한 월드에서의 이동방향
-	m_MoveDirection.Normalize(); //  순수 크기1로  정규화
-
-	m_cameraPos = m_cameraPos + m_MoveDirection * speed;   // 정면벡터
-
-	// limit pitch to straight up or straight down
-	constexpr float limit = XM_PIDIV2 - 0.01f;
-	m_pitch = max( -limit, m_pitch);
-	m_pitch = min( +limit, m_pitch);
-
-	// keep longitude in sane range by wrapping
-	if (m_yaw > XM_PI)
-	{
-		m_yaw -= XM_2PI;
-	}
-	else if (m_yaw < -XM_PI)
-	{
-		m_yaw += XM_2PI;
-	}
-
-	XMVECTOR lookAt = m_cameraPos + m_forward;   // 정면벡터
-
-	D3DRenderManager::Instance->SetEyePosition(m_cameraPos);
-	D3DRenderManager::Instance->m_View = XMMatrixLookAtLH(m_cameraPos, lookAt, Vector3::Up)
-	*/
 }
 
 void TutorialApp::Render()
 {
-	for (auto& model : m_SkeletalMeshModelList)
-	{
-		m_Renderer.AddMeshInstance(&model);
-	}
-	for (auto& model : m_StaticMeshModelList)
-	{
-		m_Renderer.AddMeshInstance(&model);
-	}
-
 	__super::Render();
 }
 
@@ -173,18 +70,18 @@ void TutorialApp::IncreaseModel()
 {	
 	
 	{
-		SkeletalMeshComponent& model = m_SkeletalMeshModelList.emplace_back();
-
-		auto SceneResource = ResourceManager::Instance->CreateSkeletalMeshSceneResource("../Resource/Zombie.fbx");
-		//SceneResource->AddAnimation(ResourceManager::Instance->CreateAnimation("../Resource/Zombie_Run.fbx"));
-		//SceneResource->AddAnimation(ResourceManager::Instance->CreateAnimation("../Resource/SkinningTest.fbx"));
-		model.SetSceneResource(SceneResource);
+		auto SkActor = m_World.CreateGameObject<SkeletalMeshActor>();
+		SkeletalMeshComponent* SkComponent = (SkeletalMeshComponent*)SkActor->GetRootComponent().get();
+		SkComponent->SetSceneFilePath("../Resource/Zombie.fbx");
+		//SkComponent->AddSceneAnimationFromFBX("../Resource/Zombie_Run.fbx");
+		//SkComponent->AddSceneAnimationFromFBX("../Resource/SkinningTest.fbx");
 
 		int range = 500;
 		float pos = (float)(rand() % range) - range * 0.5f;
-		model.m_Local = Matrix::CreateTranslation(pos, 0, 0);	
-		int playindex = rand() % model.GetSceneResource()->m_Animations.size();
-		model.PlayAnimation(playindex);
+		SkActor->SetWorldPosition(Math::Vector3(pos, 0.0f, 0.0f));
+
+		//int playindex = rand() % model.GetSceneResource()->m_Animations.size();
+		//model.PlayAnimation(playindex);
 	}
 	/*
 	{
@@ -197,31 +94,8 @@ void TutorialApp::IncreaseModel()
 	
 }
 
-void TutorialApp::DecreaseModel()
-{
-	if (!m_SkeletalMeshModelList.empty())
-	{
-		m_SkeletalMeshModelList.pop_back();
-	}
-	
-	if (!m_StaticMeshModelList.empty())
-	{
-		m_StaticMeshModelList.pop_back();
-	}
-	
-}
-
 void TutorialApp::ImGuiRender()
 {
 	ImGui::Text("다른곳에서도 ImGUI를 사용하는테스트 English Only");
-
-	D3DRenderManager::Instance->AddDebugFloatToImGuiWindow("Control Yaw", m_yaw);
-	D3DRenderManager::Instance->AddDebugFloatToImGuiWindow("Control Pitch", m_pitch);
-	D3DRenderManager::Instance->AddDebugVector3ToImGuiWindow("CameraPos", m_cameraPos);
-	
-	D3DRenderManager::Instance->AddDebugMatrixToImGuiWindow("rotMatrix", m_rotMatrix);
-	D3DRenderManager::Instance->AddDebugVector3ToImGuiWindow("Forward", m_forward);
-	D3DRenderManager::Instance->AddDebugVector3ToImGuiWindow("Right", m_right);
-	D3DRenderManager::Instance->AddDebugVector3ToImGuiWindow("MoveDirection", m_MoveDirection);
 }
 

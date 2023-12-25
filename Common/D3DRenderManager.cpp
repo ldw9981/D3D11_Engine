@@ -66,7 +66,6 @@ void D3DRenderManager::AddMeshInstance(StaticMeshComponent* pModel)
 	}
 }
 
-
 bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 {
 	m_hWnd = Handle;
@@ -316,6 +315,8 @@ void D3DRenderManager::Render()
 	m_pDeviceContext->ClearRenderTargetView(m_pRenderTargetView, clear_color_with_alpha);
 	m_pDeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 	m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);	
+	m_pDeviceContext->RSSetState(nullptr);
+	
 
 	// 버텍스셰이더 설정 (StaticMesh-SkeletalMesh에 따라 Render직전에 바뀐다)
 	// 버텍스 셰이더 상수 설정
@@ -345,61 +346,37 @@ void D3DRenderManager::Render()
 	m_TransformVP.mProjection = m_Projection.Transpose();
 	m_pDeviceContext->UpdateSubresource(m_pCBTransformVP, 0, nullptr, &m_TransformVP, 0, 0);
 
-	// m_SkeletalMeshInstance
-	m_pDeviceContext->IASetInputLayout(m_pSkeletalMeshInputLayout);
-	m_pDeviceContext->VSSetShader(m_pSkeletalMeshVertexShader, nullptr, 0);
+	RenderSkeletalMeshInstance();
+	RenderStaticMeshInstance();
+	RenderDebugDraw();
+	RenderImGui();
 
-	m_SkeletalMeshInstance.sort([](const SkeletalMeshInstance* lhs, const SkeletalMeshInstance* rhs)
+	m_pSwapChain->Present(0, 0);	// Present our back buffer to our front buffer
+}
+
+void D3DRenderManager::RenderDebugDraw()
+{
+	m_pDeviceContext->OMSetBlendState( DebugDraw::g_States->Opaque(), nullptr, 0xFFFFFFFF);
+	m_pDeviceContext->OMSetDepthStencilState(DebugDraw::g_States->DepthNone(), 0);
+	m_pDeviceContext->RSSetState(DebugDraw::g_States->CullNone());
+
+	DebugDraw::g_BatchEffect->Apply(m_pDeviceContext);
+	DebugDraw::g_BatchEffect->SetView(m_View);
+	DebugDraw::g_BatchEffect->SetProjection(m_Projection);
+
+	m_pDeviceContext->IASetInputLayout(DebugDraw::g_pBatchInputLayout.Get());
+
+	DebugDraw::g_Batch->Begin();
+
+	for (auto& SkeletalMeshComponent : m_SkeletalMeshComponents)
 	{
-		return lhs->m_pMaterial < rhs->m_pMaterial;
-	});
-
-	Material* pPrevMaterial = nullptr;
-	for (const auto& meshInstance : m_SkeletalMeshInstance)
-	{			
-		if (pPrevMaterial != meshInstance->m_pMaterial)
-		{
-			ApplyMaterial(meshInstance->m_pMaterial);	// 머터리얼 적용
-			pPrevMaterial = meshInstance->m_pMaterial;
-		}	
-		// 행렬팔레트 업데이트						
-		meshInstance->UpdateMatrixPallete(&m_MatrixPalette);
-		m_cbMatrixPallete.SetData(m_pDeviceContext, m_MatrixPalette);
-		
-		// Draw
-		meshInstance->Render(m_pDeviceContext);		
+		DebugDraw::Draw(DebugDraw::g_Batch.get(), SkeletalMeshComponent->m_BoundingBox, Colors::Blue); // BoundingBox
 	}
-	m_SkeletalMeshInstance.clear();
+	DebugDraw::g_Batch->End();
+}
 
-
-	// m_StaticMeshInstance
-	m_pDeviceContext->IASetInputLayout(m_pStaticMeshInputLayout);
-	m_pDeviceContext->VSSetShader(m_pStaticMeshVertexShader, nullptr, 0);
-
-	m_StaticMeshInstance.sort([](const StaticMeshInstance* lhs, const StaticMeshInstance* rhs)
-		{
-			return lhs->m_pMaterial < rhs->m_pMaterial;
-		});
-	for (const auto& meshInstance : m_StaticMeshInstance)
-	{		
-		if (pPrevMaterial != meshInstance->m_pMaterial)
-		{
-			ApplyMaterial(meshInstance->m_pMaterial);	// 머터리얼 적용
-			pPrevMaterial = meshInstance->m_pMaterial;
-		}
-
-		m_TransformW.mWorld = meshInstance->m_pNodeWorldTransform->Transpose();
-		m_pDeviceContext->UpdateSubresource(m_pCBTransformW, 0, nullptr, &m_TransformW, 0, 0);
-		
-		// Draw
-		meshInstance->Render(m_pDeviceContext);
-	}
-	m_StaticMeshInstance.clear();
-
-
-
-
-
+void D3DRenderManager::RenderImGui()
+{
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
@@ -411,39 +388,91 @@ void D3DRenderManager::Render()
 	{
 		ImGui::Begin("Properties");
 
-		
+
 		ImGui::Text("Frame average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
 		std::string str;
 		GetVideoMemoryInfo(str);
-		ImGui::Text("VideoMemory: %s",str.c_str() );
+		ImGui::Text("VideoMemory: %s", str.c_str());
 		GetSystemMemoryInfo(str);
-		ImGui::Text("SystemMemory: %s", str.c_str());	
+		ImGui::Text("SystemMemory: %s", str.c_str());
 
 		ImGui::Text("Light");
 		ImGui::SliderFloat3("LightDirection", (float*)&m_Light.Direction, -1.0f, 1.0f);
-		ImGui::ColorEdit3("LightRadiance", (float*)&m_Light.Radiance);			
+		ImGui::ColorEdit3("LightRadiance", (float*)&m_Light.Radiance);
 
 		ImGui::Text("BackBuffer");
 		ImGui::ColorEdit3("clear color", (float*)&m_ClearColor); // Edit 3 floats representing a color	
 
 		AddDebugVector3ToImGuiWindow("EyePosition", m_Light.EyePosition);
 		AddDebugVector3ToImGuiWindow("LookAt", m_LookAt);
-		AddDebugMatrixToImGuiWindow("ViewMatrix",m_View);
+		AddDebugMatrixToImGuiWindow("ViewMatrix", m_View);
 
 
-		if(m_pImGuiRender)
+		if (m_pImGuiRender)
 			m_pImGuiRender->ImGuiRender();
 
 		ImGui::End();
 	}
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-
-	m_pSwapChain->Present(0, 0);	// Present our back buffer to our front buffer
 }
 
 
+void D3DRenderManager::RenderSkeletalMeshInstance()
+{
+	m_pDeviceContext->IASetInputLayout(m_pSkeletalMeshInputLayout);
+	m_pDeviceContext->VSSetShader(m_pSkeletalMeshVertexShader, nullptr, 0);
 
+	m_SkeletalMeshInstance.sort([](const SkeletalMeshInstance* lhs, const SkeletalMeshInstance* rhs)
+		{
+			return lhs->m_pMaterial < rhs->m_pMaterial;
+		});
+
+	Material* pPrevMaterial = nullptr;
+	for (const auto& meshInstance : m_SkeletalMeshInstance)
+	{
+		if (pPrevMaterial != meshInstance->m_pMaterial)
+		{
+			ApplyMaterial(meshInstance->m_pMaterial);	// 머터리얼 적용
+			pPrevMaterial = meshInstance->m_pMaterial;
+		}
+		// 행렬팔레트 업데이트						
+		meshInstance->UpdateMatrixPallete(&m_MatrixPalette);
+		m_cbMatrixPallete.SetData(m_pDeviceContext, m_MatrixPalette);
+
+		// Draw
+		meshInstance->Render(m_pDeviceContext);
+	}
+	m_SkeletalMeshInstance.clear();
+}
+
+void D3DRenderManager::RenderStaticMeshInstance()
+{
+	m_pDeviceContext->IASetInputLayout(m_pStaticMeshInputLayout);
+	m_pDeviceContext->VSSetShader(m_pStaticMeshVertexShader, nullptr, 0);
+
+	m_StaticMeshInstance.sort([](const StaticMeshInstance* lhs, const StaticMeshInstance* rhs)
+		{
+			return lhs->m_pMaterial < rhs->m_pMaterial;
+		});
+
+	Material* pPrevMaterial = nullptr;
+	for (const auto& meshInstance : m_StaticMeshInstance)
+	{
+		if (pPrevMaterial != meshInstance->m_pMaterial)
+		{
+			ApplyMaterial(meshInstance->m_pMaterial);	// 머터리얼 적용
+			pPrevMaterial = meshInstance->m_pMaterial;
+		}
+
+		m_TransformW.mWorld = meshInstance->m_pNodeWorldTransform->Transpose();
+		m_pDeviceContext->UpdateSubresource(m_pCBTransformW, 0, nullptr, &m_TransformW, 0, 0);
+
+		// Draw
+		meshInstance->Render(m_pDeviceContext);
+	}
+	m_StaticMeshInstance.clear();
+}
 
 void D3DRenderManager::CreateSkeletalMesh_VS_IL()
 {

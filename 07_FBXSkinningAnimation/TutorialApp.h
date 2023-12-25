@@ -27,17 +27,8 @@ public:
 	std::list<StaticMeshComponent>		m_StaticMeshModelList;
 	std::list<SkeletalMeshComponent>	m_SkeletalMeshModelList;
 
-
 	std::shared_ptr<PlayerController> m_pPlayerController = nullptr;
 	std::shared_ptr<DefaultPawn> m_pDefaultPawn = nullptr;
-	// FPS-style
-	float                                           m_pitch;
-	float                                           m_yaw;
-	DirectX::SimpleMath::Vector3                    m_cameraPos;
-	Vector3 m_forward, m_right;
-	Matrix m_rotMatrix;
-	Vector3 m_MoveDirection = { 0.0f, 0.0f, 0.0f };
-
 
 	virtual bool Initialize(UINT Width, UINT Height);
 	virtual void Update();

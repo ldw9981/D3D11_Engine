@@ -148,6 +148,7 @@
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="MovementComponent.h" />
     <ClInclude Include="Pawn.h" />
+    <ClInclude Include="PipelineStateObjects.h" />
     <ClInclude Include="PlayerController.h" />
     <ClInclude Include="RenderComponent.h" />
     <ClInclude Include="SkeletalMeshActor.h" />
@@ -181,6 +182,7 @@
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="MovementComponent.cpp" />
     <ClCompile Include="Pawn.cpp" />
+    <ClCompile Include="PipelineStateObjects.cpp" />
     <ClCompile Include="PlayerController.cpp" />
     <ClCompile Include="RenderComponent.cpp" />
     <ClCompile Include="SkeletalMeshActor.cpp" />

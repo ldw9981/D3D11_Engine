@@ -129,6 +129,7 @@ public:
 	std::weak_ptr<CameraComponent> m_pCamera;
 
 public:
+
 	bool Initialize(HWND Handle,UINT Width, UINT Height);
 	void Uninitialize();
 
@@ -136,9 +137,7 @@ public:
 	void Render();
 
 	void SetEyePosition(const Vector3& eyePosition) { m_Light.EyePosition = eyePosition; }
-	void CreateSkeletalMesh_VS_IL();
-	void CreateStaticMesh_VS_IL();
-	void CreatePS();
+
 	void ApplyMaterial(Material* pMaterial);
 
 	void GetVideoMemoryInfo(std::string& out);
@@ -153,15 +152,17 @@ public:
 
 	std::weak_ptr<CameraComponent> Camera() const { return m_pCamera; }
 	void SetCamera(std::weak_ptr<CameraComponent> val) { m_pCamera = val; }
-
-
 	void SetImGuiRender(IImGuiRenderable* val) { m_pImGuiRender = val; }
+private:
+	void CreateSkeletalMesh_VS_IL();
+	void CreateStaticMesh_VS_IL();
+	void CreatePS();
 
-
-
-	// 렌더링 이후에 목록은 사라진다.
 	void AddMeshInstance(SkeletalMeshComponent* pModel);
 	void AddMeshInstance(StaticMeshComponent* pModel);
 
-
+	void RenderDebugDraw();
+	void RenderImGui();
+	void RenderSkeletalMeshInstance();
+	void RenderStaticMeshInstance();
 };
