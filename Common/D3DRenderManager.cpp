@@ -356,9 +356,8 @@ void D3DRenderManager::Render()
 
 void D3DRenderManager::RenderDebugDraw()
 {
-	m_pDeviceContext->OMSetBlendState( DebugDraw::g_States->Opaque(), nullptr, 0xFFFFFFFF);
-	m_pDeviceContext->OMSetDepthStencilState(DebugDraw::g_States->DepthNone(), 0);
-	m_pDeviceContext->RSSetState(DebugDraw::g_States->CullNone());
+	m_pDeviceContext->OMSetBlendState( DebugDraw::g_States->Opaque(), nullptr, 0xFFFFFFFF);	
+	//m_pDeviceContext->RSSetState(DebugDraw::g_States->CullNone());
 
 	DebugDraw::g_BatchEffect->Apply(m_pDeviceContext);
 	DebugDraw::g_BatchEffect->SetView(m_View);
@@ -376,7 +375,7 @@ void D3DRenderManager::RenderDebugDraw()
 	{
 		DebugDraw::Draw(DebugDraw::g_Batch.get(), StaticMeshComponent->m_BoundingBox, Colors::Blue); // BoundingBox
 	}
-	DebugDraw::g_Batch->End();
+	DebugDraw::g_Batch->End();	
 }
 
 void D3DRenderManager::RenderImGui()
