@@ -85,7 +85,11 @@ void TutorialApp::IncreaseModel()
 	
 	{
 		auto StActor = m_World.CreateGameObject<StaticMeshActor>();
-		StaticMeshComponent* pComponent = (StaticMeshComponent*)StActor->GetRootComponent();
+		StActor->m_SceneFilePath = "../Resource/ZeldaPosed001.fbx";
+
+		int range = 500;
+		float pos = (float)(rand() % range) - range * 0.5f;
+		StActor->SetWorldPosition(Math::Vector3(pos, 0.0f, 0.0f));
 		
 	}
 	

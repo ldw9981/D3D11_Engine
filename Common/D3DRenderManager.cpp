@@ -372,6 +372,10 @@ void D3DRenderManager::RenderDebugDraw()
 	{
 		DebugDraw::Draw(DebugDraw::g_Batch.get(), SkeletalMeshComponent->m_BoundingBox, Colors::Blue); // BoundingBox
 	}
+	for (auto& StaticMeshComponent : m_StaticMeshComponents)
+	{
+		DebugDraw::Draw(DebugDraw::g_Batch.get(), StaticMeshComponent->m_BoundingBox, Colors::Blue); // BoundingBox
+	}
 	DebugDraw::g_Batch->End();
 }
 
