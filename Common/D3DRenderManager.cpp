@@ -297,8 +297,8 @@ void D3DRenderManager::Update()
 		m_View = XMMatrixLookAtLH(eye, m_LookAt, up);
 		SetEyePosition(eye);
 
-		Math::Matrix viewProjection = m_View * m_Projection;
-		m_Frustum.Transform(m_Frustum, viewProjection);
+		Math::Matrix viewProjection =  m_View* m_Projection;
+		BoundingFrustum::CreateFromMatrix(m_Frustum, viewProjection);
 	}
 	m_nDrawComponentCount = 0;
 	for (auto& SkeletalMeshComponent : m_SkeletalMeshComponents)
@@ -378,6 +378,8 @@ void D3DRenderManager::RenderDebugDraw()
 	m_pDeviceContext->IASetInputLayout(DebugDraw::g_pBatchInputLayout.Get());
 
 	DebugDraw::g_Batch->Begin();
+
+	DebugDraw::Draw(DebugDraw::g_Batch.get(), m_Frustum, Colors::Yellow); // BoundingBox
 
 	for (auto& SkeletalMeshComponent : m_SkeletalMeshComponents)
 	{
