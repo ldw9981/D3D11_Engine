@@ -19,5 +19,5 @@ void StaticMeshActor::OnBeginPlay()
 	{
 		m_pStaticMeshComponent->ReadSceneResourceFromFBX(m_SceneFilePath);
 	}
-	
+
 }

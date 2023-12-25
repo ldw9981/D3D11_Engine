@@ -14,7 +14,7 @@ RenderComponent::~RenderComponent()
 void RenderComponent::Update(float DeltaTime)
 {
 	__super::Update(DeltaTime);
+
+	// static,skeletal mesh 다르게 할 필요가있음.
 	m_BoundingBox.Center = GetWorldPosition();
-	// 축이 아래에 항상 있다고 가정
-	m_BoundingBox.Center.y += m_BoundingBox.Extents.y;
 }

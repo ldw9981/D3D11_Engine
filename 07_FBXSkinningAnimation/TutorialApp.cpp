@@ -62,6 +62,15 @@ void TutorialApp::Render()
 
 LRESULT CALLBACK TutorialApp::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	switch (message) 
+	{	
+	case WM_KEYDOWN:
+		if (wParam == VK_UP) 
+		{
+			IncreaseModel();
+		}
+		break;
+	}
 	return GameApp::WndProc(hWnd, message, wParam, lParam);
 }
 
@@ -85,11 +94,11 @@ void TutorialApp::IncreaseModel()
 	
 	{
 		auto StActor = m_World.CreateGameObject<StaticMeshActor>();
-		StActor->m_SceneFilePath = "../Resource/ZeldaPosed001.fbx";
+		StActor->m_SceneFilePath = "../Resource/cerberus.FBX";
 
 		int range = 500;
 		float pos = (float)(rand() % range) - range * 0.5f;
-		StActor->SetWorldPosition(Math::Vector3(pos, 0.0f, 0.0f));
+		StActor->SetWorldPosition(Math::Vector3(pos, 40.0f, 0.0f));
 		
 	}
 	
