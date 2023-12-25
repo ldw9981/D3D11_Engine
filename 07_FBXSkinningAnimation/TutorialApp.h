@@ -37,7 +37,7 @@ public:
 	virtual LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 	void IncreaseModel();
-	void DecreaseModel();
+
 	virtual void ImGuiRender();
 };
 

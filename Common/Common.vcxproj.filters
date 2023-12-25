@@ -135,6 +135,9 @@
     <ClInclude Include="PipelineStateObjects.h">
       <Filter>헤더 파일\Rendering</Filter>
     </ClInclude>
+    <ClInclude Include="StaticMeshActor.h">
+      <Filter>헤더 파일\Framework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp">
@@ -232,6 +235,9 @@
     </ClCompile>
     <ClCompile Include="PipelineStateObjects.cpp">
       <Filter>소스 파일\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticMeshActor.cpp">
+      <Filter>소스 파일\Framework</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

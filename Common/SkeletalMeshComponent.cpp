@@ -55,12 +55,13 @@ std::shared_ptr<SkeletalMeshSceneResource> SkeletalMeshComponent::GetSceneResour
 }
 
 bool SkeletalMeshComponent::ReadSceneResourceFromFBX(std::string filePath)
-{
+{	
 	// 리소스 매니저에서 가져온다.
 	auto resource = ResourceManager::Instance->CreateSkeletalMeshSceneResource(filePath);	
 	if (!resource) {
 		return false;
 	}
+	m_SceneFilePath = filePath;
 	SetSceneResource(resource);
 	return true;
 }
@@ -69,10 +70,13 @@ bool SkeletalMeshComponent::ReadSceneResourceFromFBX(std::string filePath)
 
 bool SkeletalMeshComponent::AddSceneAnimationFromFBX(std::string filePath)
 {
+	assert(m_SceneResource);
 	auto animation = ResourceManager::Instance->CreateAnimationResource(filePath);
 	if (!animation) {
 		return false;
 	}
+
+	m_AnimationFilePath.push_back(filePath);
 	m_SceneResource->m_Animations.push_back(animation);
 	return true;
 }
@@ -146,14 +150,10 @@ void SkeletalMeshComponent::CreateHierachy(SkeletonResource* skeleton)
 
 void SkeletalMeshComponent::OnBeginPlay()
 {
-	ReadSceneResourceFromFBX( m_SceneFilePath);	
-	for (auto& animation : m_AnimationFilePath)
-	{
-		AddSceneAnimationFromFBX(animation);
-	};
+	__super::OnBeginPlay();
 }
 
 void SkeletalMeshComponent::OnEndPlay()
 {
-
+	__super::OnEndPlay();
 }

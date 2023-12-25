@@ -8,10 +8,10 @@ constexpr float MOVEMENT_GAIN = 0.07f;
 
 DefaultPawn::DefaultPawn()
 {
-	m_pCameraComponent = CreateComponent<CameraComponent>("CameraComponent");
+	m_pCameraComponent = CreateComponent<CameraComponent>("CameraComponent").get();
 	SetRootComponent(m_pCameraComponent);
 
-	m_pMovementComponent = CreateComponent<MovementComponent>("MovementComponent");
+	m_pMovementComponent = CreateComponent<MovementComponent>("MovementComponent").get();
 	m_pMovementComponent->m_Speed = 200.0f;
 }
 
@@ -85,5 +85,11 @@ void DefaultPawn::OnInputProcess(const DirectX::Keyboard::State& KeyboardState, 
 void DefaultPawn::OnPossess(PlayerController* pPlayerController)
 {
 	__super::OnPossess(pPlayerController);
-	D3DRenderManager::Instance->SetCamera(m_pCameraComponent);
+	
+	auto pComponent = (std::weak_ptr<Component>)GetComponentByName("CameraComponent");
+	if (pComponent.expired() ==false)
+	{
+		std::weak_ptr<CameraComponent> pCameraComponent = std::dynamic_pointer_cast<CameraComponent>(pComponent.lock());
+		D3DRenderManager::Instance->SetCamera(pCameraComponent);
+	}	
 }

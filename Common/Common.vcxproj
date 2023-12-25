@@ -166,6 +166,7 @@
     <ClInclude Include="SkeletalMeshInstance.h" />
     <ClInclude Include="SkeletalMeshResource.h" />
     <ClInclude Include="SkeletonResource.h" />
+    <ClInclude Include="StaticMeshActor.h" />
     <ClInclude Include="StaticMeshComponent.h" />
     <ClInclude Include="StaticMeshInstance.h" />
     <ClInclude Include="StaticMeshResource.h" />
@@ -205,6 +206,7 @@
     <ClCompile Include="SkeletalMeshInstance.cpp" />
     <ClCompile Include="SkeletalMeshResource.cpp" />
     <ClCompile Include="SkeletonResource.cpp" />
+    <ClCompile Include="StaticMeshActor.cpp" />
     <ClCompile Include="StaticMeshComponent.cpp" />
     <ClCompile Include="StaticMeshInstance.cpp" />
     <ClCompile Include="StaticMeshResource.cpp" />

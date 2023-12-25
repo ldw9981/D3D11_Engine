@@ -11,7 +11,7 @@ public:
 
 	Math::Vector3 m_InputVector;
 	float m_Speed=1.0f;
-	std::shared_ptr<SceneComponent> m_pRootComponent;
+	SceneComponent* m_pRootComponent;
 		
 	void AddInputVector(const Math::Vector3& input);
 

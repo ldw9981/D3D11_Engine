@@ -2,15 +2,14 @@
 #include "TutorialApp.h"
 #include "../Common/D3DRenderManager.h"
 #include "../Common/SkeletalMeshComponent.h"
+#include "../Common/SkeletalMeshActor.h"
 #include "../Common/StaticMeshComponent.h"
-#include "../Common/SkeletalMeshResource.h"
-#include "../Common/StaticMeshResource.h"
-#include "../Common/ResourceManager.h"
-#include "../Common/PlayerController.h"
+#include "../Common/StaticMeshActor.h"
 
+#include "../Common/PlayerController.h"
 #include "../Common/DefaultPawn.h"
 #include "../Common/Pawn.h"
-#include "../Common/SkeletalMeshActor.h"
+
 
 #include <utility>
 #include <algorithm>
@@ -71,10 +70,10 @@ void TutorialApp::IncreaseModel()
 	
 	{
 		auto SkActor = m_World.CreateGameObject<SkeletalMeshActor>();
-		SkeletalMeshComponent* SkComponent = (SkeletalMeshComponent*)SkActor->GetRootComponent().get();
-		SkComponent->SetSceneFilePath("../Resource/Zombie.fbx");
-		//SkComponent->AddSceneAnimationFromFBX("../Resource/Zombie_Run.fbx");
-		//SkComponent->AddSceneAnimationFromFBX("../Resource/SkinningTest.fbx");
+		SkeletalMeshComponent* pComponent = (SkeletalMeshComponent*)SkActor->GetRootComponent();
+		pComponent->ReadSceneResourceFromFBX("../Resource/Zombie.fbx");
+		pComponent->AddSceneAnimationFromFBX("../Resource/Zombie_Run.fbx");
+		pComponent->AddSceneAnimationFromFBX("../Resource/SkinningTest.fbx");
 
 		int range = 500;
 		float pos = (float)(rand() % range) - range * 0.5f;
@@ -83,14 +82,13 @@ void TutorialApp::IncreaseModel()
 		//int playindex = rand() % model.GetSceneResource()->m_Animations.size();
 		//model.PlayAnimation(playindex);
 	}
-	/*
+	
 	{
-		StaticMeshComponent& model = m_StaticMeshModelList.emplace_back();
-
-		auto SceneResource = ResourceManager::Instance->CreateStaticMeshSceneResource("../Resource/Vampire.fbx"); //cerberus
-		model.SetSceneResource(SceneResource);
+		auto StActor = m_World.CreateGameObject<StaticMeshActor>();
+		StaticMeshComponent* pComponent = (StaticMeshComponent*)StActor->GetRootComponent();
+		
 	}
-	*/
+	
 	
 }
 

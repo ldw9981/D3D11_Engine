@@ -7,12 +7,12 @@ class DefaultPawn :
     public Pawn
 {
 public:
-    DefaultPawn();
-    ~DefaultPawn();
-
-    std::shared_ptr<SceneComponent> m_pSceneComponent;
-    std::shared_ptr<MovementComponent> m_pMovementComponent;
-    std::shared_ptr<CameraComponent> m_pCameraComponent;
+    DefaultPawn();    
+     ~DefaultPawn();
+   
+    SceneComponent* m_pSceneComponent;
+    MovementComponent* m_pMovementComponent;
+    CameraComponent* m_pCameraComponent;
 
     virtual void Update(float DeltaTime) override;
 	virtual void OnBeginPlay();// World에서 추가후 게임 진행할때 호출

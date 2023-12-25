@@ -5,11 +5,16 @@
 
 SkeletalMeshActor::SkeletalMeshActor()
 {
-	m_pSkeletalMeshComponent = CreateComponent<SkeletalMeshComponent>("SkeletalMeshComponent");
+	m_pSkeletalMeshComponent = CreateComponent<SkeletalMeshComponent>("SkeletalMeshComponent").get();
 	SetRootComponent(m_pSkeletalMeshComponent);	
 }
 
-void SkeletalMeshActor::Update(float DeltaTime)
+void SkeletalMeshActor::OnBeginPlay()
 {
-	__super::Update(DeltaTime);
+	__super::OnBeginPlay();
+	if (!m_SceneFilePath.empty())
+	{
+		m_pSkeletalMeshComponent->ReadSceneResourceFromFBX(m_SceneFilePath);
+	}
 }
+

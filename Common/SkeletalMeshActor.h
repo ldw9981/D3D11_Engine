@@ -8,8 +8,9 @@ public:
 	SkeletalMeshActor();
 	~SkeletalMeshActor() {};
 
-	std::shared_ptr<SkeletalMeshComponent> m_pSkeletalMeshComponent;
+	SkeletalMeshComponent* m_pSkeletalMeshComponent = nullptr;
 
-	virtual void Update(float DeltaTime);
+	std::string m_SceneFilePath;	// BeginPlay에서 로딩
+	virtual void OnBeginPlay();
 };
 

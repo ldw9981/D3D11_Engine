@@ -1,15 +1,16 @@
 #pragma once
 #include "InputManager.h"
-#include "SceneComponent.h"
+
 #include "MovementComponent.h"
 #include "CameraComponent.h"
 #include "SkeletalMeshComponent.h"
 #include "StaticMeshComponent.h"
+#include "SceneComponent.h"
 
 
 class Component;
-
 class World;
+
 class Actor: public InputProcesser
 {
 	friend class World;
@@ -21,15 +22,15 @@ public:
 private:
 	World* m_pOwner = nullptr;					// 이 게임 오브젝트가 속한 월드
 public:
-	std::shared_ptr<SceneComponent> m_pRootComponent;		// 컴포넌트 중에 어느게 루트인지 설정
+	SceneComponent*		m_pRootComponent = nullptr;		// 컴포넌트 중에 어느게 루트인지 설정
 	World* GetOwner() const { return m_pOwner; }
 	void SetOwner(World* val) { m_pOwner = val; }
 	virtual void Update(float DeltaTime);
 	virtual void Render(ID3D11DeviceContext* pDeviceContext);
 
 	// 루트 컴포넌트로 설정
-	void SetRootComponent(std::shared_ptr<SceneComponent> pRootComponent);
-	std::shared_ptr<SceneComponent> GetRootComponent() const;
+	void SetRootComponent(SceneComponent* pRootComponent);
+	SceneComponent* GetRootComponent() const;
 
 	// 컴포넌트를 템틀릿 함수로 생성합니다.
 	template<typename T>
@@ -50,5 +51,6 @@ public:
 
 
 	void SetWorldPosition(const Math::Vector3& val);
+	std::weak_ptr<Component> GetComponentByName(const std::string& Name);
 };
 
