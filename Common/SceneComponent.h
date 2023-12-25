@@ -12,10 +12,10 @@ public:
 	~SceneComponent();
 
 		
-	void SetRelativePosition(Math::Vector3 val);
+	void SetLocalPosition(Math::Vector3 val);
 	
-	void SetRelativeRotation(Math::Vector3 val);
-	void SetRelativeScale(Math::Vector3 val);
+	void SetLocalRotation(Math::Vector3 val);
+	void SetLocalScale(Math::Vector3 val);
 	bool m_bDirty = false;
 
 
@@ -23,8 +23,8 @@ public:
 	virtual void OnBeginPlay();
 	virtual void OnEndPlay();
 private:
-	Math::Vector3 m_RelativePosition;
-	Math::Vector3 m_RelativeScale;
-	Math::Vector3 m_RelativeRotation;
+	Math::Vector3 m_LocalPosition = Math::Vector3(0.0f,0.0f,0.0f);
+	Math::Vector3 m_LocalScale = Math::Vector3(1.0f, 1.0f, 1.0f);
+	Math::Vector3 m_LocalRotation = Math::Vector3(0.0f, 0.0f, 0.0f);
 };
 

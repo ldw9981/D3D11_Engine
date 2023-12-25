@@ -22,3 +22,19 @@ std::shared_ptr<SceneComponent> Actor::GetRootComponent() const
 {
 	return m_pRootComponent;
 }
+
+void Actor::OnBeginPlay()
+{
+	for (auto& pComponent : m_OwnedComponents)
+	{
+		pComponent->OnBeginPlay();
+	}
+}
+
+void Actor::OnEndPlay()
+{
+	for (auto& pComponent : m_OwnedComponents)
+	{
+		pComponent->OnEndPlay();
+	}
+}

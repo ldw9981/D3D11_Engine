@@ -142,6 +142,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AnimationResource.h" />
+    <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="DefaultPawn.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="MovementComponent.h" />
@@ -172,6 +173,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationResource.cpp" />
+    <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="DefaultPawn.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="MovementComponent.cpp" />

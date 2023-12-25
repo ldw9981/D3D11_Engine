@@ -2,6 +2,10 @@
 #include "InputManager.h"
 #include "SceneComponent.h"
 #include "MovementComponent.h"
+#include "CameraComponent.h"
+#include "SkeletalMeshComponent.h"
+#include "StaticMeshComponent.h"
+
 
 class Component;
 
@@ -40,8 +44,8 @@ public:
 		return pComponent;
 	}
 
-	virtual void OnBeginPlay() {};	// World에서 추가후 게임 진행할때 호출
-	virtual void OnEndPlay()  {};  // World 제거되었을 때 호출
+	virtual void OnBeginPlay();	// World에서 추가후 게임 진행할때 호출
+	virtual void OnEndPlay();  // World 제거되었을 때 호출
 	virtual void OnInputProcess(const DirectX::Keyboard::State& KeyboardState, const DirectX::Mouse::State& MouseState) {};
 
 };

@@ -24,7 +24,7 @@ void MovementComponent::Update(float DeltaTime)
 	{
 		Math::Vector3 Position = m_pRootComponent->GetWorldPosition();
 		Position += m_InputVector * m_Speed * DeltaTime;
-		m_pRootComponent->SetRelativePosition(Position);
+		m_pRootComponent->SetLocalPosition(Position);
 		m_InputVector = Math::Vector3::Zero;
 	}
 }

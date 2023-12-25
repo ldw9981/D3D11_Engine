@@ -64,6 +64,7 @@ public:
 class StaticMeshInstance;
 class SkeletalMeshInstance;
 class SkeletalMeshComponent;
+class CameraComponent;
 class D3DRenderManager
 {
 public:
@@ -105,6 +106,7 @@ public:
 	Matrix  m_View;					// 뷰좌표계 공간으로 변환을 위한 행렬.
 	Matrix  m_Projection;			// 단위장치좌표계( Normalized Device Coordinate) 공간으로 변환을 위한 행렬.
 
+	Vector3	m_LookAt = { 0.0f, 0.0f, 0.0f };
 	Vector3 m_ClearColor = { 0.0f, 0.0f, 0.0f };
 
 	CB_TransformW m_TransformW;
@@ -115,8 +117,6 @@ public:
 	D3D11_VIEWPORT m_Viewport;
 
 	HWND m_hWnd = nullptr;
-	
-	void SetImGuiRender(IImGuiRenderable* val) { m_pImGuiRender = val; }
 
 	std::list<StaticMeshInstance*> m_StaticMeshInstance;		//  렌더링할 모델들의 포인터 저장해둔다. 
 	std::list<SkeletalMeshInstance*> m_SkeletalMeshInstance;		//  렌더링할 모델들의 포인터 저장해둔다. 
@@ -125,10 +125,8 @@ public:
 	std::list<SkeletalMeshComponent*> m_SkeletalMeshComponents;		//  렌더링할 모델들의 포인터 저장해둔다.
 	std::list<StaticMeshComponent*> m_StaticMeshComponents;		//  렌더링할 모델들의 포인터 저장해둔다.
 
-	// 렌더링 이후에 목록은 사라진다.
-	void AddMeshInstance(SkeletalMeshComponent* pModel);
-	void AddMeshInstance(StaticMeshComponent* pModel);
-
+	IImGuiRenderable* m_pImGuiRender = nullptr;
+	std::weak_ptr<CameraComponent> m_pCamera;
 
 public:
 	bool Initialize(HWND Handle,UINT Width, UINT Height);
@@ -152,6 +150,18 @@ public:
 	void AddDebugVector3ToImGuiWindow(const std::string& header, const Vector3& value);
 	void AddDebugVector2ToImGuiWindow(const std::string& header, const Vector2& value);
 	void AddDebugFloatToImGuiWindow(const std::string& header, const float& value);
-private:
-	IImGuiRenderable* m_pImGuiRender = nullptr;
+
+	std::weak_ptr<CameraComponent> Camera() const { return m_pCamera; }
+	void SetCamera(std::weak_ptr<CameraComponent> val) { m_pCamera = val; }
+
+
+	void SetImGuiRender(IImGuiRenderable* val) { m_pImGuiRender = val; }
+
+
+
+	// 렌더링 이후에 목록은 사라진다.
+	void AddMeshInstance(SkeletalMeshComponent* pModel);
+	void AddMeshInstance(StaticMeshComponent* pModel);
+
+
 };

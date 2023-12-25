@@ -53,12 +53,15 @@ void PlayerController::UnPosess()
 
 void PlayerController::OnBeginPlay()
 {
+	__super::OnBeginPlay();
 	InputManager::Instance->AddInputProcesser(this);
+	
 }
 
 void PlayerController::OnEndPlay()
 {
 	InputManager::Instance->RemoveInputProcesser(this);
+	__super::OnEndPlay();
 }
 
 void PlayerController::Update(float DeltaTime)

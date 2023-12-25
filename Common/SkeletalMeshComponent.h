@@ -18,6 +18,8 @@ public:
 
 	SkeletalMeshComponent();
 	~SkeletalMeshComponent();
+	
+	void SetSceneFilePath(std::string val) { m_SceneFilePath = val; }
 protected:
 	std::shared_ptr<SkeletalMeshSceneResource>  m_SceneResource;
 	std::vector<SkeletalMeshInstance> m_MeshInstances;

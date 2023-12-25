@@ -2,6 +2,8 @@
 class Transform
 {
 public:
+	Transform();
+	~Transform();
 	Transform* m_pParent = nullptr;
 	std::string m_Name;
 	Math::Matrix m_Local;

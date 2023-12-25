@@ -50,14 +50,14 @@ bool TutorialApp::Initialize(UINT Width, UINT Height)
 
 	
 	auto sk = m_World.CreateGameObject<SkeletalMeshActor>();
-	((SkeletalMeshComponent*)sk->GetRootComponent().get())->ReadSceneResourceFromFBX("../Resource/Zombie.fbx");
+	((SkeletalMeshComponent*)sk->GetRootComponent().get())->SetSceneFilePath("../Resource/Zombie.fbx");
 
 	m_pPlayerController = m_World.CreateGameObject<PlayerController>();
 	m_pDefaultPawn = m_World.CreateGameObject<DefaultPawn>();
 	m_pPlayerController->Posess((Pawn*)m_pDefaultPawn.get());
 
 	ChangeWorld(&m_World);
-	
+
 	return true;
 }
 
@@ -221,12 +221,5 @@ void TutorialApp::ImGuiRender()
 	D3DRenderManager::Instance->AddDebugVector3ToImGuiWindow("Forward", m_forward);
 	D3DRenderManager::Instance->AddDebugVector3ToImGuiWindow("Right", m_right);
 	D3DRenderManager::Instance->AddDebugVector3ToImGuiWindow("MoveDirection", m_MoveDirection);
-	
-
-	
-
-
-	
-	D3DRenderManager::Instance->AddDebugMatrixToImGuiWindow("ViewMat",D3DRenderManager::Instance->m_View);
 }
 

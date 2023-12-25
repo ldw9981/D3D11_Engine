@@ -137,7 +137,7 @@ void SkeletalMeshComponent::CreateHierachy(SkeletonResource* skeleton)
 
 void SkeletalMeshComponent::OnBeginPlay()
 {
-	ReadSceneResourceFromFBX(m_SceneFilePath);	
+	ReadSceneResourceFromFBX( m_SceneFilePath);	
 	for (auto& animation : m_AnimationFilePath)
 	{
 		AddSceneAnimationFromFBX(animation);

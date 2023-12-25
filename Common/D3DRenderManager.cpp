@@ -22,7 +22,7 @@
 #include "SkeletalMeshResource.h"
 
 #include "SkeletalMeshComponent.h"
-
+#include "CameraComponent.h"
 
 #pragma comment(lib,"d3d11.lib")
 #pragma comment(lib,"d3dcompiler.lib")
@@ -283,7 +283,17 @@ void D3DRenderManager::Uninitialize()
 
 
 void D3DRenderManager::Update()
-{
+{	
+	if (m_pCamera.expired() == false)
+	{
+		auto pCamera = m_pCamera.lock();
+		Math::Vector3 eye = pCamera->m_World.Translation();
+		m_LookAt = pCamera->m_World.Translation() + -pCamera->m_World.Forward();
+		Math::Vector3 up = pCamera->m_World.Up();
+		m_View = XMMatrixLookAtLH(eye, m_LookAt, up);
+		SetEyePosition(eye);
+	}
+
 	for (auto& SkeletalMeshComponent : m_SkeletalMeshComponents)
 	{
 		AddMeshInstance(SkeletalMeshComponent);
@@ -404,10 +414,15 @@ void D3DRenderManager::Render()
 
 		ImGui::Text("Light");
 		ImGui::SliderFloat3("LightDirection", (float*)&m_Light.Direction, -1.0f, 1.0f);
-		ImGui::ColorEdit3("LightRadiance", (float*)&m_Light.Radiance);		
+		ImGui::ColorEdit3("LightRadiance", (float*)&m_Light.Radiance);			
 
 		ImGui::Text("BackBuffer");
 		ImGui::ColorEdit3("clear color", (float*)&m_ClearColor); // Edit 3 floats representing a color	
+
+		AddDebugVector3ToImGuiWindow("EyePosition", m_Light.EyePosition);
+		AddDebugVector3ToImGuiWindow("LookAt", m_LookAt);
+		AddDebugMatrixToImGuiWindow("ViewMatrix",m_View);
+
 
 		if(m_pImGuiRender)
 			m_pImGuiRender->ImGuiRender();

@@ -126,11 +126,6 @@ void GameApp::Update()
 
 void GameApp::Render()
 {
-	if (m_pCurrentWorld)
-	{
-		m_pCurrentWorld->Render();
-	}
-
 	m_Renderer.Render();
 }
 
