@@ -41,7 +41,7 @@ public:
 		std::shared_ptr<T> pComponent = std::make_shared<T>();
 		pComponent->m_pOwner = this;
 		pComponent->SetName( Name);
-		m_OwnedComponents.push_back(pComponent);
+		m_OwnedComponents.push_back(pComponent);		
 		return pComponent;
 	}
 

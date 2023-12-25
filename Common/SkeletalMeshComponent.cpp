@@ -89,6 +89,7 @@ Material* SkeletalMeshComponent::GetMaterial(UINT index)
 void SkeletalMeshComponent::Update(float deltaTime)
 {
 	__super::Update(deltaTime);
+
 	if (!m_SceneResource->m_Animations.empty())
 	{
 		m_AnimationProressTime += deltaTime;

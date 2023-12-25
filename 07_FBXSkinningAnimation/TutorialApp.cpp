@@ -76,7 +76,6 @@ LRESULT CALLBACK TutorialApp::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 
 void TutorialApp::IncreaseModel()
 {	
-	
 	{
 		auto SkActor = m_World.CreateGameObject<SkeletalMeshActor>();
 		SkeletalMeshComponent* pComponent = (SkeletalMeshComponent*)SkActor->GetRootComponent();
@@ -84,9 +83,11 @@ void TutorialApp::IncreaseModel()
 		pComponent->AddSceneAnimationFromFBX("../Resource/Zombie_Run.fbx");
 		pComponent->AddSceneAnimationFromFBX("../Resource/SkinningTest.fbx");
 
-		int range = 500;
-		float pos = (float)(rand() % range) - range * 0.5f;
-		SkActor->SetWorldPosition(Math::Vector3(pos, 0.0f, 0.0f));
+		int range = 1000;
+		float posx = (float)(rand() % range) - range * 0.5f;
+		float posy = (float)(rand() % range) - range * 0.5f;
+		float posz = (float)(rand() % range) - range * 0.5f;
+		SkActor->SetWorldPosition(Math::Vector3(posx, posy, posz));
 
 		//int playindex = rand() % model.GetSceneResource()->m_Animations.size();
 		//model.PlayAnimation(playindex);
@@ -94,11 +95,15 @@ void TutorialApp::IncreaseModel()
 	
 	{
 		auto StActor = m_World.CreateGameObject<StaticMeshActor>();
-		StActor->m_SceneFilePath = "../Resource/cerberus.FBX";
+		StaticMeshComponent* pComponent = (StaticMeshComponent*)StActor->GetRootComponent();
+		pComponent->ReadSceneResourceFromFBX("../Resource/cerberus.FBX");
+	
 
-		int range = 500;
-		float pos = (float)(rand() % range) - range * 0.5f;
-		StActor->SetWorldPosition(Math::Vector3(pos, 40.0f, 0.0f));
+		int range = 1000;
+		float posx = (float)(rand() % range) - range * 0.5f;
+		float posy = (float)(rand() % range) - range * 0.5f;
+		float posz = (float)(rand() % range) - range * 0.5f;
+		StActor->SetWorldPosition(Math::Vector3(posx, posy, posz));
 		
 	}
 	

@@ -21,15 +21,17 @@ void World::Update(float DeltaTime)
 }
 
 void World::OnBeginPlay()
-{
+{	
 	for (auto& actor : m_actors)
 	{
 		actor->OnBeginPlay();
 	}
+	m_bIsPlaying = true;
 }
 
 void World::OnEndPlay()
 {
+	m_bIsPlaying = false;
 	for (auto& actor : m_actors)
 	{
 		actor->OnEndPlay();
