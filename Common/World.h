@@ -20,11 +20,14 @@ public:
 		std::shared_ptr<T> newObject = std::make_shared<T>();
 		newObject->SetOwner(this);
 		m_actors.push_back(newObject);
+
 		if(m_bIsPlaying)
 			newObject->OnBeginPlay();
 
 		return newObject;
 	}
+
+	void DestroyGameObject(Actor* pObject);
 
 	void Update(float DeltaTime);
 	void OnBeginPlay();
