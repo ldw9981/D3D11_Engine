@@ -43,10 +43,10 @@ bool TutorialApp::Initialize(UINT Width, UINT Height)
 	IncreaseModel();
 	
 
-	m_pPlayerController = m_World.CreateGameObject<PlayerController>();
-	m_pDefaultPawn = m_World.CreateGameObject<DefaultPawn>();
+	m_pPlayerController = m_World.CreateGameObject<PlayerController>().get();
+	m_pDefaultPawn = m_World.CreateGameObject<DefaultPawn>().get();
 	m_pDefaultPawn->SetWorldPosition(Math::Vector3(0.0f,100.0f,-500.0f));
-	m_pPlayerController->Posess((Pawn*)m_pDefaultPawn.get());
+	m_pPlayerController->Posess(m_pDefaultPawn);
 
 	ChangeWorld(&m_World);
 

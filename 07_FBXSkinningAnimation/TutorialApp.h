@@ -24,11 +24,8 @@ public:
 
 	World m_World;
 
-	std::list<StaticMeshComponent>		m_StaticMeshModelList;
-	std::list<SkeletalMeshComponent>	m_SkeletalMeshModelList;
-
-	std::shared_ptr<PlayerController> m_pPlayerController = nullptr;
-	std::shared_ptr<DefaultPawn> m_pDefaultPawn = nullptr;
+	PlayerController* m_pPlayerController = nullptr;
+	DefaultPawn* m_pDefaultPawn = nullptr;
 
 	virtual bool Initialize(UINT Width, UINT Height);
 	virtual void Update();
