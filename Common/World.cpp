@@ -38,15 +38,3 @@ void World::OnEndPlay()
 	}
 	m_actors.clear();
 }
-
-void World::Render()
-{
-/*
-	for (auto& actor : m_actors)
-	{
-		for (auto& component : actor->m_OwnedComponents)
-		{
-			
-		}
-	}*/
-}

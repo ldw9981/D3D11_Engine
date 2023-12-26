@@ -29,6 +29,5 @@ public:
 	void Update(float DeltaTime);
 	void OnBeginPlay();
 	void OnEndPlay();
-	void Render();
 };
 
