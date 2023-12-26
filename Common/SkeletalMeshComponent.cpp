@@ -96,7 +96,9 @@ void SkeletalMeshComponent::Update(float deltaTime)
 		m_AnimationProressTime = (float)fmod(m_AnimationProressTime, m_SceneResource->m_Animations[m_AnimationIndex]->Duration);
 
 	}	
-	m_RootBone.Update(deltaTime);
+
+	if(m_bIsCulled)
+		m_RootBone.Update(deltaTime);
 }
 
 void SkeletalMeshComponent::UpdateBoneAnimationReference(UINT index)
