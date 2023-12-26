@@ -130,7 +130,8 @@ public:
 	BoundingFrustum m_Frustum;
 	int m_nDrawComponentCount = 0;
 	bool m_bFreezeCulling = false;
-
+    bool m_bWorkCulling = true;
+	bool m_bDrawDebug = true;
 public:
 
 	bool Initialize(HWND Handle,UINT Width, UINT Height);
@@ -138,9 +139,6 @@ public:
 
 	void Update();
 	void Render();
-
-	void SetEyePosition(const Vector3& eyePosition) { m_Light.EyePosition = eyePosition; }
-
 	void ApplyMaterial(Material* pMaterial);
 
 	void GetVideoMemoryInfo(std::string& out);

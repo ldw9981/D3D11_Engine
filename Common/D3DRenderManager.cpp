@@ -295,8 +295,8 @@ void D3DRenderManager::Update()
 		m_LookAt = pCamera->m_World.Translation() + -pCamera->m_World.Forward();
 		Math::Vector3 up = pCamera->m_World.Up();
 		m_View = XMMatrixLookAtLH(eye, m_LookAt, up);
-		SetEyePosition(eye);
-		if (!m_bFreezeCulling)
+		m_Light.EyePosition = eye;	// HLSL 상수버퍼 갱신을 위한 데이터 업데이트
+		if (m_bWorkCulling && !m_bFreezeCulling )  // 디버깅을 위해 culling 위치를  멈출수있음.
 		{			
 			BoundingFrustum::CreateFromMatrix(m_Frustum, m_Projection, false);
 			m_Frustum.Transform(m_Frustum, pCamera->m_World);			
@@ -306,10 +306,10 @@ void D3DRenderManager::Update()
 	for (auto& SkeletalMeshComponent : m_SkeletalMeshComponents)
 	{
 		SkeletalMeshComponent->m_bIsCulled = false;
-		if (m_Frustum.Intersects(SkeletalMeshComponent->m_BoundingBox))
+		if (!m_bWorkCulling || m_Frustum.Intersects(SkeletalMeshComponent->m_BoundingBox))
 		{
 			SkeletalMeshComponent->m_bIsCulled = true;
-			AddMeshInstance(SkeletalMeshComponent);
+			AddMeshInstance(SkeletalMeshComponent);	// 하나의 메시 컴포넌트에 여러개의 메시 Instance 가 있을수있음.
 			m_nDrawComponentCount++;
 		}
 	}
@@ -317,10 +317,10 @@ void D3DRenderManager::Update()
 	for (auto& StaticMeshComponent : m_StaticMeshComponents)
 	{
 		StaticMeshComponent->m_bIsCulled = false;
-		if (m_Frustum.Intersects(StaticMeshComponent->m_BoundingBox))
+		if (!m_bWorkCulling || m_Frustum.Intersects(StaticMeshComponent->m_BoundingBox))
 		{
 			StaticMeshComponent->m_bIsCulled = true;
-			AddMeshInstance(StaticMeshComponent);
+			AddMeshInstance(StaticMeshComponent);  // 하나의 메시 컴포넌트에 여러개의 메시 Instance 가 있을수있음.
 			m_nDrawComponentCount++;
 		}		
 	}
@@ -366,7 +366,10 @@ void D3DRenderManager::Render()
 
 	RenderSkeletalMeshInstance();
 	RenderStaticMeshInstance();
-	RenderDebugDraw();
+	
+	if(m_bDrawDebug)
+		RenderDebugDraw();
+	
 	RenderImGui();
 
 	m_pSwapChain->Present(0, 0);	// Present our back buffer to our front buffer
@@ -374,6 +377,8 @@ void D3DRenderManager::Render()
 
 void D3DRenderManager::RenderDebugDraw()
 {
+	// 일반적인 메시그리는 RenderState가 아닌 디버깅용 RenderState를 사용한다.
+	// *추후 PipelineObjectStates를 관리할 필요가 있겠다. 
 	m_pDeviceContext->OMSetBlendState( DebugDraw::g_States->Opaque(), nullptr, 0xFFFFFFFF);	
 	//m_pDeviceContext->RSSetState(DebugDraw::g_States->CullNone());
 
@@ -420,6 +425,8 @@ void D3DRenderManager::RenderImGui()
 		ImGui::Text("VideoMemory: %s", str.c_str());
 		GetSystemMemoryInfo(str);
 		ImGui::Text("SystemMemory: %s", str.c_str());
+		ImGui::Checkbox("Work DebugDraw", &m_bDrawDebug);
+		ImGui::Checkbox("Work Culling", &m_bWorkCulling);
 	    ImGui::Checkbox("Freeze Culling", &m_bFreezeCulling);
 		ImGui::Text("Count DrawComponents: %d ", m_nDrawComponentCount);
 
