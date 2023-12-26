@@ -100,7 +100,7 @@ void TutorialApp::IncreaseModel()
 	{
 		auto StActor = m_World.CreateGameObject<StaticMeshActor>();
 		StaticMeshComponent* pComponent = (StaticMeshComponent*)StActor->GetRootComponent();
-		pComponent->ReadSceneResourceFromFBX("../Resource/cerberus.FBX");
+		pComponent->ReadSceneResourceFromFBX("../Resource/angel_armor.FBX");
 	
 
 		int range = 1000;
