@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "DefaultPawn.h"
 #include "D3DRenderManager.h"
-#include "PlayerController.h"
+#include "ActorController.h"
 
 constexpr float ROTATION_GAIN = 0.004f;
 constexpr float MOVEMENT_GAIN = 0.07f;
@@ -36,7 +36,7 @@ void DefaultPawn::OnEndPlay()
 
 void DefaultPawn::OnInputProcess(const DirectX::Keyboard::State& KeyboardState, const DirectX::Mouse::State& MouseState)
 {
-	PlayerController* pController = GetController();
+	ActorController* pController = GetController();
 	float fowardScale=0.0f,rightScale = 0.0f,upScale = 0.0f;
 
 	Math::Matrix rotMatrix = Matrix::CreateFromYawPitchRoll(pController->m_MouseYaw, pController->m_MousePitch, 0.0f);
@@ -61,11 +61,11 @@ void DefaultPawn::OnInputProcess(const DirectX::Keyboard::State& KeyboardState, 
 		m_pMovementComponent->AddInputVector(right);
 	}
 	
-	if (KeyboardState.IsKeyDown(DirectX::Keyboard::Keys::Q))
+	if (KeyboardState.IsKeyDown(DirectX::Keyboard::Keys::E))
 	{
 		m_pMovementComponent->AddInputVector(-Math::Vector3::Up);
 	}
-	else if (KeyboardState.IsKeyDown(DirectX::Keyboard::Keys::E))
+	else if (KeyboardState.IsKeyDown(DirectX::Keyboard::Keys::Q))
 	{
 		m_pMovementComponent->AddInputVector(Math::Vector3::Up);
 	}
@@ -82,7 +82,7 @@ void DefaultPawn::OnInputProcess(const DirectX::Keyboard::State& KeyboardState, 
 	}	
 }
 
-void DefaultPawn::OnPossess(PlayerController* pPlayerController)
+void DefaultPawn::OnPossess(ActorController* pPlayerController)
 {
 	__super::OnPossess(pPlayerController);
 	

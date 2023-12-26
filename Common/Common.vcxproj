@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ActorController.h" />
     <ClInclude Include="AnimationResource.h" />
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="DebugDraw.h" />
@@ -176,6 +177,7 @@
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ActorController.cpp" />
     <ClCompile Include="AnimationResource.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="DebugDraw.cpp" />

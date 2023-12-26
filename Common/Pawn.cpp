@@ -12,12 +12,12 @@ Pawn::~Pawn()
 
 }
 
-void Pawn::OnPossess(PlayerController* pController)
+void Pawn::OnPossess(ActorController* pController)
 {
 	m_pController = pController;
 }
 
-void Pawn::OnUnPossess(PlayerController* pController)
+void Pawn::OnUnPossess(ActorController* pController)
 {
 	m_pController = nullptr;
 }

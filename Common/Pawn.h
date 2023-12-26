@@ -1,6 +1,6 @@
 #pragma once
 #include "Actor.h"
-class PlayerController;
+class ActorController;
 class Pawn :
     public Actor
 {
@@ -8,10 +8,10 @@ public:
     Pawn();
     ~Pawn();
 
-    PlayerController* m_pController = nullptr;
-    PlayerController* GetController() { return m_pController; }
+    ActorController* m_pController = nullptr;
+    ActorController* GetController() { return m_pController; }
 
-	virtual void OnPossess(PlayerController* pController);
-	virtual void OnUnPossess(PlayerController* pController);
+	virtual void OnPossess(ActorController* pController);
+	virtual void OnUnPossess(ActorController* pController);
 };
 

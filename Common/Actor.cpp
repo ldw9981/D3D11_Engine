@@ -1,5 +1,16 @@
 #include "pch.h"
 #include "Actor.h"
+#include "InputManager.h"
+
+Actor::Actor()
+{
+
+}
+
+Actor::~Actor()
+{
+
+}
 
 void Actor::Update(float DeltaTime)
 {
@@ -29,10 +40,19 @@ void Actor::OnBeginPlay()
 	{
 		pComponent->OnBeginPlay();
 	}
+	if (b_UseInputProcesser)
+	{
+		InputManager::Instance->AddInputProcesser(this);
+	}
 }
 
 void Actor::OnEndPlay()
 {
+	if (b_UseInputProcesser)
+	{
+		InputManager::Instance->RemoveInputProcesser(this);
+	}
+
 	for (auto& pComponent : m_OwnedComponents)
 	{
 		pComponent->OnEndPlay();

@@ -3,78 +3,23 @@
 #include "Pawn.h"
 using namespace DirectX;
 
-void PlayerController::AddPitch(float value)
+
+PlayerController::PlayerController()
 {
-	m_MousePitch += value;
-	if (m_MousePitch > XM_PI)
-	{
-		m_MousePitch -= XM_2PI;
-	}
-	else if (m_MousePitch < -XM_PI)
-	{
-		m_MousePitch += XM_2PI;
-	}
+	b_UseInputProcesser = true;	// PlayerController는 InputManager에 등록하여 입력 이벤트를 받는다.
 }
 
-void PlayerController::AddYaw(float value)
-{
-	m_MouseYaw += value;
-	if (m_MouseYaw > XM_PI)
-	{
-		m_MouseYaw -= XM_2PI;
-	}
-	else if (m_MouseYaw < -XM_PI)
-	{
-		m_MouseYaw += XM_2PI;
-	}
-}
-
-void PlayerController::Posess(Pawn* pPawn)
-{	
-	if (m_pPawn)
-	{
-		m_pPawn->OnUnPossess(this);
-	}
-	m_pPawn = pPawn;
-	if (m_pPawn)
-	{
-		m_pPawn->OnPossess(this);
-	}	
-}
-
-void PlayerController::UnPosess()
-{
-	if (m_pPawn)
-	{
-		m_pPawn->OnUnPossess(this);
-		m_pPawn = nullptr;
-	}
-}
-
-void PlayerController::OnBeginPlay()
-{
-	__super::OnBeginPlay();
-	InputManager::Instance->AddInputProcesser(this);
-	
-}
-
-void PlayerController::OnEndPlay()
-{
-	InputManager::Instance->RemoveInputProcesser(this);
-	__super::OnEndPlay();
-}
-
-void PlayerController::Update(float DeltaTime)
+PlayerController::~PlayerController()
 {
 
 }
+
 
 void PlayerController::OnInputProcess(const DirectX::Keyboard::State& KeyboardState, const DirectX::Mouse::State& MouseState)
 {
-	
-
 	if (m_pPawn)
 	{
+		// Pawn자체가 입력처리를 할수도있지만 Pawn은 PlayerController가 제어중인 것만 입력이 처리되도록한다.
 		m_pPawn->OnInputProcess(KeyboardState,MouseState);
 	}
 }

@@ -15,12 +15,13 @@ class Actor: public InputProcesser
 {
 	friend class World;
 public:
-	Actor() {};
-	~Actor() {};
+	Actor();
+	~Actor();;
 public:
 	std::list<std::shared_ptr<Component>> m_OwnedComponents;	// 소유한 컴포넌트들
-private:
+protected:
 	World* m_pOwner = nullptr;					// 이 게임 오브젝트가 속한 월드
+	bool b_UseInputProcesser = false;
 public:
 	SceneComponent*		m_pRootComponent = nullptr;		// 컴포넌트 중에 어느게 루트인지 설정
 	World* GetOwner() const { return m_pOwner; }

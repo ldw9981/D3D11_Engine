@@ -138,6 +138,9 @@
     <ClInclude Include="StaticMeshActor.h">
       <Filter>헤더 파일\Framework</Filter>
     </ClInclude>
+    <ClInclude Include="ActorController.h">
+      <Filter>헤더 파일\Framework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp">
@@ -237,6 +240,9 @@
       <Filter>소스 파일\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="StaticMeshActor.cpp">
+      <Filter>소스 파일\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="ActorController.cpp">
       <Filter>소스 파일\Framework</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,31 +1,19 @@
 #pragma once
-#include "Actor.h"
+#include "ActorController.h"
 #include "InputManager.h"
-
+/*
+	주요역할은 InputManager에 등록하여 입력 이벤트를 받고
+	PlayerController가 제어중인 Pawn이 입력이 처리되도록한다.
+	제어중이지 않는 Pawn은 입력이 처리되지 않게 한다.
+*/
 class Pawn;
 class PlayerController :
-    public Actor 
+    public ActorController 
 {
 public:
-	PlayerController() {};
-	~PlayerController() {};
+	PlayerController();
+	~PlayerController();
 
-	Pawn* m_pPawn = nullptr;
-
-	float m_MousePitch=0.0f;
-	float m_MouseYaw=0.0f;
-
-	void AddPitch(float value);
-	void AddYaw(float value);
-	float GetYaw() { return m_MouseYaw; }
-	float GetPitch() { return m_MousePitch; }
-
-	void Posess(Pawn* pPawn);
-	void UnPosess();
-
-	virtual void OnBeginPlay() override;
-	virtual void OnEndPlay() override;
-	virtual void Update(float DeltaTime) override;
 	virtual void OnInputProcess(const DirectX::Keyboard::State& KeyboardState, const DirectX::Mouse::State& MouseState);
 };
 

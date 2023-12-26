@@ -61,7 +61,8 @@ Material* StaticMeshComponent::GetMaterial(UINT index)
 
 void StaticMeshComponent::OnBeginPlay()
 {
-	ReadSceneResourceFromFBX(m_SceneFilePath);
+	if(!m_SceneFilePath.empty())
+		ReadSceneResourceFromFBX(m_SceneFilePath);
 }
 
 void StaticMeshComponent::OnEndPlay()
