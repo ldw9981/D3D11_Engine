@@ -61,11 +61,11 @@ void DefaultPawn::OnInputProcess(const DirectX::Keyboard::State& KeyboardState, 
 		m_pMovementComponent->AddInputVector(right);
 	}
 	
-	if (KeyboardState.IsKeyDown(DirectX::Keyboard::Keys::X))
+	if (KeyboardState.IsKeyDown(DirectX::Keyboard::Keys::Q))
 	{
 		m_pMovementComponent->AddInputVector(-Math::Vector3::Up);
 	}
-	else if (KeyboardState.IsKeyDown(DirectX::Keyboard::Keys::Space))
+	else if (KeyboardState.IsKeyDown(DirectX::Keyboard::Keys::E))
 	{
 		m_pMovementComponent->AddInputVector(Math::Vector3::Up);
 	}
