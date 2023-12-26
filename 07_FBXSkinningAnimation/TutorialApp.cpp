@@ -3,6 +3,7 @@
 #include "../Common/D3DRenderManager.h"
 #include "../Common/SkeletalMeshComponent.h"
 #include "../Common/SkeletalMeshActor.h"
+#include "../Common/SkeletalMeshResource.h"
 #include "../Common/StaticMeshComponent.h"
 #include "../Common/StaticMeshActor.h"
 
@@ -37,6 +38,8 @@ bool TutorialApp::Initialize(UINT Width, UINT Height)
 	D3DRenderManager::Instance->SetImGuiRender(this);	
 
 	
+	IncreaseModel();
+	IncreaseModel();
 	IncreaseModel();
 	
 
@@ -89,8 +92,9 @@ void TutorialApp::IncreaseModel()
 		float posz = (float)(rand() % range) - range * 0.5f;
 		SkActor->SetWorldPosition(Math::Vector3(posx, posy, posz));
 
-		//int playindex = rand() % model.GetSceneResource()->m_Animations.size();
-		//model.PlayAnimation(playindex);
+		auto pRsc = pComponent->GetSceneResource();
+		int playindex = rand() % pRsc-> m_Animations.size();
+		pComponent->PlayAnimation(playindex);
 	}
 	
 	{
