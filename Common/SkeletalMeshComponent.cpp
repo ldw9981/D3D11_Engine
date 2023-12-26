@@ -43,10 +43,14 @@ void SkeletalMeshComponent::SetSceneResource(std::shared_ptr<SkeletalMeshSceneRe
 	m_BoundingBox.Center = Math::Vector3(m_SceneResource->m_AABBmin + m_SceneResource->m_AABBmax)*0.5;	// Calculate extent
 	m_BoundingBox.Extents = Math::Vector3(m_SceneResource->m_AABBmax - m_SceneResource->m_AABBmin)*0.5;	// Calculate extent
 	
+
 	// 팔벌릴때를 대비해서 z축과 x축중 큰값으로 AABB를 만든다.
 	float max = std::fmax(m_BoundingBox.Extents.z, m_BoundingBox.Extents.x);
+	max = std::fmax(max, m_BoundingBox.Extents.y);
 	m_BoundingBox.Extents.z = max;
 	m_BoundingBox.Extents.x = max;	
+	m_BoundingBox.Extents.y = max;
+	
 }
 
 std::shared_ptr<SkeletalMeshSceneResource> SkeletalMeshComponent::GetSceneResource() const
@@ -159,4 +163,10 @@ void SkeletalMeshComponent::OnBeginPlay()
 void SkeletalMeshComponent::OnEndPlay()
 {
 	__super::OnEndPlay();
+}
+
+void SkeletalMeshComponent::CalculateBoundingBox()
+{
+	m_BoundingBox.Center = m_World.Translation();
+	m_BoundingBox.Center.y = m_BoundingBox.Center.y + m_BoundingBox.Extents.y;
 }

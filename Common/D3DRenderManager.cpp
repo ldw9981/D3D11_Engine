@@ -439,10 +439,13 @@ void D3DRenderManager::RenderImGui()
 
 		AddDebugVector3ToImGuiWindow("EyePosition", m_Light.EyePosition);
 		AddDebugVector3ToImGuiWindow("LookAt", m_LookAt);
-		AddDebugMatrixToImGuiWindow("ViewMatrix", m_View);
-		
+		if (m_pCamera.expired() == false)
+		{
+			auto pCamera = m_pCamera.lock();
+			AddDebugMatrixToImGuiWindow("CameraWorld", pCamera->m_World);
+		}
 
-
+		ImGui::Text("");
 		if (m_pImGuiRender)
 			m_pImGuiRender->ImGuiRender();
 

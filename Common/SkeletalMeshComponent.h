@@ -43,4 +43,5 @@ public:
 	void CreateHierachy(SkeletonResource* skeleton);
 	virtual void OnBeginPlay();
 	virtual void OnEndPlay();
+	virtual void CalculateBoundingBox();
 };
