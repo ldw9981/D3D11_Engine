@@ -16,27 +16,27 @@ ActorController::~ActorController()
 
 void ActorController::AddPitch(float value)
 {
-	m_MousePitch += value;
-	if (m_MousePitch > XM_PI)
+	m_Pitch += value;
+	if (m_Pitch > XM_PI)
 	{
-		m_MousePitch -= XM_2PI;
+		m_Pitch -= XM_2PI;
 	}
-	else if (m_MousePitch < -XM_PI)
+	else if (m_Pitch < -XM_PI)
 	{
-		m_MousePitch += XM_2PI;
+		m_Pitch += XM_2PI;
 	}
 }
 
 void ActorController::AddYaw(float value)
 {
-	m_MouseYaw += value;
-	if (m_MouseYaw > XM_PI)
+	m_Yaw += value;
+	if (m_Yaw > XM_PI)
 	{
-		m_MouseYaw -= XM_2PI;
+		m_Yaw -= XM_2PI;
 	}
-	else if (m_MouseYaw < -XM_PI)
+	else if (m_Yaw < -XM_PI)
 	{
-		m_MouseYaw += XM_2PI;
+		m_Yaw += XM_2PI;
 	}
 }
 

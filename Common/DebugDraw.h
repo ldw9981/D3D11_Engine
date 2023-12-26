@@ -9,6 +9,9 @@
 
 #pragma once
 
+//https://github.com/microsoft/DirectXTK/wiki/DebugDraw
+//https://github.com/walbourn/directx-sdk-samples/blob/main/Collision/Collision.cpp
+
 #include <DirectXColors.h>
 #include <DirectXCollision.h>
 #include <directxtk/CommonStates.h>

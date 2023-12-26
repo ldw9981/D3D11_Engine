@@ -25,6 +25,6 @@ public:
 private:
 	Math::Vector3 m_LocalPosition = Math::Vector3(0.0f,0.0f,0.0f);
 	Math::Vector3 m_LocalScale = Math::Vector3(1.0f, 1.0f, 1.0f);
-	Math::Vector3 m_LocalRotation = Math::Vector3(0.0f, 0.0f, 0.0f);
+	Math::Vector3 m_LocalRotation = Math::Vector3(0.0f, 0.0f, 0.0f);	// radian
 };
 

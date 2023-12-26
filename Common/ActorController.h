@@ -14,13 +14,13 @@ public:
 
 	Pawn* m_pPawn = nullptr;		// 조작하는 대상
 
-	float m_MousePitch = 0.0f;
-	float m_MouseYaw = 0.0f;
+	float m_Pitch = 0.0f;		// radian
+	float m_Yaw = 0.0f;		// radian
 
 	void AddPitch(float value);
 	void AddYaw(float value);
-	float GetYaw() { return m_MouseYaw; }
-	float GetPitch() { return m_MousePitch; }
+	float GetYaw() { return m_Yaw; }
+	float GetPitch() { return m_Pitch; }
 
 	void Posess(Pawn* pPawn);
 	void UnPosess();
