@@ -129,6 +129,8 @@ public:
 	std::weak_ptr<CameraComponent> m_pCamera;
 	BoundingFrustum m_Frustum;
 	int m_nDrawComponentCount = 0;
+	bool m_bFreezeCulling = false;
+
 public:
 
 	bool Initialize(HWND Handle,UINT Width, UINT Height);
@@ -154,6 +156,8 @@ public:
 	std::weak_ptr<CameraComponent> Camera() const { return m_pCamera; }
 	void SetCamera(std::weak_ptr<CameraComponent> val) { m_pCamera = val; }
 	void SetImGuiRender(IImGuiRenderable* val) { m_pImGuiRender = val; }
+	bool GetFreezeCulling() const { return m_bFreezeCulling; }
+	void SetFreezeCulling(bool val) { m_bFreezeCulling = val; }
 private:
 	void CreateSkeletalMesh_VS_IL();
 	void CreateStaticMesh_VS_IL();
@@ -166,4 +170,5 @@ private:
 	void RenderImGui();
 	void RenderSkeletalMeshInstance();
 	void RenderStaticMeshInstance();
+
 };

@@ -296,15 +296,19 @@ void D3DRenderManager::Update()
 		Math::Vector3 up = pCamera->m_World.Up();
 		m_View = XMMatrixLookAtLH(eye, m_LookAt, up);
 		SetEyePosition(eye);
-
-		Math::Matrix viewProjection =  m_View* m_Projection;
-		BoundingFrustum::CreateFromMatrix(m_Frustum, viewProjection);
+		if (!m_bFreezeCulling)
+		{			
+			BoundingFrustum::CreateFromMatrix(m_Frustum, m_Projection, false);
+			m_Frustum.Transform(m_Frustum, pCamera->m_World);			
+		}	
 	}
 	m_nDrawComponentCount = 0;
 	for (auto& SkeletalMeshComponent : m_SkeletalMeshComponents)
 	{
+		SkeletalMeshComponent->m_bIsCulled = false;
 		if (m_Frustum.Intersects(SkeletalMeshComponent->m_BoundingBox))
 		{
+			SkeletalMeshComponent->m_bIsCulled = true;
 			AddMeshInstance(SkeletalMeshComponent);
 			m_nDrawComponentCount++;
 		}
@@ -312,8 +316,10 @@ void D3DRenderManager::Update()
 
 	for (auto& StaticMeshComponent : m_StaticMeshComponents)
 	{
+		StaticMeshComponent->m_bIsCulled = false;
 		if (m_Frustum.Intersects(StaticMeshComponent->m_BoundingBox))
 		{
+			StaticMeshComponent->m_bIsCulled = true;
 			AddMeshInstance(StaticMeshComponent);
 			m_nDrawComponentCount++;
 		}		
@@ -383,11 +389,13 @@ void D3DRenderManager::RenderDebugDraw()
 
 	for (auto& SkeletalMeshComponent : m_SkeletalMeshComponents)
 	{
-		DebugDraw::Draw(DebugDraw::g_Batch.get(), SkeletalMeshComponent->m_BoundingBox, Colors::Blue); // BoundingBox
+		DebugDraw::Draw(DebugDraw::g_Batch.get(), SkeletalMeshComponent->m_BoundingBox,
+			SkeletalMeshComponent->m_bIsCulled ? Colors::Red : Colors::Blue); // BoundingBox
 	}
 	for (auto& StaticMeshComponent : m_StaticMeshComponents)
 	{
-		DebugDraw::Draw(DebugDraw::g_Batch.get(), StaticMeshComponent->m_BoundingBox, Colors::Blue); // BoundingBox
+		DebugDraw::Draw(DebugDraw::g_Batch.get(), StaticMeshComponent->m_BoundingBox,
+			StaticMeshComponent->m_bIsCulled ? Colors::Red : Colors::Blue); // BoundingBox
 	}
 	DebugDraw::g_Batch->End();	
 }
@@ -412,7 +420,8 @@ void D3DRenderManager::RenderImGui()
 		ImGui::Text("VideoMemory: %s", str.c_str());
 		GetSystemMemoryInfo(str);
 		ImGui::Text("SystemMemory: %s", str.c_str());
-		ImGui::Text("DrawComponent: %d", m_nDrawComponentCount);
+	    ImGui::Checkbox("Freeze Culling", &m_bFreezeCulling);
+		ImGui::Text("Culling  %d, DrawComponent: %d ",!m_bFreezeCulling, m_nDrawComponentCount);
 
 		ImGui::Text("Light");
 		ImGui::SliderFloat3("LightDirection", (float*)&m_Light.Direction, -1.0f, 1.0f);

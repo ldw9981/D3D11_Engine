@@ -14,7 +14,7 @@ public:
 	~RenderComponent();
 
 	DirectX::BoundingBox m_BoundingBox;
-	
+	bool m_bIsCulled = true;
 	virtual void Update(float DeltaTime) override;
 };
 
