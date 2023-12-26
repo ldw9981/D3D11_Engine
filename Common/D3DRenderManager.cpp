@@ -421,7 +421,7 @@ void D3DRenderManager::RenderImGui()
 		GetSystemMemoryInfo(str);
 		ImGui::Text("SystemMemory: %s", str.c_str());
 	    ImGui::Checkbox("Freeze Culling", &m_bFreezeCulling);
-		ImGui::Text("Culling  %d, DrawComponent: %d ",!m_bFreezeCulling, m_nDrawComponentCount);
+		ImGui::Text("Count DrawComponents: %d ", m_nDrawComponentCount);
 
 		ImGui::Text("Light");
 		ImGui::SliderFloat3("LightDirection", (float*)&m_Light.Direction, -1.0f, 1.0f);
