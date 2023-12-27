@@ -34,52 +34,52 @@ void DefaultPawn::OnEndPlay()
 	__super::OnEndPlay();
 }
 
-void DefaultPawn::OnInputProcess(const DirectX::Keyboard::State& KeyboardState, const DirectX::Mouse::State& MouseState)
+void DefaultPawn::OnInputProcess(const DirectX::Keyboard::State& KeyCurr, const DirectX::Keyboard::State& KeyLast, const DirectX::Mouse::State& MouseCurr, const DirectX::Mouse::State& MouseLast)
 {
 	ActorController* pController = GetController();
-	float fowardScale=0.0f,rightScale = 0.0f,upScale = 0.0f;
+	float fowardScale = 0.0f, rightScale = 0.0f, upScale = 0.0f;
 
 	Math::Matrix rotMatrix = Matrix::CreateFromYawPitchRoll(pController->m_Yaw, pController->m_Pitch, 0.0f);
 	Math::Vector3 forward = Vector3(rotMatrix._31, rotMatrix._32, rotMatrix._33);
 	Math::Vector3 right = rotMatrix.Right();
 
-	if (KeyboardState.IsKeyDown(DirectX::Keyboard::Keys::W))
+	if (KeyCurr.IsKeyDown(DirectX::Keyboard::Keys::W))
 	{
 		m_pMovementComponent->AddInputVector(forward);
 	}
-	else if (KeyboardState.IsKeyDown(DirectX::Keyboard::Keys::S))
+	else if (KeyCurr.IsKeyDown(DirectX::Keyboard::Keys::S))
 	{
 		m_pMovementComponent->AddInputVector(-forward);
 	}
 
-	if (KeyboardState.IsKeyDown(DirectX::Keyboard::Keys::A))
+	if (KeyCurr.IsKeyDown(DirectX::Keyboard::Keys::A))
 	{
 		m_pMovementComponent->AddInputVector(-right);
 	}
-	else if (KeyboardState.IsKeyDown(DirectX::Keyboard::Keys::D))
+	else if (KeyCurr.IsKeyDown(DirectX::Keyboard::Keys::D))
 	{
 		m_pMovementComponent->AddInputVector(right);
 	}
-	
-	if (KeyboardState.IsKeyDown(DirectX::Keyboard::Keys::E))
+
+	if (KeyCurr.IsKeyDown(DirectX::Keyboard::Keys::E))
 	{
 		m_pMovementComponent->AddInputVector(-Math::Vector3::Up);
 	}
-	else if (KeyboardState.IsKeyDown(DirectX::Keyboard::Keys::Q))
+	else if (KeyCurr.IsKeyDown(DirectX::Keyboard::Keys::Q))
 	{
 		m_pMovementComponent->AddInputVector(Math::Vector3::Up);
 	}
 
 
-	InputManager::Instance->m_Mouse->SetMode(MouseState.rightButton ? Mouse::MODE_RELATIVE : Mouse::MODE_ABSOLUTE);
-	if (MouseState.positionMode == Mouse::MODE_RELATIVE)
+	InputManager::Instance->m_Mouse->SetMode(MouseCurr.rightButton ? Mouse::MODE_RELATIVE : Mouse::MODE_ABSOLUTE);
+	if (MouseCurr.positionMode == Mouse::MODE_RELATIVE)
 	{
-		Vector3 delta = Vector3(float(MouseState.x), float(MouseState.y), 0.f) * ROTATION_GAIN;
+		Vector3 delta = Vector3(float(MouseCurr.x), float(MouseCurr.y), 0.f) * ROTATION_GAIN;
 		pController->AddPitch(delta.y);
 		pController->AddYaw(delta.x);
 
-		m_pCameraComponent->SetLocalRotation(Math::Vector3(pController->m_Pitch, pController->m_Yaw,0.0f));		
-	}	
+		m_pCameraComponent->SetLocalRotation(Math::Vector3(pController->m_Pitch, pController->m_Yaw, 0.0f));
+	}
 }
 
 void DefaultPawn::OnPossess(ActorController* pPlayerController)

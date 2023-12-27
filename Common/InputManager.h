@@ -6,7 +6,8 @@
 class InputProcesser
 {
 public:
-	virtual void OnInputProcess(const DirectX::Keyboard::State& KeyboardState, const DirectX::Mouse::State& MouseState)=0;
+	virtual void OnInputProcess(const DirectX::Keyboard::State& KeyCurr, const DirectX::Keyboard::State& KeyLast,
+		const DirectX::Mouse::State& MouseCurr, const DirectX::Mouse::State& MouseLast)=0;
 };
 
 class InputManager

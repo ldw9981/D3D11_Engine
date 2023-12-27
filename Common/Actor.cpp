@@ -59,6 +59,11 @@ void Actor::OnEndPlay()
 	}
 }
 
+void Actor::OnInputProcess(const DirectX::Keyboard::State& KeyboardCurrentState, const DirectX::Keyboard::State& KeyboardLastState, const DirectX::Mouse::State& MouseCurrentState, const DirectX::Mouse::State& MouseLastState)
+{
+
+}
+
 void Actor::SetWorldPosition(const Math::Vector3& val)
 {
 	if (m_pRootComponent)
