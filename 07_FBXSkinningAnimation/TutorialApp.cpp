@@ -11,7 +11,7 @@
 #include "../Common/DefaultPawn.h"
 #include "../Common/Pawn.h"
 
-
+#include <iostream>
 #include <utility>
 #include <algorithm>
 
@@ -23,7 +23,7 @@ using namespace std;
 TutorialApp::TutorialApp(HINSTANCE hInstance)
 	:GameApp(hInstance)
 {
-
+	m_bUseConsole = true;
 }
 
 TutorialApp::~TutorialApp()
@@ -71,6 +71,7 @@ LRESULT CALLBACK TutorialApp::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 		if (wParam == VK_UP) 
 		{
 			IncreaseModel();
+			std::cout << "Test" << endl;
 		}
 		if (wParam == VK_DOWN)
 		{

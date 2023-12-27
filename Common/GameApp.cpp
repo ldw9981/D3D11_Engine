@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "GameApp.h"
 #include <imgui_impl_win32.h>
+#include <ConsoleApi.h>
 
 #include "World.h"
 
@@ -29,7 +30,8 @@ GameApp::GameApp(HINSTANCE hInstance)
 
 GameApp::~GameApp()
 {
-	
+	if (m_bUseConsole)
+		FreeConsole();
 }
 
 
@@ -48,6 +50,12 @@ void GameApp::ChangeWorld(World* pNewWorld)
 
 bool GameApp::Initialize(UINT Width, UINT Height)
 {
+	if (m_bUseConsole)
+	{	
+		AllocConsole();
+		FILE* _tempFile;
+		freopen_s(&_tempFile, "CONOUT$", "w", stdout);
+	}
 	m_ClientWidth = Width;
 	m_ClientHeight = Height;
 

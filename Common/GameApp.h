@@ -33,6 +33,7 @@ public:
 	GameTimer m_Timer;
 	UINT m_ClientWidth;
 	UINT m_ClientHeight;
+	bool m_bUseConsole=false;
 	D3DRenderManager m_Renderer;
 	ResourceManager m_Resource;
 	World* m_pCurrentWorld=nullptr;
