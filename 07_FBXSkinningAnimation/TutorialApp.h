@@ -24,6 +24,7 @@ public:
 
 	World m_World;
 
+	std::list<Actor*> m_SpawnedActors;
 	PlayerController* m_pPlayerController = nullptr;
 	DefaultPawn* m_pDefaultPawn = nullptr;
 
@@ -34,7 +35,7 @@ public:
 	virtual LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 	void IncreaseModel();
-
+	void DecreaseModel();
 	virtual void ImGuiRender();
 };
 

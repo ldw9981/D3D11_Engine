@@ -20,6 +20,7 @@ public:
 		std::shared_ptr<T> newObject = std::make_shared<T>();
 		newObject->SetOwner(this);
 		m_actors.push_back(newObject);
+		newObject->m_iteratorInWorld = --m_actors.end();
 
 		if(m_bIsPlaying)
 			newObject->OnBeginPlay();

@@ -72,6 +72,10 @@ LRESULT CALLBACK TutorialApp::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 		{
 			IncreaseModel();
 		}
+		if (wParam == VK_DOWN)
+		{
+			DecreaseModel();
+		}
 		break;
 	}
 	return GameApp::WndProc(hWnd, message, wParam, lParam);
@@ -95,6 +99,8 @@ void TutorialApp::IncreaseModel()
 		auto pRsc = pComponent->GetSceneResource();
 		int playindex = rand() % pRsc-> m_Animations.size();
 		pComponent->PlayAnimation(playindex);
+
+		m_SpawnedActors.push_back(SkActor.get());
 	}
 	
 	{
@@ -109,9 +115,21 @@ void TutorialApp::IncreaseModel()
 		float posz = (float)(rand() % range) - range * 0.5f;
 		StActor->SetWorldPosition(Math::Vector3(posx, posy, posz));
 		
+		m_SpawnedActors.push_back(StActor.get());
 	}
 	
 	
+}
+
+void TutorialApp::DecreaseModel()
+{
+	auto it = m_SpawnedActors.begin();
+	if (it == m_SpawnedActors.end())
+		return;
+
+	//(it)
+	m_World.DestroyGameObject(*it);
+	m_SpawnedActors.erase(it);
 }
 
 void TutorialApp::ImGuiRender()

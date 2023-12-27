@@ -16,10 +16,8 @@ World::~World()
 void World::DestroyGameObject(Actor* pObject)
 {
 	pObject->OnEndPlay();
-	m_actors.remove_if([pObject](std::shared_ptr<Actor> pActor)	
-		{
-		return pActor.get() == pObject;		// 일단 만들고 너무 느리면 iterator로 바꾸자
-	});
+	
+	m_actors.erase(pObject->m_iteratorInWorld);
 }
 
 void World::Update(float DeltaTime)
