@@ -23,13 +23,11 @@ void InputManager::Update(float DeltaTime)
 
 	m_KeyboardState = m_Keyboard->GetState();
 	m_KeyboardStateTracker.Update(m_KeyboardState);
-
-	auto KeyboardLastState = m_KeyboardStateTracker.GetLastState();
-	auto MouseLastState = m_MouseStateTracker.GetLastState();
+	
 
 	for (auto& it : m_InputProcessers)
 	{
-		(it)->OnInputProcess(m_KeyboardState, KeyboardLastState, m_MouseState, MouseLastState);
+		it->OnInputProcess(m_KeyboardState, m_KeyboardStateTracker, m_MouseState, m_MouseStateTracker);		
 	}	
 }
 

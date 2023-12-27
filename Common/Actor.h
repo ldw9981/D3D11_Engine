@@ -49,8 +49,8 @@ public:
 
 	virtual void OnBeginPlay();	// World에서 추가후 게임 진행할때 호출
 	virtual void OnEndPlay();  // World 제거되었을 때 호출
-	virtual void OnInputProcess(const DirectX::Keyboard::State& KeyCurr, const DirectX::Keyboard::State& KeyLast,
-		const DirectX::Mouse::State& MouseCurr, const DirectX::Mouse::State& MouseLast);
+	virtual void OnInputProcess(const Keyboard::State& KeyState, const Keyboard::KeyboardStateTracker& KeyTracker,
+		const Mouse::State& MouseState, const Mouse::ButtonStateTracker& MouseTracker);
 
 	void SetWorldPosition(const Math::Vector3& val);
 	std::weak_ptr<Component> GetComponentByName(const std::string& Name);

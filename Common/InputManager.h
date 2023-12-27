@@ -3,11 +3,13 @@
 #include <directXTK/Mouse.h>
 #include <directXTK/Keyboard.h>
 
+using namespace DirectX;
+
 class InputProcesser
 {
 public:
-	virtual void OnInputProcess(const DirectX::Keyboard::State& KeyCurr, const DirectX::Keyboard::State& KeyLast,
-		const DirectX::Mouse::State& MouseCurr, const DirectX::Mouse::State& MouseLast)=0;
+	virtual void OnInputProcess(const Keyboard::State& KeyState,const Keyboard::KeyboardStateTracker& KeyTracker ,
+		const Mouse::State& MouseState, const Mouse::ButtonStateTracker& MouseTracker)=0;
 };
 
 class InputManager

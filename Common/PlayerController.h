@@ -14,8 +14,7 @@ public:
 	PlayerController();
 	~PlayerController();
 
-	virtual void OnInputProcess(const DirectX::Keyboard::State& KeyCurr, const DirectX::Keyboard::State& KeyLast,
-		const DirectX::Mouse::State& MouseCurr, const DirectX::Mouse::State& MouseLast);
+	virtual void OnInputProcess(const Keyboard::State& KeyState, const Keyboard::KeyboardStateTracker& KeyTracker, const Mouse::State& MouseState, const Mouse::ButtonStateTracker& MouseTracker);
 
 };
 
