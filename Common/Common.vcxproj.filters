@@ -108,9 +108,6 @@
     <ClInclude Include="Helper.h">
       <Filter>헤더 파일\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>헤더 파일\Utility</Filter>
-    </ClInclude>
     <ClInclude Include="MovementComponent.h">
       <Filter>헤더 파일\Framework</Filter>
     </ClInclude>
@@ -140,6 +137,9 @@
     </ClInclude>
     <ClInclude Include="ActorController.h">
       <Filter>헤더 파일\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -206,9 +206,6 @@
     <ClCompile Include="Helper.cpp">
       <Filter>소스 파일\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="pch.cpp">
-      <Filter>소스 파일\Utility</Filter>
-    </ClCompile>
     <ClCompile Include="TimeSystem.cpp">
       <Filter>소스 파일\Utility</Filter>
     </ClCompile>
@@ -244,6 +241,9 @@
     </ClCompile>
     <ClCompile Include="ActorController.cpp">
       <Filter>소스 파일\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

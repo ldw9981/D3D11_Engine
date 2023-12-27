@@ -9,7 +9,12 @@ Texture2D txOpacity : register(t4);
 Texture2D txMetalness : register(t5);
 Texture2D txRoughness : register(t6);
 
-SamplerState samLinear : register(s0);
+TextureCube txIBL_Specular : register(t7);
+TextureCube txIBL_Irradiance : register(t8);
+Texture2D txIBL_SpecularBRDF_LUT : register(t9);
+
+SamplerState samplerLinear : register(s0);
+SamplerState samplerSpecularBRDF : register(s1);
 
 cbuffer TransformW : register(b0)
 {
@@ -42,7 +47,7 @@ cbuffer Material : register(b3)
     int UseOpacityMap;
     int UseMetalnessMap;
     int UseRoughnessMap;
-    int Select;
+    int UseIBL;
 }
 
 cbuffer MatrixPalette : register(b4)

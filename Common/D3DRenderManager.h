@@ -42,7 +42,7 @@ struct CB_Marterial
 	int UseOpacityMap = true;					// 4
 	int UseMetalnessMap = true;					// 4
 	int UseRoughnessMap = true;					// 4
-	int Select;							// 8  16byte
+	int UseIBL = false;							// 4  16byte
 };
 
 class StaticMeshComponent;
@@ -160,6 +160,7 @@ private:
 	void CreateSkeletalMesh_VS_IL();
 	void CreateStaticMesh_VS_IL();
 	void CreatePS();
+	void CreateIBL();
 
 	void AddMeshInstance(SkeletalMeshComponent* pModel);
 	void AddMeshInstance(StaticMeshComponent* pModel);
@@ -169,4 +170,6 @@ private:
 	void RenderSkeletalMeshInstance();
 	void RenderStaticMeshInstance();
 
+
+	ComPtr<ID3D11SamplerState> CreateSamplerState(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE addressMode) const;
 };

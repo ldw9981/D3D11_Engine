@@ -5,5 +5,13 @@
 */
 class PipelineStateObjects
 {
+public:
+	PipelineStateObjects() {};
+	~PipelineStateObjects() {};
+	
+	ComPtr<ID3D11DepthStencilState> m_pDepthStencilState = nullptr;	// 깊이/스텐실 상태
+	ComPtr<ID3D11RasterizerState>	m_pRasterizerState = nullptr;	// 래스터라이저 상태	
+	ComPtr<ID3D11SamplerState>		m_pSamplerLinear = nullptr;		// 샘플러 상태.
+	ComPtr<ID3D11BlendState>		m_pAlphaBlendState = nullptr;		// 블렌드 상태 
 };
 

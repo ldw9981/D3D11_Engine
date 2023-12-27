@@ -512,6 +512,22 @@ void D3DRenderManager::RenderStaticMeshInstance()
 	m_StaticMeshInstance.clear();
 }
 
+Microsoft::WRL::ComPtr<ID3D11SamplerState> D3DRenderManager::CreateSamplerState(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE addressMode) const
+{
+	D3D11_SAMPLER_DESC desc = {};
+	desc.Filter = filter;
+	desc.AddressU = addressMode;
+	desc.AddressV = addressMode;
+	desc.AddressW = addressMode;
+	desc.MaxAnisotropy = (filter == D3D11_FILTER_ANISOTROPIC) ? D3D11_REQ_MAXANISOTROPY : 1;
+	desc.MinLOD = 0;
+	desc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	ComPtr<ID3D11SamplerState> samplerState;
+	HR_T(m_pDevice->CreateSamplerState(&desc, &samplerState));
+	return samplerState;
+}
+
 void D3DRenderManager::CreateSkeletalMesh_VS_IL()
 {
 	HRESULT hr;
@@ -596,6 +612,11 @@ void D3DRenderManager::CreatePS()
 	HR_T(m_pDevice->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
 		pixelShaderBuffer->GetBufferSize(), NULL, &m_pPixelShader));
 	SAFE_RELEASE(pixelShaderBuffer);
+}
+
+void D3DRenderManager::CreateIBL()
+{
+
 }
 
 void D3DRenderManager::ApplyMaterial(Material* pMaterial)
