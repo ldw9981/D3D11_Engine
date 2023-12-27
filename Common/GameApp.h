@@ -27,8 +27,6 @@ public:
 	WCHAR m_szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 	WCHAR m_szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
 	WNDCLASSEXW m_wcex;
-	float m_previousTime;
-	float m_currentTime;
 	int  m_nCmdShow;
 	GameTimer m_Timer;
 	UINT m_ClientWidth;

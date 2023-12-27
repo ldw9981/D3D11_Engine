@@ -79,10 +79,7 @@ bool GameApp::Initialize(UINT Width, UINT Height)
 
 	// 윈도우 보이기
 	ShowWindow(m_hWnd,SW_SHOW);
-	UpdateWindow(m_hWnd);
-
-	m_currentTime = m_previousTime = (float)GetTickCount64() / 1000.0f;
-
+	UpdateWindow(m_hWnd);	
 
 	if(!m_Renderer.Initialize(m_hWnd, m_ClientWidth, m_ClientHeight))
 	{
