@@ -21,6 +21,6 @@ public:
 	
 	void SetAnimationTimePtr(float* val) { m_pAnimationTime = val; }
 	virtual void Update(float DeltaTime);
-	Bone* FindNode(const std::string& name);
+	Bone* FindBone(const std::string& name);
 	Bone& CreateChild();	
 };

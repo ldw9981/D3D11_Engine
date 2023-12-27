@@ -34,14 +34,14 @@ void Bone::Update(float DeltaTime)
 	}
 }
 
-Bone* Bone::FindNode(const std::string& name)
+Bone* Bone::FindBone(const std::string& name)
 {
 	if (m_Name == name)
 		return this;
 
 	for (auto& child : m_Children)
 	{
-		Bone* found = child.FindNode(name);
+		Bone* found = child.FindBone(name);
 		if (found != nullptr)
 			return found;
 	}

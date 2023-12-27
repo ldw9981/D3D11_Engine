@@ -25,7 +25,7 @@ void SkeletalMeshInstance::Create(SkeletalMeshResource* pMeshResource, SkeletonR
 	for (size_t i = 0; i < meshBoneCount; ++i)
 	{
 		std::string& name = m_pMeshResource->m_BoneReferences[i].NodeName;
-		Bone* pNode = pRootNode->FindNode(name);
+		Bone* pNode = pRootNode->FindBone(name);
 		assert(pNode != nullptr);
 		m_BoneReferences[i] = &pNode->m_World;
 	}

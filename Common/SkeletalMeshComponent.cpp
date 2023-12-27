@@ -112,9 +112,9 @@ void SkeletalMeshComponent::UpdateBoneAnimationReference(UINT index)
 	for (size_t i = 0; i < animation->NodeAnimations.size(); i++)
 	{
 		NodeAnimation& nodeAnimation = animation->NodeAnimations[i];
-		Bone* pNode = m_RootBone.FindNode(nodeAnimation.NodeName);
-		assert(pNode != nullptr);
-		pNode->m_pNodeAnimation = &animation->NodeAnimations[i];
+		Bone* pBone = m_RootBone.FindBone(nodeAnimation.NodeName);
+		assert(pBone != nullptr);
+		pBone->m_pNodeAnimation = &animation->NodeAnimations[i];
 	}
 }
 
@@ -139,19 +139,19 @@ void SkeletalMeshComponent::CreateHierachy(SkeletonResource* skeleton)
 	// 0번 루트는 컨테이너이므로 현재 Node와 같다 그러므로 1번부터 시작한다.
 	for (UINT i = 1; i < count; i++)
 	{
-		BoneInfo* pBone = skeleton->GetBone(i);
-		assert(pBone != nullptr);
-		assert(pBone->ParentBoneIndex != -1);
+		BoneInfo* pBoneInfo = skeleton->GetBone(i);
+		assert(pBoneInfo != nullptr);
+		assert(pBoneInfo->ParentBoneIndex != -1);
 
-		Bone* pParentNode = m_RootBone.FindNode(skeleton->GetBoneName(pBone->ParentBoneIndex));
-		assert(pParentNode != nullptr);
+		Bone* pParentBone = m_RootBone.FindBone(skeleton->GetBoneName(pBoneInfo->ParentBoneIndex));
+		assert(pParentBone != nullptr);
 
-		auto& node = pParentNode->CreateChild();
-		node.m_Name = pBone->Name;
-		node.m_Local = pBone->RelativeTransform;
-		node.m_Children.reserve(pBone->NumChildren);
-		node.m_pParent = pParentNode;
-		node.m_pAnimationTime = &m_AnimationProressTime;
+		auto& ChildBone = pParentBone->CreateChild();
+		ChildBone.m_Name = pBoneInfo->Name;
+		ChildBone.m_Local = pBoneInfo->RelativeTransform;
+		ChildBone.m_Children.reserve(pBoneInfo->NumChildren);
+		ChildBone.m_pParent = pParentBone;
+		ChildBone.m_pAnimationTime = &m_AnimationProressTime;
 	}
 }
 
