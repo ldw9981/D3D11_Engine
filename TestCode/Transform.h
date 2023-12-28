@@ -16,6 +16,7 @@ public:
 
 protected:
 	DirectX::SimpleMath::Vector3 m_position;
+	float m_SameData;
 public:
 	void UpdateTransform(float DeltaTime);
 	virtual void SetPosition(const DirectX::SimpleMath::Vector3& position);

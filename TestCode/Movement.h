@@ -19,6 +19,7 @@ public:
 private:
 	DirectX::SimpleMath::Vector3 m_Direction;
 	float m_Speed;
+	float m_SameData;
 public:		
     void UpdateMovement(float DeltaTime);
 };
