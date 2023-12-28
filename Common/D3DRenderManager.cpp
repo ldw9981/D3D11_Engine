@@ -417,7 +417,7 @@ void D3DRenderManager::RenderImGui()
 
 	{
 		ImGui::Begin("Properties");
-
+		ImGui::Text("Keyboard: WASD-QE , Mouse: rotation on RightClick");
 
 		ImGui::Text("Frame average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
 		std::string str;
