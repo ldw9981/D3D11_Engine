@@ -7,22 +7,30 @@ SceneComponent::~SceneComponent()
 {
 }
 
-void SceneComponent::SetLocalPosition(Math::Vector3 val)
+void SceneComponent::SetLocalPosition(const Math::Vector3& val)
 {
 	m_bDirty = true;
 	m_LocalPosition = val;
 }
 
-void SceneComponent::SetLocalRotation(Math::Vector3 val)
+void SceneComponent::SetLocalRotation(const Math::Vector3& val)
 {
 	m_bDirty = true;
 	m_LocalRotation = val;
 }
 
-void SceneComponent::SetLocalScale(Math::Vector3 val)
+void SceneComponent::SetLocalScale(const Math::Vector3& val)
 {
 	m_bDirty = true;
 	m_LocalScale = val;
+}
+
+void SceneComponent::SetLocalTransform(Math::Matrix val)
+{
+	m_bDirty = true;	
+	Math::Quaternion q;
+	val.Decompose(m_LocalScale,q,m_LocalPosition);	
+	m_LocalRotation = q.ToEuler();
 }
 
 void SceneComponent::Update(float DeltaTime)

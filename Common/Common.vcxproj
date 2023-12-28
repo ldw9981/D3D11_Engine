@@ -171,6 +171,7 @@
     <ClInclude Include="StaticMeshComponent.h" />
     <ClInclude Include="StaticMeshInstance.h" />
     <ClInclude Include="StaticMeshResource.h" />
+    <ClInclude Include="Texture2D.h" />
     <ClInclude Include="TimeSystem.h" />
     <ClInclude Include="Bone.h" />
     <ClInclude Include="Transform.h" />
@@ -212,6 +213,7 @@
     <ClCompile Include="StaticMeshComponent.cpp" />
     <ClCompile Include="StaticMeshInstance.cpp" />
     <ClCompile Include="StaticMeshResource.cpp" />
+    <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="TimeSystem.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>

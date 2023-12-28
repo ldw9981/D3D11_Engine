@@ -14,16 +14,18 @@ public:
 
 	Pawn* m_pPawn = nullptr;		// 조작하는 대상
 
-	float m_Pitch = 0.0f;		// radian
-	float m_Yaw = 0.0f;		// radian
-
+	float GetPitch() const { return m_Pitch; }
+	void SetPitch(float val) { m_Pitch = val; }
+	float GetYaw() const { return m_Yaw; }
+	void SetYaw(float val) { m_Yaw = val; }
 	void AddPitch(float value);
 	void AddYaw(float value);
-	float GetYaw() { return m_Yaw; }
-	float GetPitch() { return m_Pitch; }
 
 	void Posess(Pawn* pPawn);
 	void UnPosess();
+private:
+	float m_Pitch = 0.0f;		// radian
+	float m_Yaw = 0.0f;		// radian
 };
 
 

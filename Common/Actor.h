@@ -53,6 +53,7 @@ public:
 		const Mouse::State& MouseState, const Mouse::ButtonStateTracker& MouseTracker);
 
 	void SetWorldPosition(const Math::Vector3& val);
+	void SetWorldTransform(Math::Matrix val);
 	std::weak_ptr<Component> GetComponentByName(const std::string& Name);
 };
 

@@ -39,13 +39,15 @@ void DefaultPawn::OnInputProcess(const Keyboard::State& KeyState, const Keyboard
 	ActorController* pController = GetController();
 	float fowardScale = 0.0f, rightScale = 0.0f, upScale = 0.0f;
 
-	Math::Matrix rotMatrix = Matrix::CreateFromYawPitchRoll(pController->m_Yaw, pController->m_Pitch, 0.0f);
+	Math::Matrix rotMatrix = Matrix::CreateFromYawPitchRoll(pController->GetYaw(), pController->GetPitch(), 0.0f);
 	Math::Vector3 forward = Vector3(rotMatrix._31, rotMatrix._32, rotMatrix._33);
 	Math::Vector3 right = rotMatrix.Right();
 
 	if (KeyTracker.IsKeyPressed(Keyboard::Keys::R))
 	{
-		SetWorldPosition(Math::Vector3::Zero);
+		SetWorldTransform(Matrix::Identity);		
+		pController->SetPitch(0.0f);
+		pController->SetYaw(0.0f);
 	}
 
 	if (KeyState.IsKeyDown(DirectX::Keyboard::Keys::W))
@@ -83,7 +85,7 @@ void DefaultPawn::OnInputProcess(const Keyboard::State& KeyState, const Keyboard
 		pController->AddPitch(delta.y);
 		pController->AddYaw(delta.x);
 
-		m_pCameraComponent->SetLocalRotation(Math::Vector3(pController->m_Pitch, pController->m_Yaw, 0.0f));
+		m_pCameraComponent->SetLocalRotation(Math::Vector3(pController->GetPitch(), pController->GetYaw(), 0.0f));
 	}
 }
 

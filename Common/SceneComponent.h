@@ -12,10 +12,11 @@ public:
 	~SceneComponent();
 
 		
-	void SetLocalPosition(Math::Vector3 val);
+	void SetLocalPosition(const Math::Vector3& val);
 	
-	void SetLocalRotation(Math::Vector3 val);
-	void SetLocalScale(Math::Vector3 val);
+	void SetLocalRotation(const Math::Vector3& val);
+	void SetLocalScale(const Math::Vector3& val);
+	void SetLocalTransform(Math::Matrix val);
 	bool m_bDirty = false;
 
 

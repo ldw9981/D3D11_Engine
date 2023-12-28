@@ -72,6 +72,14 @@ void Actor::SetWorldPosition(const Math::Vector3& val)
 	}	
 }
 
+void Actor::SetWorldTransform(Math::Matrix val)
+{
+	if (m_pRootComponent)
+	{
+		m_pRootComponent->SetLocalTransform(val);
+	}
+}
+
 std::weak_ptr<Component> Actor::GetComponentByName(const std::string& Name)
 {
 	for (auto& pComponent : m_OwnedComponents)
