@@ -20,6 +20,6 @@ private:
 	DirectX::SimpleMath::Vector3 m_Direction;
 	float m_Speed;
 public:		
-    virtual void UpdateMovement(float DeltaTime);
+    void UpdateMovement(float DeltaTime);
 };
 
