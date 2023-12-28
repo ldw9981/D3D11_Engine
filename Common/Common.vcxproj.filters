@@ -142,7 +142,7 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Texture2D.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>헤더 파일\Rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -249,7 +249,7 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Texture2D.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\Rendering</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

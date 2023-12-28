@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "TestConstruct.h"
 #include <iostream>
 #include <vector>

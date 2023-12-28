@@ -15,21 +15,45 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="TestCode.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="DelegateInterface.cpp">
+    <ClCompile Include="pch.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectMixIn.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Movement.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="TestConstruct.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="DelegateInterface.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DelegateInterface.h">
+    <ClInclude Include="pch.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObjectMixIn.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Movement.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="TestConstruct.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="DelegateInterface.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
