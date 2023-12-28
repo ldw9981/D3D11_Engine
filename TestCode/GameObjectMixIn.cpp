@@ -3,5 +3,6 @@
 
 void GameObjectMixIn::Update(float DeltaTime)
 {
+	UpdateTransform(DeltaTime);
 	UpdateMovement(DeltaTime);
 }
