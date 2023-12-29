@@ -21,7 +21,7 @@ const Math::Vector3 START_POSITION = { 0.f, 0.f, -1000.f};
 using namespace std;
 
 TutorialApp::TutorialApp(HINSTANCE hInstance)
-	:GameApp(hInstance)
+	:GameApp(hInstance),m_World("MyWorld")
 {
 	m_bUseConsole = true;
 }
@@ -47,7 +47,7 @@ bool TutorialApp::Initialize(UINT Width, UINT Height)
 	m_pDefaultPawn = m_World.CreateGameObject<DefaultPawn>().get();
 	m_pDefaultPawn->SetWorldPosition(Math::Vector3(0.0f,100.0f,-500.0f));
 	m_pPlayerController->Posess(m_pDefaultPawn);
-
+	m_World.SetWorldEvent(this);
 	ChangeWorld(&m_World);
 
 	return true;
@@ -137,5 +137,15 @@ void TutorialApp::ImGuiRender()
 {	
 	ImGui::Text("%s",__FUNCTION__);
 	ImGui::Text("다른곳에서도 ImGUI를 사용하는테스트 English Only");
+}
+
+void TutorialApp::OnBeginPlay(World* pWorld)
+{
+	LOG_MESSAGEA("%s World OnBeginPlay",pWorld->m_Name.c_str());
+}
+
+void TutorialApp::OnEndPlay(World* pWorld)
+{
+	LOG_MESSAGEA("%s World OnEndPlay", pWorld->m_Name.c_str());
 }
 

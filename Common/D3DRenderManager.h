@@ -93,6 +93,9 @@ public:
 	ID3D11PixelShader* m_pPixelShader = nullptr;		// 픽셀 셰이더.	
 	ID3D11SamplerState* m_pSamplerLinear = nullptr;		// 샘플러 상태.
 	ID3D11BlendState* m_pAlphaBlendState = nullptr;		// 블렌드 상태 변경 (반투명처리를위한 블렌드상태)
+	ID3D11RasterizerState* m_pRasterizerState = nullptr; // MSAA활성화를 위해
+
+
 	ID3D11Buffer* m_pGpuCbMaterial = nullptr;				// 상수 버퍼: 변환행렬
 	ID3D11Buffer* m_pCBTransformW = nullptr;				// 상수 버퍼: 변환행렬
 	ID3D11Buffer* m_pCBTransformVP = nullptr;				// 상수 버퍼: 변환행렬

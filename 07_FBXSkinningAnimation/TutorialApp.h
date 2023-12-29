@@ -15,15 +15,13 @@ using namespace DirectX;
 class PlayerController;
 class DefaultPawn;
 class TutorialApp :
-    public GameApp,public IImGuiRenderable
+    public GameApp,public IImGuiRenderable,public IWorldEvent
 {
 public:
 	TutorialApp(HINSTANCE hInstance);
 	~TutorialApp();
 
-
 	World m_World;
-
 	std::list<Actor*> m_SpawnedActors;
 	PlayerController* m_pPlayerController = nullptr;
 	DefaultPawn* m_pDefaultPawn = nullptr;
@@ -37,5 +35,7 @@ public:
 	void IncreaseModel();
 	void DecreaseModel();
 	virtual void ImGuiRender();
+	virtual void OnBeginPlay(World* pWorld);
+	virtual void OnEndPlay(World* pWorld);
 };
 

@@ -182,7 +182,7 @@ float4 main(PS_INPUT input) : SV_Target
 	
     float3 final = directLighting + ambientLighting + emissive ;
     float3 GammaCorrect = pow(final, float(1.0 / 2.2).rrr);
-    float3 output = directLighting;
+    float3 output = GammaCorrect;
 
     return float4(output, Opacity);
 }
