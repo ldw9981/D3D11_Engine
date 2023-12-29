@@ -234,6 +234,14 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	HR_T(m_pDevice->CreateSamplerState(&sampDesc, &m_pSamplerLinear));
 
 
+	D3D11_RASTERIZER_DESC rasterizerDesc = {};
+	rasterizerDesc.AntialiasedLineEnable = true;
+	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+	rasterizerDesc.CullMode = D3D11_CULL_BACK;
+	rasterizerDesc.FrontCounterClockwise = true;
+	rasterizerDesc.DepthClipEnable = true;
+	HR_T(m_pDevice->CreateRasterizerState(&rasterizerDesc, &m_pRasterizerState));
+
 	// Initialize the world matrix
 	m_World = XMMatrixIdentity();
 	XMVECTOR Eye = XMVectorSet(0.0f, 0.0f, -1000.0f, 0.0f);
@@ -259,7 +267,8 @@ void D3DRenderManager::Uninitialize()
 	SAFE_RELEASE(m_pCBDirectionLight);
 	SAFE_RELEASE(m_pCBTransformW);
 	SAFE_RELEASE(m_pCBTransformVP);
-	SAFE_RELEASE(m_pGpuCbMaterial);
+	SAFE_RELEASE(m_pGpuCbMaterial);	
+	SAFE_RELEASE(m_pRasterizerState);
 	SAFE_RELEASE(m_pAlphaBlendState);
 	SAFE_RELEASE(m_pSamplerLinear);
 	SAFE_RELEASE(m_pPixelShader);
