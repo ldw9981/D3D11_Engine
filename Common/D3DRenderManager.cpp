@@ -23,6 +23,10 @@
 
 #include "SkeletalMeshComponent.h"
 #include "CameraComponent.h"
+#include "CollisionComponent.h"
+#include "BoxComponent.h"
+#include "SphereComponent.h"
+#include "OrientedBoxComponent.h"
 
 #include "DebugDraw.h"
 
@@ -402,6 +406,32 @@ void D3DRenderManager::RenderDebugDraw()
 		DebugDraw::Draw(DebugDraw::g_Batch.get(), StaticMeshComponent->m_BoundingBox,
 			StaticMeshComponent->m_bIsCulled ? Colors::Red : Colors::Blue); // BoundingBox
 	}
+
+	for (auto& CollisionComponent : m_CollisionComponents)
+	{
+		switch (CollisionComponent->m_Type)
+		{	
+			case CollisionType::Sphere:
+			{
+				SphereComponent* pSphere = static_cast<SphereComponent*>(CollisionComponent);
+				DebugDraw::Draw(DebugDraw::g_Batch.get(), pSphere->m_Geomety, pSphere->m_bIsOverlapped ? Colors::Red : Colors::Green);
+			}		
+			break;
+			case CollisionType::Box:
+			{
+				BoxComponent* pBox = static_cast<BoxComponent*>(CollisionComponent);
+				DebugDraw::Draw(DebugDraw::g_Batch.get(), pBox->m_Geomety, pBox->m_bIsOverlapped ? Colors::Red : Colors::Green);
+
+			}
+			break;
+			case CollisionType::OrientedBox:
+			{
+				OrientedBoxComponent* pOrientedBox = static_cast<OrientedBoxComponent*>(CollisionComponent);
+				DebugDraw::Draw(DebugDraw::g_Batch.get(), pOrientedBox->m_Geomety, pOrientedBox->m_bIsOverlapped ? Colors::Red : Colors::Green);
+			}
+			break;
+		}
+	}
 	DebugDraw::g_Batch->End();	
 }
 
@@ -698,6 +728,16 @@ void D3DRenderManager::AddDebugFloatToImGuiWindow(const std::string& header, con
 	ImGui::Text(" ");
 	ImGui::Text(header.c_str());
 	ImGui::Text("%f", value);
+}
+
+void D3DRenderManager::AddCollisionComponent(CollisionComponent* pCollisionComponent)
+{
+	pCollisionComponent->m_Iterator = m_CollisionComponents.insert(m_CollisionComponents.end(), pCollisionComponent);
+}
+
+void D3DRenderManager::RemoveCollisionComponent(CollisionComponent* pCollisionComponent)
+{
+	m_CollisionComponents.erase(pCollisionComponent->m_Iterator);
 }
 
 void D3DRenderManager::AddDebugVector4ToImGuiWindow(const std::string& header, const Vector4& value)

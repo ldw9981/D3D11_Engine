@@ -65,6 +65,7 @@ class StaticMeshInstance;
 class SkeletalMeshInstance;
 class SkeletalMeshComponent;
 class CameraComponent;
+class CollisionComponent;
 class D3DRenderManager
 {
 public:
@@ -121,9 +122,9 @@ public:
 	std::list<StaticMeshInstance*> m_StaticMeshInstance;		//  렌더링할 모델들의 포인터 저장해둔다. 
 	std::list<SkeletalMeshInstance*> m_SkeletalMeshInstance;		//  렌더링할 모델들의 포인터 저장해둔다. 
 
-
 	std::list<SkeletalMeshComponent*> m_SkeletalMeshComponents;		//  렌더링할 모델들의 포인터 저장해둔다.
-	std::list<StaticMeshComponent*> m_StaticMeshComponents;		//  렌더링할 모델들의 포인터 저장해둔다.
+	std::list<StaticMeshComponent*> m_StaticMeshComponents;		//  렌더링할 모델들의 포인터 저장해둔다
+	std::list<CollisionComponent*> m_CollisionComponents;		//  렌더링할 모델들의 포인터 저장해둔다
 
 	IImGuiRenderable* m_pImGuiRender = nullptr;
 	std::weak_ptr<CameraComponent> m_pCamera;
@@ -156,6 +157,10 @@ public:
 	void SetImGuiRender(IImGuiRenderable* val) { m_pImGuiRender = val; }
 	bool GetFreezeCulling() const { return m_bFreezeCulling; }
 	void SetFreezeCulling(bool val) { m_bFreezeCulling = val; }
+	
+	void AddCollisionComponent(CollisionComponent* pCollisionComponent);
+	void RemoveCollisionComponent(CollisionComponent* pCollisionComponent);
+
 private:
 	void CreateSkeletalMesh_VS_IL();
 	void CreateStaticMesh_VS_IL();
@@ -166,6 +171,7 @@ private:
 	void AddMeshInstance(StaticMeshComponent* pModel);
 
 	void RenderDebugDraw();
+
 	void RenderImGui();
 	void RenderSkeletalMeshInstance();
 	void RenderStaticMeshInstance();

@@ -144,6 +144,21 @@
     <ClInclude Include="Texture2D.h">
       <Filter>헤더 파일\Rendering</Filter>
     </ClInclude>
+    <ClInclude Include="CollisionManager.h">
+      <Filter>헤더 파일\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionComponent.h">
+      <Filter>헤더 파일\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxComponent.h">
+      <Filter>헤더 파일\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="SphereComponent.h">
+      <Filter>헤더 파일\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="OrientedBoxComponent.h">
+      <Filter>헤더 파일\Framework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp">
@@ -250,6 +265,21 @@
     </ClCompile>
     <ClCompile Include="Texture2D.cpp">
       <Filter>소스 파일\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionManager.cpp">
+      <Filter>소스 파일\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionComponent.cpp">
+      <Filter>소스 파일\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="SphereComponent.cpp">
+      <Filter>소스 파일\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="OrientedBoxComponent.cpp">
+      <Filter>소스 파일\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="BoxComponent.cpp">
+      <Filter>소스 파일\Framework</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

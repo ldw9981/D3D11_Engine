@@ -15,7 +15,6 @@ float ndfGGX(float cosLh, float roughness)
 {
     float alpha = roughness * roughness;
     float alphaSq = alpha * alpha;
-
     float denom = (cosLh * cosLh) * (alphaSq - 1.0) + 1.0;
     return alphaSq / (PI * denom * denom);
 }
@@ -183,7 +182,7 @@ float4 main(PS_INPUT input) : SV_Target
 	
     float3 final = directLighting + ambientLighting + emissive ;
     float3 GammaCorrect = pow(final, float(1.0 / 2.2).rrr);
-    float3 output = GammaCorrect;
+    float3 output = directLighting;
 
     return float4(output, Opacity);
 }

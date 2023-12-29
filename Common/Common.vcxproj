@@ -143,11 +143,15 @@
   <ItemGroup>
     <ClInclude Include="ActorController.h" />
     <ClInclude Include="AnimationResource.h" />
+    <ClInclude Include="BoxComponent.h" />
     <ClInclude Include="CameraComponent.h" />
+    <ClInclude Include="CollisionComponent.h" />
+    <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="DebugDraw.h" />
     <ClInclude Include="DefaultPawn.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="MovementComponent.h" />
+    <ClInclude Include="OrientedBoxComponent.h" />
     <ClInclude Include="Pawn.h" />
     <ClInclude Include="PipelineStateObjects.h" />
     <ClInclude Include="PlayerController.h" />
@@ -167,6 +171,7 @@
     <ClInclude Include="SkeletalMeshInstance.h" />
     <ClInclude Include="SkeletalMeshResource.h" />
     <ClInclude Include="SkeletonResource.h" />
+    <ClInclude Include="SphereComponent.h" />
     <ClInclude Include="StaticMeshActor.h" />
     <ClInclude Include="StaticMeshComponent.h" />
     <ClInclude Include="StaticMeshInstance.h" />
@@ -180,11 +185,15 @@
   <ItemGroup>
     <ClCompile Include="ActorController.cpp" />
     <ClCompile Include="AnimationResource.cpp" />
+    <ClCompile Include="BoxComponent.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
+    <ClCompile Include="CollisionComponent.cpp" />
+    <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="DebugDraw.cpp" />
     <ClCompile Include="DefaultPawn.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="MovementComponent.cpp" />
+    <ClCompile Include="OrientedBoxComponent.cpp" />
     <ClCompile Include="Pawn.cpp" />
     <ClCompile Include="PipelineStateObjects.cpp" />
     <ClCompile Include="PlayerController.cpp" />
@@ -209,6 +218,7 @@
     <ClCompile Include="SkeletalMeshInstance.cpp" />
     <ClCompile Include="SkeletalMeshResource.cpp" />
     <ClCompile Include="SkeletonResource.cpp" />
+    <ClCompile Include="SphereComponent.cpp" />
     <ClCompile Include="StaticMeshActor.cpp" />
     <ClCompile Include="StaticMeshComponent.cpp" />
     <ClCompile Include="StaticMeshInstance.cpp" />
