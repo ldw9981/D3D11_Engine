@@ -83,7 +83,7 @@ void TutorialApp::IncreaseModel()
 {	
 	{
 		auto SkActor = m_World.CreateGameObject<SkeletalMeshActor>();
-		SkeletalMeshComponent* pComponent = (SkeletalMeshComponent*)SkActor->GetRootComponent();
+		SkeletalMeshComponent* pComponent = (SkeletalMeshComponent*)SkActor->GetComponentPtrByName("SkeletalMeshComponent");
 		pComponent->ReadSceneResourceFromFBX("../Resource/Zombie.fbx");
 		pComponent->AddSceneAnimationFromFBX("../Resource/Zombie_Run.fbx");
 		pComponent->AddSceneAnimationFromFBX("../Resource/SkinningTest.fbx");
@@ -103,7 +103,7 @@ void TutorialApp::IncreaseModel()
 	
 	{
 		auto StActor = m_World.CreateGameObject<StaticMeshActor>();
-		StaticMeshComponent* pComponent = (StaticMeshComponent*)StActor->GetRootComponent();
+		StaticMeshComponent* pComponent = (StaticMeshComponent*)StActor->GetComponentPtrByName("StaticMeshComponent");
 		pComponent->ReadSceneResourceFromFBX("../Resource/angel_armor.FBX");
 	
 

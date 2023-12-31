@@ -380,8 +380,7 @@ void D3DRenderManager::Render()
 	RenderSkeletalMeshInstance();
 	RenderStaticMeshInstance();
 	
-	if(m_bDrawDebug)
-		RenderDebugDraw();
+	RenderDebugDraw();
 	
 	RenderImGui();
 
@@ -403,28 +402,33 @@ void D3DRenderManager::RenderDebugDraw()
 
 	DebugDraw::g_Batch->Begin();
 
-	DebugDraw::Draw(DebugDraw::g_Batch.get(), m_Frustum, Colors::Yellow); // BoundingBox
+	if (m_bDrawDebugCulling)
+	{
+		DebugDraw::Draw(DebugDraw::g_Batch.get(), m_Frustum, Colors::Yellow); // BoundingBox
 
-	for (auto& SkeletalMeshComponent : m_SkeletalMeshComponents)
-	{
-		DebugDraw::Draw(DebugDraw::g_Batch.get(), SkeletalMeshComponent->m_BoundingBox,
-			SkeletalMeshComponent->m_bIsCulled ? Colors::Red : Colors::Blue); // BoundingBox
-	}
-	for (auto& StaticMeshComponent : m_StaticMeshComponents)
-	{
-		DebugDraw::Draw(DebugDraw::g_Batch.get(), StaticMeshComponent->m_BoundingBox,
-			StaticMeshComponent->m_bIsCulled ? Colors::Red : Colors::Blue); // BoundingBox
+		for (auto& SkeletalMeshComponent : m_SkeletalMeshComponents)
+		{
+			DebugDraw::Draw(DebugDraw::g_Batch.get(), SkeletalMeshComponent->m_BoundingBox,
+				SkeletalMeshComponent->m_bIsCulled ? Colors::Red : Colors::Blue); // BoundingBox
+		}
+		for (auto& StaticMeshComponent : m_StaticMeshComponents)
+		{
+			DebugDraw::Draw(DebugDraw::g_Batch.get(), StaticMeshComponent->m_BoundingBox,
+				StaticMeshComponent->m_bIsCulled ? Colors::Red : Colors::Blue); // BoundingBox
+		}
 	}
 
-	for (auto& CollisionComponent : m_CollisionComponents)
+	if (m_bDrawDebugCollision)
 	{
-		switch (CollisionComponent->m_ColliderType)
-		{	
+		for (auto& CollisionComponent : m_CollisionComponents)
+		{
+			switch (CollisionComponent->m_ColliderType)
+			{
 			case ColliderType::Sphere:
 			{
 				SphereComponent* pSphere = static_cast<SphereComponent*>(CollisionComponent);
 				DebugDraw::Draw(DebugDraw::g_Batch.get(), pSphere->m_Geomety, pSphere->m_bIsOverlapped ? Colors::Red : Colors::Green);
-			}		
+			}
 			break;
 			case ColliderType::Box:
 			{
@@ -439,8 +443,10 @@ void D3DRenderManager::RenderDebugDraw()
 				DebugDraw::Draw(DebugDraw::g_Batch.get(), pOrientedBox->m_Geomety, pOrientedBox->m_bIsOverlapped ? Colors::Red : Colors::Green);
 			}
 			break;
+			}
 		}
 	}
+
 	DebugDraw::g_Batch->End();	
 }
 
@@ -464,7 +470,8 @@ void D3DRenderManager::RenderImGui()
 		ImGui::Text("VideoMemory: %s", str.c_str());
 		GetSystemMemoryInfo(str);
 		ImGui::Text("SystemMemory: %s", str.c_str());
-		ImGui::Checkbox("Work DebugDraw", &m_bDrawDebug);
+		ImGui::Checkbox("m_bDrawDebugCulling", &m_bDrawDebugCulling);
+		ImGui::Checkbox("m_bDrawDebugCollision", &m_bDrawDebugCollision);
 		ImGui::Checkbox("Work Culling", &m_bWorkCulling);
 	    ImGui::Checkbox("Freeze Culling", &m_bFreezeCulling);
 		ImGui::Text("Count DrawComponents: %d ", m_nDrawComponentCount);

@@ -93,7 +93,7 @@ void DefaultPawn::OnPossess(ActorController* pPlayerController)
 {
 	__super::OnPossess(pPlayerController);
 	
-	auto pComponent = (std::weak_ptr<Component>)GetComponentByName("CameraComponent");
+	auto pComponent = (std::weak_ptr<Component>)GetComponentWeakPtrByName("CameraComponent");
 	if (pComponent.expired() ==false)
 	{
 		std::weak_ptr<CameraComponent> pCameraComponent = std::dynamic_pointer_cast<CameraComponent>(pComponent.lock());

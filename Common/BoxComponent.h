@@ -11,5 +11,6 @@ public:
     BoundingBox  m_Geomety;
 
     virtual bool IsCollide(CollisionComponent* pOtherComponent);
+    virtual void Update(float DeltaTime);
 };
 

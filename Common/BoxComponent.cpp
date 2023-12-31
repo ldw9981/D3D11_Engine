@@ -36,3 +36,10 @@ bool BoxComponent::IsCollide(CollisionComponent* pOtherComponent)
 	}
 	return false;
 }
+
+void BoxComponent::Update(float DeltaTime)
+{
+	__super::Update(DeltaTime);
+
+	m_Geomety.Center = GetWorldPosition();
+}

@@ -54,6 +54,7 @@ public:
 
 	void SetWorldPosition(const Math::Vector3& val);
 	void SetWorldTransform(Math::Matrix val);
-	std::weak_ptr<Component> GetComponentByName(const std::string& Name);
+	std::weak_ptr<Component> GetComponentWeakPtrByName(const std::string& Name);
+	Component* GetComponentPtrByName(const std::string& Name);
 };
 

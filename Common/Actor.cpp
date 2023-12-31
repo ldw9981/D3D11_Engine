@@ -80,7 +80,7 @@ void Actor::SetWorldTransform(Math::Matrix val)
 	}
 }
 
-std::weak_ptr<Component> Actor::GetComponentByName(const std::string& Name)
+std::weak_ptr<Component> Actor::GetComponentWeakPtrByName(const std::string& Name)
 {
 	for (auto& pComponent : m_OwnedComponents)
 	{
@@ -90,4 +90,16 @@ std::weak_ptr<Component> Actor::GetComponentByName(const std::string& Name)
 		}
 	}
 	return std::weak_ptr<Component>();
+}
+
+Component* Actor::GetComponentPtrByName(const std::string& Name)
+{
+	for (auto& pComponent : m_OwnedComponents)
+	{
+		if (pComponent->GetName() == Name)
+		{
+			return pComponent.get();
+		}
+	}
+	return nullptr;
 }
