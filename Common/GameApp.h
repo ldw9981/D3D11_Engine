@@ -5,6 +5,7 @@
 #include "D3DRenderManager.h"
 #include "ResourceManager.h"
 #include "InputManager.h"
+#include "CollisionManager.h"
 
 
 
@@ -35,9 +36,8 @@ public:
 	D3DRenderManager m_Renderer;
 	ResourceManager m_Resource;
 	World* m_pCurrentWorld=nullptr;
-	void ChangeWorld(World* pNewWorld);
-
 	InputManager m_InputManager;
+	CollisionManager m_CollisionManager;
 public:
 	// 윈도우 정보 등록,생성,보이기 한다.
 	virtual bool Initialize(UINT Width, UINT Height);
@@ -46,5 +46,7 @@ public:
 	virtual void Render(); // 상속 받은 클래스에서 구현
 
 	virtual LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);	
+
+	void ChangeWorld(World* pNewWorld);
 };
 

@@ -3,7 +3,7 @@
 
 BoxComponent::BoxComponent()
 {
-	m_Type = CollisionType::Box;
+	m_ColliderType = ColliderType::Box;
 }
 
 BoxComponent::~BoxComponent()

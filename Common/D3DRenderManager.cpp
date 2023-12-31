@@ -418,22 +418,22 @@ void D3DRenderManager::RenderDebugDraw()
 
 	for (auto& CollisionComponent : m_CollisionComponents)
 	{
-		switch (CollisionComponent->m_Type)
+		switch (CollisionComponent->m_ColliderType)
 		{	
-			case CollisionType::Sphere:
+			case ColliderType::Sphere:
 			{
 				SphereComponent* pSphere = static_cast<SphereComponent*>(CollisionComponent);
 				DebugDraw::Draw(DebugDraw::g_Batch.get(), pSphere->m_Geomety, pSphere->m_bIsOverlapped ? Colors::Red : Colors::Green);
 			}		
 			break;
-			case CollisionType::Box:
+			case ColliderType::Box:
 			{
 				BoxComponent* pBox = static_cast<BoxComponent*>(CollisionComponent);
 				DebugDraw::Draw(DebugDraw::g_Batch.get(), pBox->m_Geomety, pBox->m_bIsOverlapped ? Colors::Red : Colors::Green);
 
 			}
 			break;
-			case CollisionType::OrientedBox:
+			case ColliderType::OrientedBox:
 			{
 				OrientedBoxComponent* pOrientedBox = static_cast<OrientedBoxComponent*>(CollisionComponent);
 				DebugDraw::Draw(DebugDraw::g_Batch.get(), pOrientedBox->m_Geomety, pOrientedBox->m_bIsOverlapped ? Colors::Red : Colors::Green);

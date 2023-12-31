@@ -87,7 +87,7 @@ bool GameApp::Initialize(UINT Width, UINT Height)
 	}
 
 	m_InputManager.Initialize(m_hWnd);
-	
+	m_CollisionManager.Initialize();
 	return true;
 }
 
@@ -124,6 +124,7 @@ void GameApp::Update()
 	{
 		m_pCurrentWorld->Update(m_Timer.DeltaTime());
 	}	
+	m_CollisionManager.Update(m_Timer.DeltaTime());
 	m_Renderer.Update();
 	
 

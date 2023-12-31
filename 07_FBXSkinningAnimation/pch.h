@@ -12,6 +12,7 @@
 #include <windows.h>
 #include <vector>
 #include <map>
+#include <set>
 #include <memory>
 #include <DirectXMath.h>
 #include <wrl/client.h>
@@ -24,6 +25,8 @@
 #include <imgui.h>
 #include <imgui_impl_win32.h>
 #include <imgui_impl_dx11.h>
-
+#include <iostream>
+#include <utility>
+#include <algorithm>
 namespace Math = DirectX::SimpleMath;
 #endif //PCH_H

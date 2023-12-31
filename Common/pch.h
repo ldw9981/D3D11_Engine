@@ -12,6 +12,8 @@
 #include <windows.h>
 #include <vector>
 #include <map>
+#include <set>
+#include <list>
 #include <memory>
 #include <DirectXMath.h>
 #include <wrl/client.h>
@@ -21,7 +23,9 @@
 #include <filesystem>
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
-
+#include <iostream>
+#include <utility>
+#include <algorithm>
 
 namespace Math = DirectX::SimpleMath;
 using namespace DirectX;

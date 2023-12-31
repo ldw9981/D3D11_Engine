@@ -6,7 +6,7 @@
 #include "SkeletalMeshComponent.h"
 #include "StaticMeshComponent.h"
 #include "SceneComponent.h"
-
+#include "CollisionComponent.h"
 
 class Component;
 class World;

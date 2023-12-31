@@ -11,9 +11,6 @@
 #include "../Common/DefaultPawn.h"
 #include "../Common/Pawn.h"
 
-#include <iostream>
-#include <utility>
-#include <algorithm>
 
 
 const Math::Vector3 START_POSITION = { 0.f, 0.f, -1000.f};

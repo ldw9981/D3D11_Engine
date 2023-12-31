@@ -3,7 +3,7 @@
 
 OrientedBoxComponent::OrientedBoxComponent()
 {
-	m_Type = CollisionType::OrientedBox;
+	m_ColliderType = ColliderType::OrientedBox;
 }
 
 OrientedBoxComponent::~OrientedBoxComponent()
