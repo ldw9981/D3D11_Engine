@@ -8,5 +8,7 @@ public:
 	~SphereComponent();
 
 	BoundingSphere  m_Geomety;
+
+	bool IsCollide(CollisionComponent* pOtherComponent);
 };
 

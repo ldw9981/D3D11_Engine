@@ -9,5 +9,7 @@ public:
 
 
 	BoundingOrientedBox  m_Geomety;
+
+	bool IsCollide(CollisionComponent* pOtherComponent);
 };
 

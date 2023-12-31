@@ -9,5 +9,7 @@ public:
     ~BoxComponent();
 
     BoundingBox  m_Geomety;
+
+    virtual bool IsCollide(CollisionComponent* pOtherComponent);
 };
 

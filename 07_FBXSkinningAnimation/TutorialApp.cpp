@@ -36,8 +36,8 @@ bool TutorialApp::Initialize(UINT Width, UINT Height)
 
 	
 	IncreaseModel();
-	IncreaseModel();
-	IncreaseModel();
+//	IncreaseModel();
+//	IncreaseModel();
 	
 
 	m_pPlayerController = m_World.CreateGameObject<PlayerController>().get();
