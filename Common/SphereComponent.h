@@ -10,5 +10,6 @@ public:
 	BoundingSphere  m_Geomety;
 
 	bool IsCollide(CollisionComponent* pOtherComponent);
+	void Update(float DeltaTime);
 };
 

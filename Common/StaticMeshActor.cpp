@@ -11,6 +11,7 @@ StaticMeshActor::StaticMeshActor()
 	SetRootComponent(m_pStaticMeshComponent);
 	m_pBoxComponent = CreateComponent<BoxComponent>("BoxComponent").get();	
 	m_pBoxComponent->SetParent(m_pStaticMeshComponent);
+	m_pBoxComponent->SetCollisionType(CollisionType::Block);
 }
 
 StaticMeshActor::~StaticMeshActor()

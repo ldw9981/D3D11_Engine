@@ -748,12 +748,12 @@ void D3DRenderManager::AddDebugFloatToImGuiWindow(const std::string& header, con
 
 void D3DRenderManager::AddCollisionComponent(CollisionComponent* pCollisionComponent)
 {
-	pCollisionComponent->m_Iterator = m_CollisionComponents.insert(m_CollisionComponents.end(), pCollisionComponent);
+	pCollisionComponent->m_ItRenderManager = m_CollisionComponents.insert(m_CollisionComponents.end(), pCollisionComponent);
 }
 
 void D3DRenderManager::RemoveCollisionComponent(CollisionComponent* pCollisionComponent)
 {
-	m_CollisionComponents.erase(pCollisionComponent->m_Iterator);
+	m_CollisionComponents.erase(pCollisionComponent->m_ItRenderManager);
 }
 
 void D3DRenderManager::AddDebugVector4ToImGuiWindow(const std::string& header, const Vector4& value)

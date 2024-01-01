@@ -32,7 +32,8 @@ public:
 
 	virtual LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
-	void IncreaseModel();
+	void IncreaseSkeletalMeshModel();
+	void IncreaseStaticMeshModel();
 	void DecreaseModel();
 	virtual void ImGuiRender();
 	virtual void OnBeginPlay(World* pWorld);

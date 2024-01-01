@@ -7,7 +7,7 @@ public:
 	CollisionManager();
 	~CollisionManager();
 	
-		
+	static CollisionManager* Instance;
 	std::list<CollisionComponent*> m_CollisionComponents;
 
 public:

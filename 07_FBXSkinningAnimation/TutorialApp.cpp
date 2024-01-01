@@ -35,7 +35,8 @@ bool TutorialApp::Initialize(UINT Width, UINT Height)
 	D3DRenderManager::Instance->SetImGuiRender(this);	
 
 	
-	IncreaseModel();
+	IncreaseSkeletalMeshModel();
+	IncreaseStaticMeshModel();
 //	IncreaseModel();
 //	IncreaseModel();
 	
@@ -67,7 +68,8 @@ LRESULT CALLBACK TutorialApp::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 	case WM_KEYDOWN:
 		if (wParam == VK_UP) 
 		{
-			IncreaseModel();
+			IncreaseSkeletalMeshModel();
+			IncreaseStaticMeshModel();
 			std::cout << "Test" << endl;
 		}
 		if (wParam == VK_DOWN)
@@ -79,7 +81,7 @@ LRESULT CALLBACK TutorialApp::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 	return GameApp::WndProc(hWnd, message, wParam, lParam);
 }
 
-void TutorialApp::IncreaseModel()
+void TutorialApp::IncreaseSkeletalMeshModel()
 {	
 	auto SkActor = m_World.CreateGameObject<SkeletalMeshActor>();
 	SkeletalMeshComponent* pSkeletalMeshComponent = (SkeletalMeshComponent*)SkActor->GetComponentPtrByName("SkeletalMeshComponent");	
@@ -87,6 +89,9 @@ void TutorialApp::IncreaseModel()
 	pSkeletalMeshComponent->AddSceneAnimationFromFBX("../Resource/Zombie_Run.fbx");
 	pSkeletalMeshComponent->AddSceneAnimationFromFBX("../Resource/SkinningTest.fbx");
 	pSkeletalMeshComponent->SetBoundingBoxCenterOffset(Vector3(0.0f, pSkeletalMeshComponent->m_BoundingBox.Extents.y, 0.0f));
+
+	BoxComponent* pCollisionComponent = (BoxComponent*)SkActor->GetComponentPtrByName("BoxComponent");
+	pCollisionComponent->SetLocalPosition(Vector3(0.0f, pSkeletalMeshComponent->m_BoundingBox.Extents.y, 0.0f));
 
 	int range = 1000;
 	float posx = (float)(rand() % range) - range * 0.5f;
@@ -99,27 +104,28 @@ void TutorialApp::IncreaseModel()
 	pSkeletalMeshComponent->PlayAnimation(playindex);
 
 	m_SpawnedActors.push_back(SkActor.get());
+}
 
-
-
+void TutorialApp::IncreaseStaticMeshModel()
+{
 	auto StActor = m_World.CreateGameObject<StaticMeshActor>();
 	StaticMeshComponent* pStaticMeshComponent = (StaticMeshComponent*)StActor->GetComponentPtrByName("StaticMeshComponent");
 	pStaticMeshComponent->ReadSceneResourceFromFBX("../Resource/angel_armor.FBX");
-	pStaticMeshComponent->SetBoundingBoxCenterOffset( Vector3(0.0f, pStaticMeshComponent->m_BoundingBox.Extents.y,0.0f));
+	pStaticMeshComponent->SetBoundingBoxCenterOffset(Vector3(0.0f, pStaticMeshComponent->m_BoundingBox.Extents.y, 0.0f));
 	BoxComponent* pCollisionComponent = (BoxComponent*)StActor->GetComponentPtrByName("BoxComponent");
 	pCollisionComponent->SetLocalPosition(Vector3(0.0f, pStaticMeshComponent->m_BoundingBox.Extents.y, 0.0f));
 
-	
+	int range = 1000;
+	float posx = (float)(rand() % range) - range * 0.5f;
+	float posy = (float)(rand() % range) - range * 0.5f;
+	float posz = (float)(rand() % range) - range * 0.5f;
 	posx = (float)(rand() % range) - range * 0.5f;
 	posy = (float)(rand() % range) - range * 0.5f;
 	posz = (float)(rand() % range) - range * 0.5f;
 	StActor->SetWorldPosition(Math::Vector3(posx, posy, posz));
-	
+
 
 	m_SpawnedActors.push_back(StActor.get());
-
-	
-	
 }
 
 void TutorialApp::DecreaseModel()

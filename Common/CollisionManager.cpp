@@ -2,15 +2,20 @@
 #include "CollisionManager.h"
 #include "CollisionComponent.h"
 
+CollisionManager* CollisionManager::Instance = nullptr;
+
 CollisionManager::CollisionManager()
 {
-
+	assert(Instance == nullptr);
+	Instance = this;
 }
 
 CollisionManager::~CollisionManager()
 {
 
 }
+
+
 
 bool CollisionManager::Initialize()
 {
@@ -19,12 +24,12 @@ bool CollisionManager::Initialize()
 
 void CollisionManager::AddCollisionComponent(CollisionComponent* pCollisionComponent)
 {
-	pCollisionComponent->m_Iterator = m_CollisionComponents.insert(m_CollisionComponents.end(), pCollisionComponent);
+	pCollisionComponent->m_ItCollisionManager = m_CollisionComponents.insert(m_CollisionComponents.end(), pCollisionComponent);
 }
 
 void CollisionManager::RemoveCollisionComponent(CollisionComponent* pCollisionComponent)
 {
-	m_CollisionComponents.erase(pCollisionComponent->m_Iterator);
+	m_CollisionComponents.erase(pCollisionComponent->m_ItCollisionManager);
 }
 
 void CollisionManager::Update(float DeltaTime)

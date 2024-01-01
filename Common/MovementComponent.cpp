@@ -22,9 +22,9 @@ void MovementComponent::Update(float DeltaTime)
 {
 	if (m_InputVector.Length() > 0.0f)
 	{
-		Math::Vector3 Position = m_pRootComponent->GetWorldPosition();
-		Position += m_InputVector * m_Speed * DeltaTime;
-		m_pRootComponent->SetLocalPosition(Position);
+		m_PositionBefore = m_pRootComponent->GetWorldPosition();
+		m_PositionAfter = m_PositionBefore + m_InputVector * m_Speed * DeltaTime;
+		m_pRootComponent->SetLocalPosition(m_PositionAfter);
 		m_InputVector = Math::Vector3::Zero;
 	}
 }

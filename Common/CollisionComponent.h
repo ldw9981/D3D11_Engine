@@ -40,7 +40,8 @@ public:
 	ColliderType m_ColliderType = ColliderType::Count;
 	CollisionType m_CollisionType = CollisionType::Count;
 
-	std::list<CollisionComponent*>::iterator m_Iterator;
+	std::list<CollisionComponent*>::iterator m_ItRenderManager;
+	std::list<CollisionComponent*>::iterator m_ItCollisionManager;
 	std::set<CollisionComponent*> m_OverlapStateCurr;    // 현재 충돌 상태
 	std::set<CollisionComponent*> m_OverlapStatePrev;	// 이전 충돌 상태
 private:
@@ -51,6 +52,7 @@ public:
 	void SetNotifyListener(ICollisionNotify* val) { m_pNotifyListener = val; }
 	ColliderType GetColliderType() const { return m_ColliderType; }	
 	CollisionType GetCollisionType() const { return m_CollisionType; }
+	void SetCollisionType(CollisionType val) { m_CollisionType=val; }
 	virtual bool IsCollide(CollisionComponent* pOtherComponent)=0;
 
 	void ProcessOverlap();

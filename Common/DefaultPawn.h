@@ -1,11 +1,13 @@
 #pragma once
 #include "Pawn.h"
+#include "CollisionComponent.h"
 
 class MovementComponent;
 class CameraComponent;
 class ActorController;
+class SphereComponent;
 class DefaultPawn :
-    public Pawn
+    public Pawn, public ICollisionNotify
 {
 public:
     DefaultPawn();    
@@ -14,6 +16,7 @@ public:
     SceneComponent* m_pSceneComponent = nullptr;
     MovementComponent* m_pMovementComponent = nullptr;
     CameraComponent* m_pCameraComponent = nullptr;
+    SphereComponent* m_pSphereComponent = nullptr;
 
     virtual void Update(float DeltaTime) override;
 	virtual void OnBeginPlay();// World에서 추가후 게임 진행할때 호출
@@ -22,5 +25,8 @@ public:
 		const Mouse::State& MouseState, const Mouse::ButtonStateTracker& MouseTracker);
 
     virtual void OnPossess(ActorController* pActorController) override;
+	virtual void OnBlock(CollisionComponent* pOwnedComponent, Actor* pOtherActor, CollisionComponent* pOtherComponent) override;
+	virtual void OnBeginOverlap(CollisionComponent* pOwnedComponent, Actor* pOtherActor, CollisionComponent* pOtherComponent) override;
+	virtual void OnEndOverlap(CollisionComponent* pOwnedComponent, Actor* pOtherActor, CollisionComponent* pOtherComponent) override;
 };
 

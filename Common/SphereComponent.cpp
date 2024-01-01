@@ -5,7 +5,7 @@
 
 SphereComponent::SphereComponent()
 {
-
+	m_ColliderType = ColliderType::Sphere;
 }
 
 SphereComponent::~SphereComponent()
@@ -35,4 +35,11 @@ bool SphereComponent::IsCollide(CollisionComponent* pOtherComponent)
 		assert(false);
 	}
 	return false;
+}
+
+void SphereComponent::Update(float DeltaTime)
+{
+	__super::Update(DeltaTime);
+
+	m_Geomety.Center = GetWorldPosition();
 }

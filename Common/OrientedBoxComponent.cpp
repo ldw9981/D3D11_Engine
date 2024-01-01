@@ -36,3 +36,10 @@ bool OrientedBoxComponent::IsCollide(CollisionComponent* pOtherComponent)
 	}
 	return false;
 }
+
+void OrientedBoxComponent::Update(float DeltaTime)
+{
+	__super::Update(DeltaTime);
+
+	m_Geomety.Center = GetWorldPosition();
+}

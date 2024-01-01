@@ -2,6 +2,7 @@
 #include "DefaultPawn.h"
 #include "D3DRenderManager.h"
 #include "ActorController.h"
+#include "SphereComponent.h"
 
 constexpr float ROTATION_GAIN = 0.004f;
 constexpr float MOVEMENT_GAIN = 0.07f;
@@ -13,6 +14,12 @@ DefaultPawn::DefaultPawn()
 
 	m_pMovementComponent = CreateComponent<MovementComponent>("MovementComponent").get();
 	m_pMovementComponent->m_Speed = 200.0f;
+
+	m_pSphereComponent = CreateComponent<SphereComponent>("SphereComponent").get();
+	m_pSphereComponent->SetParent(m_pCameraComponent);
+	m_pSphereComponent->SetCollisionType(CollisionType::Block);
+	m_pSphereComponent->m_Geomety.Radius = 50.0f;
+	m_pSphereComponent->SetNotifyListener(this);
 }
 
 DefaultPawn::~DefaultPawn()
@@ -99,4 +106,19 @@ void DefaultPawn::OnPossess(ActorController* pPlayerController)
 		std::weak_ptr<CameraComponent> pCameraComponent = std::dynamic_pointer_cast<CameraComponent>(pComponent.lock());
 		D3DRenderManager::Instance->SetCamera(pCameraComponent);
 	}	
+}
+
+void DefaultPawn::OnBlock(CollisionComponent* pOwnedComponent, Actor* pOtherActor, CollisionComponent* pOtherComponent)
+{	
+	SetWorldPosition(m_pMovementComponent->m_PositionBefore);
+}
+
+void DefaultPawn::OnBeginOverlap(CollisionComponent* pOwnedComponent, Actor* pOtherActor, CollisionComponent* pOtherComponent)
+{
+
+}
+
+void DefaultPawn::OnEndOverlap(CollisionComponent* pOwnedComponent, Actor* pOtherActor, CollisionComponent* pOtherComponent)
+{
+
 }
