@@ -253,6 +253,8 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 	m_View = XMMatrixLookAtLH(Eye, At, Up);
 	m_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, m_Viewport.Width / (FLOAT)m_Viewport.Height, 1.0f, 10000.0f);
+
+	// 프로젝션 행렬이 바뀌면 다시 값을 계산해야한다.  
 	BoundingFrustum::CreateFromMatrix(m_Frustum, m_Projection);
 
 	DebugDraw::Initialize(m_pDevice, m_pDeviceContext);
@@ -367,6 +369,7 @@ void D3DRenderManager::Render()
 	m_pDeviceContext->PSSetConstantBuffers(3, 1, &m_pGpuCbMaterial);
 
 	m_pDeviceContext->PSSetSamplers(0, 1, &m_pSamplerLinear);
+	m_pDeviceContext->PSSetSamplers(1, 1, &m_pSamplerLinear);	// !수정필요!! samplerSpecularBRDF 샘플러 설정해야함.
 
 	//라이트 업데이트	
 	m_Light.Direction.Normalize();
