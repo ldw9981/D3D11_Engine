@@ -14,9 +14,17 @@ Actor::~Actor()
 
 void Actor::Update(float DeltaTime)
 {
-	for(auto& pComponent : m_OwnedComponents)
+	if (m_ActorStatus == ActorStatus::CREATE)
 	{
-		pComponent->Update(DeltaTime);
+		OnBeginPlay();
+		m_ActorStatus = ActorStatus::PLAY;
+	}
+	else if (m_ActorStatus == ActorStatus::PLAY)
+	{
+		for (auto& pComponent : m_OwnedComponents)
+		{
+			pComponent->Update(DeltaTime);
+		}
 	}
 }
 

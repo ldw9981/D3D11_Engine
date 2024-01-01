@@ -27,14 +27,14 @@ void World::SetWorldEvent(IWorldEvent* pWorldEvent)
 void World::DestroyGameObject(Actor* pObject)
 {
 	pObject->OnEndPlay();	
-	m_actors.erase(pObject->m_iteratorInWorld);
+	m_Actors.erase(pObject->m_iteratorInWorld);
 	if (m_pWorldEvent)
 		m_pWorldEvent->OnEndPlay(this);
 }
 
 void World::Update(float DeltaTime)
 {
-	for (auto& actor : m_actors)
+	for (auto& actor : m_Actors)
 	{
 		actor->Update(DeltaTime);
 	}
@@ -45,7 +45,7 @@ void World::OnBeginPlay()
 	if (m_pWorldEvent)
 		m_pWorldEvent->OnBeginPlay(this);
 
-	for (auto& actor : m_actors)
+	for (auto& actor : m_Actors)
 	{
 		actor->OnBeginPlay();
 	}
@@ -55,9 +55,9 @@ void World::OnBeginPlay()
 void World::OnEndPlay()
 {
 	m_bIsPlaying = false;
-	for (auto& actor : m_actors)
+	for (auto& actor : m_Actors)
 	{
 		actor->OnEndPlay();
 	}
-	m_actors.clear();
+	m_Actors.clear();
 }

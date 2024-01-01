@@ -11,6 +11,12 @@
 class Component;
 class World;
 
+enum class ActorStatus
+{
+	CREATE=0,
+	PLAY,
+	DESTROY
+};
 class Actor: public InputProcesser
 {
 	friend class World;
@@ -23,6 +29,7 @@ protected:
 	World* m_pOwner = nullptr;					// 이 게임 오브젝트가 속한 월드
 	bool b_UseInputProcesser = false;
 	std::list<std::shared_ptr<Actor>>::iterator m_iteratorInWorld;
+	ActorStatus m_ActorStatus = ActorStatus::CREATE;
 public:
 	SceneComponent*		m_pRootComponent = nullptr;		// 컴포넌트 중에 어느게 루트인지 설정
 	World* GetOwner() const { return m_pOwner; }
@@ -56,5 +63,7 @@ public:
 	void SetWorldTransform(Math::Matrix val);
 	std::weak_ptr<Component> GetComponentWeakPtrByName(const std::string& Name);
 	Component* GetComponentPtrByName(const std::string& Name);
+	ActorStatus GetActorStatus() const { return m_ActorStatus; }
+	void SetActorStatus(ActorStatus val) { m_ActorStatus = val; }
 };
 

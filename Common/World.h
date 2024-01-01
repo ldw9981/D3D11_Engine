@@ -17,7 +17,7 @@ public:
 	~World();
 public:
 	std::string m_Name="NoName";
-	std::list<std::shared_ptr<Actor>> m_actors;	// 생성된 게임 오브젝트들
+	std::list<std::shared_ptr<Actor>> m_Actors;	// 생성된 게임 오브젝트들	
 	bool m_bIsPlaying = false;
 	IWorldEvent* m_pWorldEvent = nullptr;
 
@@ -30,12 +30,7 @@ public:
 		assert(bIsBase == true);
 		std::shared_ptr<T> newObject = std::make_shared<T>();
 		newObject->SetOwner(this);
-		m_actors.push_back(newObject);
-		newObject->m_iteratorInWorld = --m_actors.end();
-
-		if(m_bIsPlaying)
-			newObject->OnBeginPlay();
-
+		newObject->m_iteratorInWorld = m_Actors.insert(m_Actors.end(), newObject);
 		return newObject;
 	}
 
