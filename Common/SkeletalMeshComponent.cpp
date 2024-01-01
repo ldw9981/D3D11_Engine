@@ -32,10 +32,9 @@ void SkeletalMeshComponent::SetSceneResource(std::shared_ptr<SkeletalMeshSceneRe
 	m_MeshInstances.resize(m_SceneResource->m_SkeletalMeshResources.size());
 	for (UINT i = 0; i < m_SceneResource->m_SkeletalMeshResources.size(); i++)
 	{
-		m_MeshInstances[i].Create(&m_SceneResource->m_SkeletalMeshResources[i], // mesh resource
-			&m_SceneResource->m_Skeleton,	 // skeleton resource
-			&m_RootBone,	// root node
-			m_SceneResource->GetMeshMaterial(i));		//material resource 
+		SkeletalMeshResource* meshResource = &m_SceneResource->m_SkeletalMeshResources[i];
+		Material* material = &m_SceneResource->m_Materials[i];
+		m_MeshInstances[i].Create(meshResource,&m_SceneResource->m_Skeleton,&m_RootBone,material);
 	}
 	UpdateBoneAnimationReference(0);	// 각 노드의 애니메이션 정보참조 연결	
 
