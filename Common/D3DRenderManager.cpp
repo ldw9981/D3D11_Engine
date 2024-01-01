@@ -341,8 +341,9 @@ void D3DRenderManager::Update()
 	}
 }
 
+//매 프레임 호출해야하는 것만 여기에 넣는다.  한번만 호출해도 되는것은 Initialize()에 넣는다.
 void D3DRenderManager::Render()
-{
+{	
 	// Clear the back buffer
 	const float clear_color_with_alpha[4] = { m_ClearColor.x , m_ClearColor.y , m_ClearColor.z, 1.0f };
 	m_pDeviceContext->ClearRenderTargetView(m_pRenderTargetView, clear_color_with_alpha);
