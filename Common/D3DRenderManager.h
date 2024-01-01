@@ -136,8 +136,8 @@ public:
 	int m_nDrawComponentCount = 0;
 	bool m_bFreezeCulling = false;
     bool m_bWorkCulling = true;
-	bool m_bDrawDebugCulling = true;
-	bool m_bDrawDebugCollision = true;
+	bool m_bDrawDebugCulling = false;
+	bool m_bDrawDebugCollision = false;
 public:
 
 	bool Initialize(HWND Handle,UINT Width, UINT Height);

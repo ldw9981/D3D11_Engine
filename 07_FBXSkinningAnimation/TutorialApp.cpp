@@ -33,19 +33,13 @@ TutorialApp::~TutorialApp()
 bool TutorialApp::Initialize(UINT Width, UINT Height)
 {
 	__super::Initialize(Width, Height);
-
-
-
 	
-//	IncreaseSkeletalMeshModel();
+	IncreaseSkeletalMeshModel();
 	IncreaseStaticMeshModel();
-//	IncreaseModel();
-//	IncreaseModel();
-	
 
 	m_pPlayerController = m_World.CreateGameObject<PlayerController>().get();
 	m_pDefaultPawn = m_World.CreateGameObject<DefaultPawn>().get();
-	m_pDefaultPawn->SetWorldPosition(Math::Vector3(0.0f,100.0f,-500.0f));
+	m_pDefaultPawn->SetWorldPosition(Math::Vector3(0.0f,0.0f,-500.0f));
 	m_pPlayerController->Posess(m_pDefaultPawn);
 	m_World.SetWorldEvent(this);
 	ChangeWorld(&m_World);
@@ -99,7 +93,7 @@ void TutorialApp::IncreaseSkeletalMeshModel()
 	float posx = (float)(rand() % range) - range * 0.5f;
 	float posy = (float)(rand() % range) - range * 0.5f;
 	float posz = (float)(rand() % range) - range * 0.5f;
-	SkActor->SetWorldPosition(Math::Vector3(0.0f, 0.0f, posz));
+	SkActor->SetWorldPosition(Math::Vector3(posx, posy, posz));
 
 	auto pRsc = pSkeletalMeshComponent->GetSceneResource();
 	int playindex = rand() % pRsc-> m_Animations.size();
@@ -121,10 +115,7 @@ void TutorialApp::IncreaseStaticMeshModel()
 	float posx = (float)(rand() % range) - range * 0.5f;
 	float posy = (float)(rand() % range) - range * 0.5f;
 	float posz = (float)(rand() % range) - range * 0.5f;
-	posx = (float)(rand() % range) - range * 0.5f;
-	posy = (float)(rand() % range) - range * 0.5f;
-	posz = (float)(rand() % range) - range * 0.5f;
-	StActor->SetWorldPosition(Math::Vector3(0.0f, 0.0f, posz));
+	StActor->SetWorldPosition(Math::Vector3(posx, posy, posz));
 
 
 	m_SpawnedActors.push_back(StActor.get());
