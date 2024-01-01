@@ -10,7 +10,7 @@
 #include "../Common/PlayerController.h"
 #include "../Common/DefaultPawn.h"
 #include "../Common/Pawn.h"
-
+#include "../Common/BoxComponent.h"
 
 
 const Math::Vector3 START_POSITION = { 0.f, 0.f, -1000.f};
@@ -81,40 +81,43 @@ LRESULT CALLBACK TutorialApp::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 
 void TutorialApp::IncreaseModel()
 {	
-	{
-		auto SkActor = m_World.CreateGameObject<SkeletalMeshActor>();
-		SkeletalMeshComponent* pComponent = (SkeletalMeshComponent*)SkActor->GetComponentPtrByName("SkeletalMeshComponent");
-		pComponent->ReadSceneResourceFromFBX("../Resource/Zombie.fbx");
-		pComponent->AddSceneAnimationFromFBX("../Resource/Zombie_Run.fbx");
-		pComponent->AddSceneAnimationFromFBX("../Resource/SkinningTest.fbx");
+	auto SkActor = m_World.CreateGameObject<SkeletalMeshActor>();
+	SkeletalMeshComponent* pSkeletalMeshComponent = (SkeletalMeshComponent*)SkActor->GetComponentPtrByName("SkeletalMeshComponent");	
+	pSkeletalMeshComponent->ReadSceneResourceFromFBX("../Resource/Zombie.fbx");
+	pSkeletalMeshComponent->AddSceneAnimationFromFBX("../Resource/Zombie_Run.fbx");
+	pSkeletalMeshComponent->AddSceneAnimationFromFBX("../Resource/SkinningTest.fbx");
+	pSkeletalMeshComponent->SetBoundingBoxCenterOffset(Vector3(0.0f, pSkeletalMeshComponent->m_BoundingBox.Extents.y, 0.0f));
 
-		int range = 1000;
-		float posx = (float)(rand() % range) - range * 0.5f;
-		float posy = (float)(rand() % range) - range * 0.5f;
-		float posz = (float)(rand() % range) - range * 0.5f;
-		SkActor->SetWorldPosition(Math::Vector3(posx, posy, posz));
+	int range = 1000;
+	float posx = (float)(rand() % range) - range * 0.5f;
+	float posy = (float)(rand() % range) - range * 0.5f;
+	float posz = (float)(rand() % range) - range * 0.5f;
+	SkActor->SetWorldPosition(Math::Vector3(posx, posy, posz));
 
-		auto pRsc = pComponent->GetSceneResource();
-		int playindex = rand() % pRsc-> m_Animations.size();
-		pComponent->PlayAnimation(playindex);
+	auto pRsc = pSkeletalMeshComponent->GetSceneResource();
+	int playindex = rand() % pRsc-> m_Animations.size();
+	pSkeletalMeshComponent->PlayAnimation(playindex);
 
-		m_SpawnedActors.push_back(SkActor.get());
-	}
+	m_SpawnedActors.push_back(SkActor.get());
+
+
+
+	auto StActor = m_World.CreateGameObject<StaticMeshActor>();
+	StaticMeshComponent* pStaticMeshComponent = (StaticMeshComponent*)StActor->GetComponentPtrByName("StaticMeshComponent");
+	pStaticMeshComponent->ReadSceneResourceFromFBX("../Resource/angel_armor.FBX");
+	pStaticMeshComponent->SetBoundingBoxCenterOffset( Vector3(0.0f, pStaticMeshComponent->m_BoundingBox.Extents.y,0.0f));
+	BoxComponent* pCollisionComponent = (BoxComponent*)StActor->GetComponentPtrByName("BoxComponent");
+	pCollisionComponent->SetLocalPosition(Vector3(0.0f, pStaticMeshComponent->m_BoundingBox.Extents.y, 0.0f));
+
 	
-	{
-		auto StActor = m_World.CreateGameObject<StaticMeshActor>();
-		StaticMeshComponent* pComponent = (StaticMeshComponent*)StActor->GetComponentPtrByName("StaticMeshComponent");
-		pComponent->ReadSceneResourceFromFBX("../Resource/angel_armor.FBX");
+	posx = (float)(rand() % range) - range * 0.5f;
+	posy = (float)(rand() % range) - range * 0.5f;
+	posz = (float)(rand() % range) - range * 0.5f;
+	StActor->SetWorldPosition(Math::Vector3(posx, posy, posz));
 	
 
-		int range = 1000;
-		float posx = (float)(rand() % range) - range * 0.5f;
-		float posy = (float)(rand() % range) - range * 0.5f;
-		float posz = (float)(rand() % range) - range * 0.5f;
-		StActor->SetWorldPosition(Math::Vector3(posx, posy, posz));
-		
-		m_SpawnedActors.push_back(StActor.get());
-	}
+	m_SpawnedActors.push_back(StActor.get());
+
 	
 	
 }

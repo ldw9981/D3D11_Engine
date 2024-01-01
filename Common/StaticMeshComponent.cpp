@@ -45,9 +45,8 @@ void StaticMeshComponent::SetSceneResource(std::shared_ptr<StaticMeshSceneResour
 		StaticMeshResource* meshResource = &m_SceneResource->m_StaticMeshResources[i];
 		Material* material = &m_SceneResource->m_Materials[i];
 		m_MeshInstances[i].Create(meshResource,&m_World,material);		//material resource 
-	}
-
-	m_BoundingBox.Center = Math::Vector3(m_SceneResource->m_AABBmin + m_SceneResource->m_AABBmax) * 0.5f;	// Calculate extent
+	}		
+	m_BoundingBox.Center =  Math::Vector3(m_SceneResource->m_AABBmin + m_SceneResource->m_AABBmax) * 0.5f;	// Calculate extent	
 	m_BoundingBox.Extents = Math::Vector3(m_SceneResource->m_AABBmax - m_SceneResource->m_AABBmin) * 0.5f;	// Calculate extent
 }
 

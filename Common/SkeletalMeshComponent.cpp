@@ -163,9 +163,3 @@ void SkeletalMeshComponent::OnEndPlay()
 {
 	__super::OnEndPlay();
 }
-
-void SkeletalMeshComponent::CalculateBoundingBox()
-{
-	m_BoundingBox.Center = m_World.Translation();
-	m_BoundingBox.Center.y = m_BoundingBox.Center.y + m_BoundingBox.Extents.y;
-}

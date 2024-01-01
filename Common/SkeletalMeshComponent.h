@@ -37,11 +37,10 @@ public:
 	bool ReadSceneResourceFromFBX(std::string filePath);	
 	bool AddSceneAnimationFromFBX(std::string filePath);
 	Material* GetMaterial(UINT index);
-	virtual void Update(float deltaTime);
+	virtual void Update(float deltaTime) override;
 	void UpdateBoneAnimationReference(UINT index);
 	void PlayAnimation(UINT index);
 	void CreateHierachy(SkeletonResource* skeleton);
-	virtual void OnBeginPlay();
-	virtual void OnEndPlay();
-	virtual void CalculateBoundingBox();
+	virtual void OnBeginPlay() override;
+	virtual void OnEndPlay() override;
 };

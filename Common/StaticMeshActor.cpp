@@ -7,10 +7,10 @@
 
 StaticMeshActor::StaticMeshActor()
 {
-	m_pBoxComponent = CreateComponent<BoxComponent>("BoxComponent").get();
-	SetRootComponent(m_pBoxComponent);
 	m_pStaticMeshComponent = CreateComponent<StaticMeshComponent>("StaticMeshComponent").get();
-	m_pStaticMeshComponent->SetParent(m_pBoxComponent);
+	SetRootComponent(m_pStaticMeshComponent);
+	m_pBoxComponent = CreateComponent<BoxComponent>("BoxComponent").get();	
+	m_pBoxComponent->SetParent(m_pStaticMeshComponent);
 }
 
 StaticMeshActor::~StaticMeshActor()

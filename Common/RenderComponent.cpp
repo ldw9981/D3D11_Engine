@@ -14,11 +14,6 @@ RenderComponent::~RenderComponent()
 void RenderComponent::Update(float DeltaTime)
 {
 	__super::Update(DeltaTime);
-	CalculateBoundingBox();
+	m_BoundingBox.Center = GetWorldPosition() + m_BoundingBoxCenterOffset;
 }
 
-void RenderComponent::CalculateBoundingBox()
-{
-	// static,skeletal mesh 다르게 할 필요가있음.
-	m_BoundingBox.Center = GetWorldPosition();
-}
