@@ -492,8 +492,10 @@ void D3DRenderManager::RenderImGui()
 		}
 
 		ImGui::Text("");
-		if (m_pImGuiRender)
-			m_pImGuiRender->ImGuiRender();
+		for (auto ImguiRenderable : m_ImGuiRenders)
+		{
+			ImguiRenderable->ImGuiRender();
+		}
 
 		ImGui::End();
 	}
@@ -754,6 +756,16 @@ void D3DRenderManager::AddCollisionComponent(CollisionComponent* pCollisionCompo
 void D3DRenderManager::RemoveCollisionComponent(CollisionComponent* pCollisionComponent)
 {
 	m_CollisionComponents.erase(pCollisionComponent->m_ItRenderManager);
+}
+
+void D3DRenderManager::AddImguiRenderable(IImGuiRenderable* pIImGuiRenderable)
+{
+	m_ImGuiRenders.push_back(pIImGuiRenderable);
+}
+
+void D3DRenderManager::RemoveImguiRenderable(IImGuiRenderable* pIImGuiRenderable)
+{
+	m_ImGuiRenders.remove(pIImGuiRenderable);
 }
 
 void D3DRenderManager::AddDebugVector4ToImGuiWindow(const std::string& header, const Vector4& value)

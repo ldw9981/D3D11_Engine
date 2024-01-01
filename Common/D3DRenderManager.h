@@ -122,14 +122,15 @@ public:
 
 	HWND m_hWnd = nullptr;
 
-	std::list<StaticMeshInstance*> m_StaticMeshInstance;		//  렌더링할 모델들의 포인터 저장해둔다. 
-	std::list<SkeletalMeshInstance*> m_SkeletalMeshInstance;		//  렌더링할 모델들의 포인터 저장해둔다. 
+	std::list<StaticMeshInstance*>		m_StaticMeshInstance;		//  렌더링할 모델들의 포인터 저장해둔다. 
+	std::list<SkeletalMeshInstance*>	m_SkeletalMeshInstance;		//  렌더링할 모델들의 포인터 저장해둔다. 
 
-	std::list<SkeletalMeshComponent*> m_SkeletalMeshComponents;		//  렌더링할 모델들의 포인터 저장해둔다.
-	std::list<StaticMeshComponent*> m_StaticMeshComponents;		//  렌더링할 모델들의 포인터 저장해둔다
-	std::list<CollisionComponent*> m_CollisionComponents;		//  렌더링할 모델들의 포인터 저장해둔다
+	std::list<SkeletalMeshComponent*>	m_SkeletalMeshComponents;		//  렌더링할 모델들의 포인터 저장해둔다.
+	std::list<StaticMeshComponent*>		m_StaticMeshComponents;		//  렌더링할 모델들의 포인터 저장해둔다
+	std::list<CollisionComponent*>		m_CollisionComponents;		//  렌더링할 모델들의 포인터 저장해둔다
 
-	IImGuiRenderable* m_pImGuiRender = nullptr;
+	std::list<IImGuiRenderable*>		m_ImGuiRenders;
+
 	std::weak_ptr<CameraComponent> m_pCamera;
 	BoundingFrustum m_Frustum;
 	int m_nDrawComponentCount = 0;
@@ -158,13 +159,15 @@ public:
 
 	std::weak_ptr<CameraComponent> Camera() const { return m_pCamera; }
 	void SetCamera(std::weak_ptr<CameraComponent> val) { m_pCamera = val; }
-	void SetImGuiRender(IImGuiRenderable* val) { m_pImGuiRender = val; }
+
 	bool GetFreezeCulling() const { return m_bFreezeCulling; }
 	void SetFreezeCulling(bool val) { m_bFreezeCulling = val; }
 	
 	void AddCollisionComponent(CollisionComponent* pCollisionComponent);
 	void RemoveCollisionComponent(CollisionComponent* pCollisionComponent);
 
+	void AddImguiRenderable(IImGuiRenderable* pIImGuiRenderable);
+	void RemoveImguiRenderable(IImGuiRenderable* pIImGuiRenderable);
 private:
 	void CreateSkeletalMesh_VS_IL();
 	void CreateStaticMesh_VS_IL();

@@ -27,6 +27,10 @@
 #include <utility>
 #include <algorithm>
 
+#include <imgui.h>
+#include <imgui_impl_win32.h>
+#include <imgui_impl_dx11.h>
+
 namespace Math = DirectX::SimpleMath;
 using namespace DirectX;
 using namespace Microsoft::WRL;

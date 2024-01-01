@@ -2,6 +2,8 @@
 #include "MovementComponent.h"
 #include "Actor.h"
 #include "SceneComponent.h"
+#include "D3DRenderManager.h"
+
 
 MovementComponent::MovementComponent()
 {
@@ -36,7 +38,13 @@ void MovementComponent::OnBeginPlay()
 
 void MovementComponent::OnEndPlay()
 {
-
+	
 }
 
+void MovementComponent::ImGuiRender()
+{
+	ImGui::Text("%s", __FUNCTION__);
+	D3DRenderManager::Instance->AddDebugVector3ToImGuiWindow("m_PositionBefore", m_PositionBefore);
+	D3DRenderManager::Instance->AddDebugVector3ToImGuiWindow("m_PositionAfter", m_PositionAfter);
+}
 

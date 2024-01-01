@@ -18,9 +18,6 @@ public:
     CameraComponent* m_pCameraComponent = nullptr;
     SphereComponent* m_pSphereComponent = nullptr;
 
-    virtual void Update(float DeltaTime) override;
-	virtual void OnBeginPlay();// World에서 추가후 게임 진행할때 호출
-	virtual void OnEndPlay();  // World 제거되었을 때 호출
 	virtual void OnInputProcess(const Keyboard::State& KeyState, const Keyboard::KeyboardStateTracker& KeyTracker,
 		const Mouse::State& MouseState, const Mouse::ButtonStateTracker& MouseTracker);
 

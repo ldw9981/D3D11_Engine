@@ -19,17 +19,11 @@ void Actor::Update(float DeltaTime)
 		OnBeginPlay();
 		m_ActorStatus = ActorStatus::PLAY;
 	}
-	else if (m_ActorStatus == ActorStatus::PLAY)
+	
+	for (auto& pComponent : m_OwnedComponents)
 	{
-		for (auto& pComponent : m_OwnedComponents)
-		{
-			pComponent->Update(DeltaTime);
-		}
+		pComponent->Update(DeltaTime);	
 	}
-}
-
-void Actor::Render(ID3D11DeviceContext* pDeviceContext)
-{
 }
 
 void Actor::SetRootComponent(SceneComponent* pRootComponent)

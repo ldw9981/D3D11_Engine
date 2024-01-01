@@ -13,6 +13,7 @@
 #include "../Common/BoxComponent.h"
 
 
+
 const Math::Vector3 START_POSITION = { 0.f, 0.f, -1000.f};
 
 using namespace std;
@@ -21,21 +22,22 @@ TutorialApp::TutorialApp(HINSTANCE hInstance)
 	:GameApp(hInstance),m_World("MyWorld")
 {
 	m_bUseConsole = true;
+	D3DRenderManager::Instance->AddImguiRenderable(this);
 }
 
 TutorialApp::~TutorialApp()
 {
-	
+
 }
 
 bool TutorialApp::Initialize(UINT Width, UINT Height)
 {
 	__super::Initialize(Width, Height);
 
-	D3DRenderManager::Instance->SetImGuiRender(this);	
+
 
 	
-	IncreaseSkeletalMeshModel();
+//	IncreaseSkeletalMeshModel();
 	IncreaseStaticMeshModel();
 //	IncreaseModel();
 //	IncreaseModel();
@@ -97,7 +99,7 @@ void TutorialApp::IncreaseSkeletalMeshModel()
 	float posx = (float)(rand() % range) - range * 0.5f;
 	float posy = (float)(rand() % range) - range * 0.5f;
 	float posz = (float)(rand() % range) - range * 0.5f;
-	SkActor->SetWorldPosition(Math::Vector3(posx, posy, posz));
+	SkActor->SetWorldPosition(Math::Vector3(0.0f, 0.0f, posz));
 
 	auto pRsc = pSkeletalMeshComponent->GetSceneResource();
 	int playindex = rand() % pRsc-> m_Animations.size();
@@ -122,7 +124,7 @@ void TutorialApp::IncreaseStaticMeshModel()
 	posx = (float)(rand() % range) - range * 0.5f;
 	posy = (float)(rand() % range) - range * 0.5f;
 	posz = (float)(rand() % range) - range * 0.5f;
-	StActor->SetWorldPosition(Math::Vector3(posx, posy, posz));
+	StActor->SetWorldPosition(Math::Vector3(0.0f, 0.0f, posz));
 
 
 	m_SpawnedActors.push_back(StActor.get());

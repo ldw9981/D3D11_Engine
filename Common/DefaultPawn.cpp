@@ -3,43 +3,34 @@
 #include "D3DRenderManager.h"
 #include "ActorController.h"
 #include "SphereComponent.h"
+#include "MovementComponent.h"
 
 constexpr float ROTATION_GAIN = 0.004f;
 constexpr float MOVEMENT_GAIN = 0.07f;
 
 DefaultPawn::DefaultPawn()
 {
-	m_pCameraComponent = CreateComponent<CameraComponent>("CameraComponent").get();
-	SetRootComponent(m_pCameraComponent);
-
 	m_pMovementComponent = CreateComponent<MovementComponent>("MovementComponent").get();
 	m_pMovementComponent->m_Speed = 200.0f;
+
+	m_pCameraComponent = CreateComponent<CameraComponent>("CameraComponent").get();
+	SetRootComponent(m_pCameraComponent);
 
 	m_pSphereComponent = CreateComponent<SphereComponent>("SphereComponent").get();
 	m_pSphereComponent->SetParent(m_pCameraComponent);
 	m_pSphereComponent->SetCollisionType(CollisionType::Block);
-	m_pSphereComponent->m_Geomety.Radius = 50.0f;
+	m_pSphereComponent->m_Geomety.Radius = 10.0f;
 	m_pSphereComponent->SetNotifyListener(this);
+
+	D3DRenderManager::Instance->AddImguiRenderable(m_pMovementComponent);
 }
 
 DefaultPawn::~DefaultPawn()
 {
+	D3DRenderManager::Instance->RemoveImguiRenderable(m_pMovementComponent);
 }
 
-void DefaultPawn::Update(float DeltaTime)
-{
-	__super::Update(DeltaTime);
-}
 
-void DefaultPawn::OnBeginPlay()
-{
-	__super::OnBeginPlay();
-}
-
-void DefaultPawn::OnEndPlay()
-{
-	__super::OnEndPlay();
-}
 
 void DefaultPawn::OnInputProcess(const Keyboard::State& KeyState, const Keyboard::KeyboardStateTracker& KeyTracker, const Mouse::State& MouseState, const Mouse::ButtonStateTracker& MouseTracker)
 {
@@ -110,7 +101,7 @@ void DefaultPawn::OnPossess(ActorController* pPlayerController)
 
 void DefaultPawn::OnBlock(CollisionComponent* pOwnedComponent, Actor* pOtherActor, CollisionComponent* pOtherComponent)
 {	
-	SetWorldPosition(m_pMovementComponent->m_PositionBefore);
+	SetWorldPosition(m_pMovementComponent->m_PositionBefore);	
 }
 
 void DefaultPawn::OnBeginOverlap(CollisionComponent* pOwnedComponent, Actor* pOtherActor, CollisionComponent* pOtherComponent)

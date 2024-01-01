@@ -8,6 +8,7 @@
 #include "SceneComponent.h"
 #include "CollisionComponent.h"
 
+
 class Component;
 class World;
 
@@ -35,7 +36,6 @@ public:
 	World* GetOwner() const { return m_pOwner; }
 	void SetOwner(World* val) { m_pOwner = val; }
 	virtual void Update(float DeltaTime);
-	virtual void Render(ID3D11DeviceContext* pDeviceContext);
 
 	// 루트 컴포넌트로 설정
 	void SetRootComponent(SceneComponent* pRootComponent);
