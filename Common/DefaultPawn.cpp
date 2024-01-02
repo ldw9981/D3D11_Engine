@@ -88,14 +88,12 @@ void DefaultPawn::OnInputProcess(const Keyboard::State& KeyState, const Keyboard
 	}
 	else if (MouseTracker.leftButton == Mouse::ButtonStateTracker::PRESSED)
 	{		
-		Math::Vector3 CameraPos = m_pCameraComponent->GetWorldPosition();	
-	
 		Math::Vector3 org,dir;
-		D3DRenderManager::Instance->CreateRay(MouseState.x, MouseState.y, org, dir);			
-		D3DRenderManager::Instance->AddDebugDrawLine(CameraPos, dir * 1000000,false,Math::Vector3(1.0f,1.0f,0.0f),10.0f);
+		D3DRenderManager::Instance->CreateMousePickingRay(MouseState.x, MouseState.y, org, dir);			
+		D3DRenderManager::Instance->AddDebugDrawLine(org, dir * 100000000,false,Math::Vector3(1.0f,1.0f,0.0f),10.0f);
 		
 		std::list<RayResult> result;
-		if (CollisionManager::Instance->Query(Math::Ray(CameraPos, dir), result, true))
+		if (CollisionManager::Instance->Query(Math::Ray(org, dir), result, true))
 		{
 			for (auto& it : result)
 			{

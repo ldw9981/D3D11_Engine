@@ -177,9 +177,7 @@ public:
 	void AddImguiRenderable(IImGuiRenderable* pIImGuiRenderable);
 	void RemoveImguiRenderable(IImGuiRenderable* pIImGuiRenderable);
 
-	Math::Vector3 ScreenToWorld(float mouseX, float mouseY,float Depth);
-
-	void CreateRay(float ScreenX,float ScreenY,Math::Vector3 & Origin, Math::Vector3& Direction);
+	void CreateMousePickingRay(float ScreenX,float ScreenY,Math::Vector3 & Origin, Math::Vector3& Direction);
 
 	void AddDebugDrawLine(const Math::Vector3& origin, const Math::Vector3& direction, bool normalize, const Math::Vector3& color, float time);
 private:

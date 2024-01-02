@@ -792,35 +792,19 @@ void D3DRenderManager::RemoveImguiRenderable(IImGuiRenderable* pIImGuiRenderable
 	m_ImGuiRenders.remove(pIImGuiRenderable);
 }
 
-Math::Vector3 D3DRenderManager::ScreenToWorld(float mouseX, float mouseY,float Depth)
-{
-	Math::Vector3 worldPos;
-	
-	float screenX = mouseX / m_Viewport.Width * 2.0f - 1.0f;
-	float screenY = 1.0f - mouseY / m_Viewport.Height * 2.0f;
 
-	auto cam = m_pCamera.lock();
-		
-
-	worldPos = DirectX::XMVector3Unproject(
-		Math::Vector4(screenX, screenY, Depth,1.0f),
-		0.0f,0.0f,m_Viewport.Width, m_Viewport.Height,
-		0.0f,1.0f,
-		m_Projection,m_View, Math::Matrix::Identity);
-	return worldPos;
-}
-
-void D3DRenderManager::CreateRay(float mouseX, float mouseY, Math::Vector3& rayOrigin, Math::Vector3& rayDirection)
+void D3DRenderManager::CreateMousePickingRay(float mouseX, float mouseY, Math::Vector3& rayOrigin, Math::Vector3& rayDirection)
 {
 	float viewX = (+2.0f * mouseX / m_Viewport.Width - 1.0f) / m_Projection(0, 0);
 	float viewY = (-2.0f * mouseY / m_Viewport.Height + 1.0f) / m_Projection(1, 1);
 
-	// 카메라 공간의 좌표
+	// 카메라 공간의 좌표와 벡터
 	Vector3 org = Vector3(0.0f, 0.0f, 0.0f);
 	Vector3 dir = Vector3(viewX, viewY, 1.0f);
 
+	// 월드 공간의 좌표와 벡터
 	auto cam = m_pCamera.lock();
-	rayOrigin = Vector3::TransformNormal(org, cam->m_World);
+	rayOrigin = Vector3::Transform(org, cam->m_World);
 	rayDirection = Vector3::TransformNormal(dir, cam->m_World);
 	rayDirection.Normalize();
 }	
