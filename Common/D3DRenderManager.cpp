@@ -815,16 +815,14 @@ void D3DRenderManager::CreateRay(float mouseX, float mouseY, Math::Vector3& rayO
 	float viewX = (+2.0f * mouseX / m_Viewport.Width - 1.0f) / m_Projection(0, 0);
 	float viewY = (-2.0f * mouseY / m_Viewport.Height + 1.0f) / m_Projection(1, 1);
 
+	// 카메라 공간의 좌표
 	Vector3 org = Vector3(0.0f, 0.0f, 0.0f);
 	Vector3 dir = Vector3(viewX, viewY, 1.0f);
 
 	auto cam = m_pCamera.lock();
-
-	org = Vector3::Transform(org, cam->m_World);
-	dir = Vector3::Transform(dir, cam->m_World);
-
-	rayOrigin = org;
-	rayDirection = dir;
+	rayOrigin = Vector3::TransformNormal(org, cam->m_World);
+	rayDirection = Vector3::TransformNormal(dir, cam->m_World);
+	rayDirection.Normalize();
 }	
 
 void D3DRenderManager::AddDebugDrawLine(const Math::Vector3& origin, const Math::Vector3& direction, bool normalize, const Math::Vector3& color, float time)

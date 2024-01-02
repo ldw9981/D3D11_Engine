@@ -88,22 +88,14 @@ void DefaultPawn::OnInputProcess(const Keyboard::State& KeyState, const Keyboard
 	}
 	else if (MouseTracker.leftButton == Mouse::ButtonStateTracker::PRESSED)
 	{		
-		Math::Vector3 nearPoint = D3DRenderManager::Instance->ScreenToWorld(MouseState.x, MouseState.y,0.0f);
-		Math::Vector3 farPoint = D3DRenderManager::Instance->ScreenToWorld(MouseState.x, MouseState.y,1.0f);
-
-
-		Math::Vector3 org,dir;
-		D3DRenderManager::Instance->CreateRay(MouseState.x, MouseState.y, org, dir);
+		Math::Vector3 CameraPos = m_pCameraComponent->GetWorldPosition();	
 	
-		farPoint = org + dir *1000000;
+		Math::Vector3 org,dir;
+		D3DRenderManager::Instance->CreateRay(MouseState.x, MouseState.y, org, dir);			
+		D3DRenderManager::Instance->AddDebugDrawLine(CameraPos, dir * 1000000,false,Math::Vector3(1.0f,1.0f,0.0f),10.0f);
 		
-
-
-		
-		D3DRenderManager::Instance->AddDebugDrawLine(org, farPoint,false,Math::Vector3(1.0f,1.0f,0.0f),10.0f);
-		
-		/*
-		if (CollisionManager::Instance->Query(Math::Ray(nearPoint, farPoint), result, true))
+		std::list<RayResult> result;
+		if (CollisionManager::Instance->Query(Math::Ray(CameraPos, dir), result, true))
 		{
 			for (auto& it : result)
 			{
@@ -113,7 +105,7 @@ void DefaultPawn::OnInputProcess(const Keyboard::State& KeyState, const Keyboard
 				printf("hit %s\n", it.pComponent->GetName().c_str());
 			}
 		}		
-		*/
+		
 	}
 }
 
