@@ -109,8 +109,11 @@ Component* Actor::GetComponentPtrByName(const std::string& Name)
 
 void Actor::ImGuiRender()
 {
+	std::string Title = __FUNCTION__;
+	ImGui::Begin(Title.c_str());
 	for (auto& pComponent : m_OwnedComponents)
 	{
 		pComponent->ImGuiRender();
 	}
+	ImGui::End();
 }
