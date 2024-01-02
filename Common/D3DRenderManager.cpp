@@ -464,6 +464,10 @@ void D3DRenderManager::RenderDebugDraw()
 
 	for (auto& ray : m_DebugDrawLines)
 	{
+		BoundingBox BoxStart(ray.origin, Math::Vector3(0.1f, 0.1f, 0.1f));
+		BoundingBox BoxEnd(ray.direction, Math::Vector3(0.1f, 0.1f, 0.1f));
+		DebugDraw::Draw(DebugDraw::g_Batch.get(), BoxStart, Colors::Red);
+		DebugDraw::Draw(DebugDraw::g_Batch.get(), BoxEnd, Colors::Blue);
 		DebugDraw::DrawRay(DebugDraw::g_Batch.get(),ray.origin,ray.direction,ray.normalize,ray.color);
 	}
 
@@ -805,6 +809,23 @@ Math::Vector3 D3DRenderManager::ScreenToWorld(float mouseX, float mouseY,float D
 		m_Projection,m_View, Math::Matrix::Identity);
 	return worldPos;
 }
+
+void D3DRenderManager::CreateRay(float mouseX, float mouseY, Math::Vector3& rayOrigin, Math::Vector3& rayDirection)
+{
+	float viewX = (+2.0f * mouseX / m_Viewport.Width - 1.0f) / m_Projection(0, 0);
+	float viewY = (-2.0f * mouseY / m_Viewport.Height + 1.0f) / m_Projection(1, 1);
+
+	Vector3 org = Vector3(0.0f, 0.0f, 0.0f);
+	Vector3 dir = Vector3(viewX, viewY, 1.0f);
+
+	auto cam = m_pCamera.lock();
+
+	org = Vector3::Transform(org, cam->m_World);
+	dir = Vector3::Transform(dir, cam->m_World);
+
+	rayOrigin = org;
+	rayDirection = dir;
+}	
 
 void D3DRenderManager::AddDebugDrawLine(const Math::Vector3& origin, const Math::Vector3& direction, bool normalize, const Math::Vector3& color, float time)
 {

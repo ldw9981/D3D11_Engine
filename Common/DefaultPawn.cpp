@@ -90,15 +90,20 @@ void DefaultPawn::OnInputProcess(const Keyboard::State& KeyState, const Keyboard
 	{		
 		Math::Vector3 nearPoint = D3DRenderManager::Instance->ScreenToWorld(MouseState.x, MouseState.y,0.0f);
 		Math::Vector3 farPoint = D3DRenderManager::Instance->ScreenToWorld(MouseState.x, MouseState.y,1.0f);
-	
-		Math::Vector3 camPos = m_pCameraComponent->GetWorldPosition();
-		Math::Vector3 dir = farPoint - nearPoint;
-		dir.Normalize();
-		std::list<RayResult> result;
 
-		D3DRenderManager::Instance->AddDebugDrawLine(camPos,dir,true,Math::Vector3(1.0f,1.0f,0.0f),1000.0f);
+
+		Math::Vector3 org,dir;
+		D3DRenderManager::Instance->CreateRay(MouseState.x, MouseState.y, org, dir);
+	
+		farPoint = org + dir *1000000;
+		
+
+
+		
+		D3DRenderManager::Instance->AddDebugDrawLine(org, farPoint,false,Math::Vector3(1.0f,1.0f,0.0f),10.0f);
+		
 		/*
-		if (CollisionManager::Instance->Query(Math::Ray(camPos, dir), result, true))
+		if (CollisionManager::Instance->Query(Math::Ray(nearPoint, farPoint), result, true))
 		{
 			for (auto& it : result)
 			{
@@ -107,7 +112,7 @@ void DefaultPawn::OnInputProcess(const Keyboard::State& KeyState, const Keyboard
 
 				printf("hit %s\n", it.pComponent->GetName().c_str());
 			}
-		}
+		}		
 		*/
 	}
 }

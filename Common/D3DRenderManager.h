@@ -45,15 +45,8 @@ struct CB_Marterial
 	int UseIBL = false;							// 4  16byte
 };
 
-class StaticMeshComponent;
-class SkeletalMeshComponent;
-class Material;
 
-class IRenderable
-{
-public:
-	virtual void Render(ID3D11DeviceContext* pDeviceContext) = 0;
-};
+
 
 class IImGuiRenderable
 {
@@ -71,8 +64,10 @@ struct DebugRay
 };
 
 
+class Material;
 class StaticMeshInstance;
 class SkeletalMeshInstance;
+class StaticMeshComponent;
 class SkeletalMeshComponent;
 class CameraComponent;
 class CollisionComponent;
@@ -184,6 +179,7 @@ public:
 
 	Math::Vector3 ScreenToWorld(float mouseX, float mouseY,float Depth);
 
+	void CreateRay(float ScreenX,float ScreenY,Math::Vector3 & Origin, Math::Vector3& Direction);
 
 	void AddDebugDrawLine(const Math::Vector3& origin, const Math::Vector3& direction, bool normalize, const Math::Vector3& color, float time);
 private:
