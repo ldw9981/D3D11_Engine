@@ -18,7 +18,7 @@ public:
 	std::shared_ptr<StaticMeshSceneResource>  m_SceneResource;
 	std::vector<StaticMeshInstance> m_MeshInstances;
 	
-	std::list< StaticMeshComponent*>::iterator m_iterator;
+	std::list< StaticMeshComponent*>::iterator m_ItRenderManager;
 
 	virtual void Update(float DeltaTime) override;
 	

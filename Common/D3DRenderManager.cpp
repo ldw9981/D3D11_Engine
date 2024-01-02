@@ -769,6 +769,27 @@ void D3DRenderManager::AddDebugFloatToImGuiWindow(const std::string& header, con
 	ImGui::Text("%f", value);
 }
 
+void D3DRenderManager::AddSkeletalMeshComponent(SkeletalMeshComponent* pSkeletalMeshComponent)
+{
+	pSkeletalMeshComponent->m_ItRenderManager = m_SkeletalMeshComponents.insert(m_SkeletalMeshComponents.end(), pSkeletalMeshComponent);
+}
+
+void D3DRenderManager::RemoveSkeletalMeshComponent(SkeletalMeshComponent* pSkeletalMeshComponent)
+{
+	m_SkeletalMeshComponents.erase(pSkeletalMeshComponent->m_ItRenderManager);
+
+}
+
+void D3DRenderManager::AddStaticMeshComponent(StaticMeshComponent* pStaticMeshComponent)
+{
+	pStaticMeshComponent->m_ItRenderManager = m_StaticMeshComponents.insert(m_StaticMeshComponents.end(), pStaticMeshComponent);
+}
+
+void D3DRenderManager::RemoveStaticMeshComponent(StaticMeshComponent* pStaticMeshComponent)
+{
+	m_StaticMeshComponents.erase(pStaticMeshComponent->m_ItRenderManager);
+}
+
 void D3DRenderManager::AddCollisionComponent(CollisionComponent* pCollisionComponent)
 {
 	pCollisionComponent->m_ItRenderManager = m_CollisionComponents.insert(m_CollisionComponents.end(), pCollisionComponent);

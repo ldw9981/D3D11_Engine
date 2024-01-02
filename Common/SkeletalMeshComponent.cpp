@@ -13,13 +13,12 @@
 
 SkeletalMeshComponent::SkeletalMeshComponent()
 {
-	D3DRenderManager::Instance->m_SkeletalMeshComponents.push_back(this);
-	m_iterator = --D3DRenderManager::Instance->m_SkeletalMeshComponents.end();
+	D3DRenderManager::Instance->AddSkeletalMeshComponent(this);
 }
 
 SkeletalMeshComponent::~SkeletalMeshComponent()
 {
-	D3DRenderManager::Instance->m_SkeletalMeshComponents.erase(m_iterator);
+	D3DRenderManager::Instance->RemoveSkeletalMeshComponent(this);
 }
 
 void SkeletalMeshComponent::SetSceneResource(std::shared_ptr<SkeletalMeshSceneResource> val)

@@ -170,6 +170,12 @@ public:
 
 	bool GetFreezeCulling() const { return m_bFreezeCulling; }
 	void SetFreezeCulling(bool val) { m_bFreezeCulling = val; }
+
+	void AddSkeletalMeshComponent(SkeletalMeshComponent* pSkeletalMeshComponent);
+	void RemoveSkeletalMeshComponent(SkeletalMeshComponent* pSkeletalMeshComponent);
+
+	void AddStaticMeshComponent(StaticMeshComponent* pStaticMeshComponent);
+	void RemoveStaticMeshComponent(StaticMeshComponent* pStaticMeshComponent);
 	
 	void AddCollisionComponent(CollisionComponent* pCollisionComponent);
 	void RemoveCollisionComponent(CollisionComponent* pCollisionComponent);

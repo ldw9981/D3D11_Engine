@@ -29,7 +29,7 @@ protected:
 	std::string m_SceneFilePath;				// BeginPlay에서 로딩	
 	std::list<std::string> m_AnimationFilePath; // BeginPlay에서 로딩	
 
-	std::list< SkeletalMeshComponent*>::iterator m_iterator;
+	std::list< SkeletalMeshComponent*>::iterator m_ItRenderManager;
 
 public:
 	void SetSceneResource(std::shared_ptr<SkeletalMeshSceneResource> val);
