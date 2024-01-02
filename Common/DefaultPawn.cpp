@@ -4,6 +4,7 @@
 #include "ActorController.h"
 #include "SphereComponent.h"
 #include "MovementComponent.h"
+#include "CollisionManager.h"
 
 constexpr float ROTATION_GAIN = 0.004f;
 constexpr float MOVEMENT_GAIN = 0.07f;
@@ -19,7 +20,7 @@ DefaultPawn::DefaultPawn()
 	m_pSphereComponent = CreateComponent<SphereComponent>("SphereComponent").get();
 	m_pSphereComponent->SetParent(m_pCameraComponent);
 	m_pSphereComponent->SetCollisionType(CollisionType::Block);
-	m_pSphereComponent->m_Geomety.Radius = 3.0f;
+	m_pSphereComponent->m_Geomety.Radius = 1.0f;
 	m_pSphereComponent->SetNotifyListener(this);
 
 	D3DRenderManager::Instance->AddImguiRenderable(m_pMovementComponent);
@@ -84,6 +85,30 @@ void DefaultPawn::OnInputProcess(const Keyboard::State& KeyState, const Keyboard
 		pController->AddYaw(delta.x);
 
 		m_pCameraComponent->SetLocalRotation(Math::Vector3(pController->GetPitch(), pController->GetYaw(), 0.0f));
+	}
+	else if (MouseTracker.leftButton == Mouse::ButtonStateTracker::PRESSED)
+	{		
+		Math::Vector3 nearPoint = D3DRenderManager::Instance->ScreenToWorld(MouseState.x, MouseState.y,0.0f);
+		Math::Vector3 farPoint = D3DRenderManager::Instance->ScreenToWorld(MouseState.x, MouseState.y,1.0f);
+	
+		Math::Vector3 camPos = m_pCameraComponent->GetWorldPosition();
+		Math::Vector3 dir = farPoint - nearPoint;
+		dir.Normalize();
+		std::list<RayResult> result;
+
+		D3DRenderManager::Instance->AddDebugDrawLine(camPos,dir,true,Math::Vector3(1.0f,1.0f,0.0f),1000.0f);
+		/*
+		if (CollisionManager::Instance->Query(Math::Ray(camPos, dir), result, true))
+		{
+			for (auto& it : result)
+			{
+				if(it.pComponent == m_pSphereComponent)
+					continue;
+
+				printf("hit %s\n", it.pComponent->GetName().c_str());
+			}
+		}
+		*/
 	}
 }
 

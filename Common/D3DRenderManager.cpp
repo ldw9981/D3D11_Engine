@@ -301,7 +301,7 @@ void D3DRenderManager::Uninitialize()
 
 
 
-void D3DRenderManager::Update()
+void D3DRenderManager::Update(float DeltaTime)
 {	
 	if (m_pCamera.expired() == false)
 	{
@@ -338,6 +338,16 @@ void D3DRenderManager::Update()
 			AddMeshInstance(StaticMeshComponent);  // 하나의 메시 컴포넌트에 여러개의 메시 Instance 가 있을수있음.
 			m_nDrawComponentCount++;
 		}		
+	}
+
+	for (std::list<DebugRay>::iterator it = m_DebugDrawLines.begin(); it != m_DebugDrawLines.end() ; )
+	{
+		DebugRay& ray = *it;
+		ray.time -= DeltaTime;
+		if (ray.time <= 0)
+			it = m_DebugDrawLines.erase(it);		
+		else
+			it++;
 	}
 }
 
@@ -449,6 +459,12 @@ void D3DRenderManager::RenderDebugDraw()
 			break;
 			}
 		}
+	}
+
+
+	for (auto& ray : m_DebugDrawLines)
+	{
+		DebugDraw::DrawRay(DebugDraw::g_Batch.get(),ray.origin,ray.direction,ray.normalize,ray.color);
 	}
 
 	DebugDraw::g_Batch->End();	
@@ -770,6 +786,35 @@ void D3DRenderManager::AddImguiRenderable(IImGuiRenderable* pIImGuiRenderable)
 void D3DRenderManager::RemoveImguiRenderable(IImGuiRenderable* pIImGuiRenderable)
 {
 	m_ImGuiRenders.remove(pIImGuiRenderable);
+}
+
+Math::Vector3 D3DRenderManager::ScreenToWorld(float mouseX, float mouseY,float Depth)
+{
+	Math::Vector3 worldPos;
+	
+	float screenX = mouseX / m_Viewport.Width * 2.0f - 1.0f;
+	float screenY = 1.0f - mouseY / m_Viewport.Height * 2.0f;
+
+	auto cam = m_pCamera.lock();
+		
+
+	worldPos = DirectX::XMVector3Unproject(
+		Math::Vector4(screenX, screenY, Depth,1.0f),
+		0.0f,0.0f,m_Viewport.Width, m_Viewport.Height,
+		0.0f,1.0f,
+		m_Projection,m_View, Math::Matrix::Identity);
+	return worldPos;
+}
+
+void D3DRenderManager::AddDebugDrawLine(const Math::Vector3& origin, const Math::Vector3& direction, bool normalize, const Math::Vector3& color, float time)
+{
+	DebugRay debugDrawLine;
+	debugDrawLine.origin = origin;
+	debugDrawLine.direction = direction;
+	debugDrawLine.normalize = normalize;
+	debugDrawLine.color = color;
+	debugDrawLine.time = time;
+	m_DebugDrawLines.push_back(debugDrawLine);
 }
 
 void D3DRenderManager::AddDebugVector4ToImGuiWindow(const std::string& header, const Vector4& value)

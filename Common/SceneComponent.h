@@ -25,6 +25,8 @@ public:
 	const Math::Vector3& GetLocalRotation() const { return m_LocalRotation; }
 	const Math::Vector3& GetLocalScale() const { return m_LocalScale; }
 
+	const Math::Vector3 GetForward() const { return Math::Vector3(m_World._31, m_World._32, m_World._33); }
+
 	virtual void Update(float DeltaTime);
 	virtual void OnBeginPlay();
 	virtual void OnEndPlay();

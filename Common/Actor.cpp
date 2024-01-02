@@ -38,6 +38,7 @@ SceneComponent* Actor::GetRootComponent() const
 
 void Actor::OnBeginPlay()
 {
+	m_ActorStatus = ActorStatus::PLAY;
 	for (auto& pComponent : m_OwnedComponents)
 	{
 		pComponent->OnBeginPlay();

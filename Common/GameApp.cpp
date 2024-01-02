@@ -125,7 +125,7 @@ void GameApp::Update()
 		m_pCurrentWorld->Update(m_Timer.DeltaTime());
 	}	
 	m_CollisionManager.Update(m_Timer.DeltaTime());
-	m_Renderer.Update();
+	m_Renderer.Update(m_Timer.DeltaTime());
 	
 
 }

@@ -61,6 +61,16 @@ public:
 	virtual void ImGuiRender() = 0;
 };
 
+struct DebugRay
+{
+	Math::Vector3 origin;
+	Math::Vector3 direction;
+	bool normalize;
+	Math::Vector3 color;
+	float time;
+};
+
+
 class StaticMeshInstance;
 class SkeletalMeshInstance;
 class SkeletalMeshComponent;
@@ -131,6 +141,9 @@ public:
 
 	std::list<IImGuiRenderable*>		m_ImGuiRenders;
 
+
+	std::list<DebugRay>			m_DebugDrawLines;
+
 	std::weak_ptr<CameraComponent> m_pCamera;
 	BoundingFrustum m_Frustum;
 	int m_nDrawComponentCount = 0;
@@ -143,7 +156,7 @@ public:
 	bool Initialize(HWND Handle,UINT Width, UINT Height);
 	void Uninitialize();
 
-	void Update();
+	void Update(float DeltaTime);
 	void Render();
 	void ApplyMaterial(Material* pMaterial);
 
@@ -168,6 +181,11 @@ public:
 
 	void AddImguiRenderable(IImGuiRenderable* pIImGuiRenderable);
 	void RemoveImguiRenderable(IImGuiRenderable* pIImGuiRenderable);
+
+	Math::Vector3 ScreenToWorld(float mouseX, float mouseY,float Depth);
+
+
+	void AddDebugDrawLine(const Math::Vector3& origin, const Math::Vector3& direction, bool normalize, const Math::Vector3& color, float time);
 private:
 	void CreateSkeletalMesh_VS_IL();
 	void CreateStaticMesh_VS_IL();

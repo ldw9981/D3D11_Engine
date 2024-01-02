@@ -133,9 +133,10 @@ bool CollisionManager::Query(const Math::Ray& Input, std::list<RayResult>& Outpu
 		float Dist = 0.0f;
 		if (pComponent->IsCollide(Input, Dist))
 		{
-			auto item = Output.emplace_back();
-			item.Dist = Dist;
-			item.pComponent = pComponent;
+			RayResult result;
+			result.Dist = Dist;
+			result.pComponent = pComponent;
+			Output.push_back(result);
 		}		
 	}
 
