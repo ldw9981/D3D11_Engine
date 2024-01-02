@@ -1,9 +1,8 @@
 #pragma once
 #include "Component.h"
-#include "D3DRenderManager.h"
 
 class SceneComponent;
-class MovementComponent: public Component , public IImGuiRenderable
+class MovementComponent: public Component
 {
 public:
 	MovementComponent();

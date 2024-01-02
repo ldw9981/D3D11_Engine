@@ -1,7 +1,8 @@
 #pragma once
+#include "D3DRenderManager.h"
 
 class Actor;
-class Component
+class Component : public IImGuiRenderable
 {
 public:
 	friend class Actor;
@@ -23,5 +24,6 @@ public:
 	virtual void Update(float DeltaTime) = 0;
 	virtual void OnBeginPlay() = 0;
 	virtual void OnEndPlay() = 0;
+	virtual void ImGuiRender() {};
 };
 

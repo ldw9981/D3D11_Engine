@@ -100,7 +100,13 @@ void DefaultPawn::OnInputProcess(const Keyboard::State& KeyState, const Keyboard
 				if(it.pComponent == m_pSphereComponent)
 					continue;
 
-				printf("hit %s\n", it.pComponent->GetName().c_str());
+				if (m_pSelectedActor != nullptr)
+				{
+					D3DRenderManager::Instance->RemoveImguiRenderable(m_pSelectedActor);
+				}
+				m_pSelectedActor = it.pComponent->GetOwner();
+				D3DRenderManager::Instance->AddImguiRenderable(it.pComponent->GetOwner());				
+				break;
 			}
 		}		
 		

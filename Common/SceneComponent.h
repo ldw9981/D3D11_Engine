@@ -30,7 +30,7 @@ public:
 	virtual void Update(float DeltaTime);
 	virtual void OnBeginPlay();
 	virtual void OnEndPlay();
-
+	virtual void ImGuiRender();
 
 };
 

@@ -43,8 +43,10 @@ void MovementComponent::OnEndPlay()
 
 void MovementComponent::ImGuiRender()
 {
-	ImGui::Text("%s", __FUNCTION__);
+	std::string Name = __FUNCTION__;
+	ImGui::Begin(Name.c_str());
 	D3DRenderManager::Instance->AddDebugVector3ToImGuiWindow("m_PositionBefore", m_PositionBefore);
 	D3DRenderManager::Instance->AddDebugVector3ToImGuiWindow("m_PositionAfter", m_PositionAfter);
+	ImGui::End();
 }
 

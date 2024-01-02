@@ -134,8 +134,10 @@ void TutorialApp::DecreaseModel()
 
 void TutorialApp::ImGuiRender()
 {	
+	ImGui::Begin("TutorialApp");
 	ImGui::Text("%s",__FUNCTION__);
 	ImGui::Text("다른곳에서도 ImGUI를 사용하는테스트 English Only");
+	ImGui::End();
 }
 
 void TutorialApp::OnBeginPlay(World* pWorld)

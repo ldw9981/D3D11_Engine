@@ -106,3 +106,11 @@ Component* Actor::GetComponentPtrByName(const std::string& Name)
 	}
 	return nullptr;
 }
+
+void Actor::ImGuiRender()
+{
+	for (auto& pComponent : m_OwnedComponents)
+	{
+		pComponent->ImGuiRender();
+	}
+}

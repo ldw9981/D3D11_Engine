@@ -18,6 +18,8 @@ public:
     CameraComponent* m_pCameraComponent = nullptr;
     SphereComponent* m_pSphereComponent = nullptr;
 
+    Actor* m_pSelectedActor = nullptr;
+
 	virtual void OnInputProcess(const Keyboard::State& KeyState, const Keyboard::KeyboardStateTracker& KeyTracker,
 		const Mouse::State& MouseState, const Mouse::ButtonStateTracker& MouseTracker);
 

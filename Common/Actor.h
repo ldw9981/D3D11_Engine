@@ -7,7 +7,7 @@
 #include "StaticMeshComponent.h"
 #include "SceneComponent.h"
 #include "CollisionComponent.h"
-
+#include "D3DRenderManager.h"
 
 class Component;
 class World;
@@ -18,7 +18,7 @@ enum class ActorStatus
 	PLAY,
 	DESTROY
 };
-class Actor: public InputProcesser
+class Actor: public InputProcesser,public IImGuiRenderable
 {
 	friend class World;
 public:
@@ -32,6 +32,7 @@ protected:
 	std::list<std::shared_ptr<Actor>>::iterator m_iteratorInWorld;
 	ActorStatus m_ActorStatus = ActorStatus::CREATE;
 public:
+	
 	SceneComponent*		m_pRootComponent = nullptr;		// 컴포넌트 중에 어느게 루트인지 설정
 	World* GetOwner() const { return m_pOwner; }
 	void SetOwner(World* val) { m_pOwner = val; }
@@ -65,5 +66,7 @@ public:
 	Component* GetComponentPtrByName(const std::string& Name);
 	ActorStatus GetActorStatus() const { return m_ActorStatus; }
 	void SetActorStatus(ActorStatus val) { m_ActorStatus = val; }
+
+	virtual void ImGuiRender();
 };
 

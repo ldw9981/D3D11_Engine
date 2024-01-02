@@ -483,9 +483,9 @@ void D3DRenderManager::RenderImGui()
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
-
 	{
-		ImGui::Begin("Properties");
+		std::string Title = __FUNCTION__;
+		ImGui::Begin(Title.c_str());
 		ImGui::Text("Keyboard: WASD-QE , Mouse: rotation on RightClick");
 
 		ImGui::Text("Frame average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
@@ -514,14 +514,11 @@ void D3DRenderManager::RenderImGui()
 			auto pCamera = m_pCamera.lock();
 			AddDebugMatrixToImGuiWindow("CameraWorld", pCamera->m_World);
 		}
-
-		ImGui::Text("");
+		ImGui::End();	
 		for (auto ImguiRenderable : m_ImGuiRenders)
 		{
 			ImguiRenderable->ImGuiRender();
 		}
-
-		ImGui::End();
 	}
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
