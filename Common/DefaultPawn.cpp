@@ -84,7 +84,7 @@ void DefaultPawn::OnInputProcess(const Keyboard::State& KeyState, const Keyboard
 		pController->AddPitch(delta.y);
 		pController->AddYaw(delta.x);
 
-		m_pCameraComponent->SetLocalRotation(Math::Vector3(pController->GetPitch(), pController->GetYaw(), 0.0f));
+		m_pCameraComponent->SetLocalRotation(Math::Vector3(XMConvertToDegrees(pController->GetPitch()), XMConvertToDegrees(pController->GetYaw()), 0.0f));
 	}
 	else if (MouseTracker.leftButton == Mouse::ButtonStateTracker::PRESSED)
 	{		

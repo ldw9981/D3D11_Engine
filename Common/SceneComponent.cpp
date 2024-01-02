@@ -37,7 +37,9 @@ void SceneComponent::Update(float DeltaTime)
 {
 	if (m_bDirty)
 	{
-		m_Local = Math::Matrix::CreateScale(m_LocalScale) * Math::Matrix::CreateFromYawPitchRoll(m_LocalRotation) * Math::Matrix::CreateTranslation(m_LocalPosition);
+		m_Local = Math::Matrix::CreateScale(m_LocalScale) * 
+			Math::Matrix::CreateFromYawPitchRoll(XMConvertToRadians(m_LocalRotation.y), XMConvertToRadians(m_LocalRotation.x), XMConvertToRadians(m_LocalRotation.z)) *
+			Math::Matrix::CreateTranslation(m_LocalPosition);
 		m_bDirty = false;
 	}	
 	Transform::Update(DeltaTime);
