@@ -79,3 +79,59 @@ void CollisionManager::Update(float DeltaTime)
 		}
 	}
 }
+
+bool CollisionManager::Query(const BoundingBox& Input, std::list<CollisionComponent*>& Output)
+{	
+	for (std::list<CollisionComponent*>::iterator it = m_CollisionComponents.begin(); it != m_CollisionComponents.end(); it++)
+	{
+		CollisionComponent* pComponent = *it;
+		if (pComponent->GetCollisionType() == CollisionType::NoCollision)
+			continue;
+
+		if (pComponent->IsCollide(Input))
+			Output.push_back(pComponent);
+	}
+	return !Output.empty();
+}
+
+bool CollisionManager::Query(const BoundingSphere& Input, std::list<CollisionComponent*>& Output)
+{
+	for (std::list<CollisionComponent*>::iterator it = m_CollisionComponents.begin(); it != m_CollisionComponents.end(); it++)
+	{
+		CollisionComponent* pComponent = *it;
+		if (pComponent->GetCollisionType() == CollisionType::NoCollision)
+			continue;
+
+		if (pComponent->IsCollide(Input))
+			Output.push_back(pComponent);
+	}
+	return !Output.empty();
+}
+
+bool CollisionManager::Query(const BoundingOrientedBox& Input, std::list<CollisionComponent*>& Output)
+{
+	for (std::list<CollisionComponent*>::iterator it = m_CollisionComponents.begin(); it != m_CollisionComponents.end(); it++)
+	{
+		CollisionComponent* pComponent = *it;
+		if (pComponent->GetCollisionType() == CollisionType::NoCollision)
+			continue;
+
+		if (pComponent->IsCollide(Input))
+			Output.push_back(pComponent);
+	}
+	return !Output.empty();
+}
+
+bool CollisionManager::Query(const Math::Ray& Input, std::list<CollisionComponent*>& Output)
+{
+	for (std::list<CollisionComponent*>::iterator it = m_CollisionComponents.begin(); it != m_CollisionComponents.end(); it++)
+	{
+		CollisionComponent* pComponent = *it;
+		if (pComponent->GetCollisionType() == CollisionType::NoCollision)
+			continue;
+
+		if (pComponent->IsCollide(Input))
+			Output.push_back(pComponent);
+	}
+	return !Output.empty();
+}

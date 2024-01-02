@@ -54,6 +54,10 @@ public:
 	CollisionType GetCollisionType() const { return m_CollisionType; }
 	void SetCollisionType(CollisionType val) { m_CollisionType=val; }
 	virtual bool IsCollide(CollisionComponent* pOtherComponent)=0;
+	virtual bool IsCollide(const BoundingOrientedBox& OtherGeometry)=0;
+	virtual bool IsCollide(const BoundingSphere& OtherGeometry)=0;
+	virtual bool IsCollide(const BoundingBox& OtherGeometry)=0;
+	virtual bool IsCollide(const Math::Ray& OtherGeometry)=0;
 
 	void ProcessOverlap();
 	void ProcessBlock(CollisionComponent* pOtherComponent);

@@ -37,6 +37,27 @@ bool OrientedBoxComponent::IsCollide(CollisionComponent* pOtherComponent)
 	return false;
 }
 
+bool OrientedBoxComponent::IsCollide(const BoundingOrientedBox& OtherGeometry)
+{
+	return m_Geomety.Intersects(OtherGeometry);
+}
+
+bool OrientedBoxComponent::IsCollide(const BoundingSphere& OtherGeometry)
+{
+	return m_Geomety.Intersects(OtherGeometry);
+}
+
+bool OrientedBoxComponent::IsCollide(const BoundingBox& OtherGeometry)
+{
+	return m_Geomety.Intersects(OtherGeometry);
+}
+
+bool OrientedBoxComponent::IsCollide(const Math::Ray& OtherGeometry)
+{
+	float Dist;
+	return m_Geomety.Intersects(OtherGeometry.position, OtherGeometry.direction,Dist);
+}
+
 void OrientedBoxComponent::Update(float DeltaTime)
 {
 	__super::Update(DeltaTime);
