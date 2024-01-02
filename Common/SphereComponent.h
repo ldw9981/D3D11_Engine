@@ -13,7 +13,7 @@ public:
 	virtual bool IsCollide(const BoundingOrientedBox& OtherGeometry) override;
 	virtual bool IsCollide(const BoundingSphere& OtherGeometry) override;
 	virtual bool IsCollide(const BoundingBox& OtherGeometry) override;
-	virtual bool IsCollide(const Math::Ray& OtherGeometry) override;
+	virtual bool IsCollide(const Math::Ray& OtherGeometry, float& Dist) override;
 	virtual void Update(float DeltaTime) override;
 };
 

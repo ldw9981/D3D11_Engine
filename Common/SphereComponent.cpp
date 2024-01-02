@@ -52,9 +52,8 @@ bool SphereComponent::IsCollide(const BoundingBox& OtherGeometry)
 	return m_Geomety.Intersects(OtherGeometry);
 }
 
-bool SphereComponent::IsCollide(const Math::Ray& OtherGeometry)
+bool SphereComponent::IsCollide(const Math::Ray& OtherGeometry, float& Dist) 
 {
-	float Dist;
 	return OtherGeometry.Intersects(m_Geomety,Dist);
 }
 

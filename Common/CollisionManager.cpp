@@ -122,16 +122,29 @@ bool CollisionManager::Query(const BoundingOrientedBox& Input, std::list<Collisi
 	return !Output.empty();
 }
 
-bool CollisionManager::Query(const Math::Ray& Input, std::list<CollisionComponent*>& Output)
+bool CollisionManager::Query(const Math::Ray& Input, std::list<RayResult>& Output, bool sort)
 {
 	for (std::list<CollisionComponent*>::iterator it = m_CollisionComponents.begin(); it != m_CollisionComponents.end(); it++)
 	{
 		CollisionComponent* pComponent = *it;
 		if (pComponent->GetCollisionType() == CollisionType::NoCollision)
 			continue;
+		
+		float Dist = 0.0f;
+		if (pComponent->IsCollide(Input, Dist))
+		{
+			auto item = Output.emplace_back();
+			item.Dist = Dist;
+			item.pComponent = pComponent;
+		}		
+	}
 
-		if (pComponent->IsCollide(Input))
-			Output.push_back(pComponent);
+	if (sort)
+	{
+		Output.sort([](const RayResult& A, const RayResult& B) -> bool
+			{
+				return A.Dist < B.Dist;
+			});
 	}
 	return !Output.empty();
 }

@@ -2,6 +2,7 @@
 #include "BoxComponent.h"
 #include "SphereComponent.h"
 #include "OrientedBoxComponent.h"
+#include "CollisionManager.h"
 
 BoxComponent::BoxComponent()
 {
@@ -52,9 +53,8 @@ bool BoxComponent::IsCollide(const BoundingBox& OtherGeometry)
 	return m_Geomety.Intersects(OtherGeometry);
 }
 
-bool BoxComponent::IsCollide(const Math::Ray& OtherGeometry)
+bool BoxComponent::IsCollide(const Math::Ray& OtherGeometry,float& Dist)
 {
-	float Dist;
 	return OtherGeometry.Intersects(m_Geomety,Dist);	
 }
 

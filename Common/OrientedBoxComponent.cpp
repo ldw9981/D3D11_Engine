@@ -52,9 +52,8 @@ bool OrientedBoxComponent::IsCollide(const BoundingBox& OtherGeometry)
 	return m_Geomety.Intersects(OtherGeometry);
 }
 
-bool OrientedBoxComponent::IsCollide(const Math::Ray& OtherGeometry)
+bool OrientedBoxComponent::IsCollide(const Math::Ray& OtherGeometry, float& Dist) 
 {
-	float Dist;
 	return m_Geomety.Intersects(OtherGeometry.position, OtherGeometry.direction,Dist);
 }
 
