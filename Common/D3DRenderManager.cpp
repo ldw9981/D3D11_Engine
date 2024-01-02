@@ -795,8 +795,9 @@ void D3DRenderManager::RemoveImguiRenderable(IImGuiRenderable* pIImGuiRenderable
 
 void D3DRenderManager::CreateMousePickingRay(float mouseX, float mouseY, Math::Vector3& rayOrigin, Math::Vector3& rayDirection)
 {
-	float viewX = (+2.0f * mouseX / m_Viewport.Width - 1.0f) / m_Projection(0, 0);
-	float viewY = (-2.0f * mouseY / m_Viewport.Height + 1.0f) / m_Projection(1, 1);
+	// Screen공간의 마우스 위치를 NDC 좌표계( -1 ~  +1)로 변경
+	float viewX = (+2.0f * mouseX / m_Viewport.Width - 1.0f) / m_Projection(0, 0);   // 투영행렬에 반영된 뷰포트 종횡비 고려하여 점을 조정
+	float viewY = (-2.0f * mouseY / m_Viewport.Height + 1.0f) / m_Projection(1, 1);  // 투영행렬에 반영된 뷰포트 종횡비 고려하여 점을 조정
 
 	// 카메라 공간의 좌표와 벡터
 	Vector3 org = Vector3(0.0f, 0.0f, 0.0f);
