@@ -1,6 +1,10 @@
 #pragma once
 #include "Component.h"
-
+/*
+	RootSceneComponent의 Position을 InpuVector 방향에 따라 업데이트 해주는 컴포넌트
+	InpuVector는 한번 사용하고 0으로 초기화한다.
+	업데이트 전에 Before에 보관하고 업데이트 후에 After에 보관한다.
+*/
 class SceneComponent;
 class MovementComponent: public Component
 {

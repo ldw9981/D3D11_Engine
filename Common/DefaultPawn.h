@@ -2,6 +2,10 @@
 #include "Pawn.h"
 #include "CollisionComponent.h"
 
+/*
+    중력없이 이동하는 프리카메라
+    충돌처리는 Block 설정한  Sphere를 사용한다.
+*/
 class MovementComponent;
 class CameraComponent;
 class ActorController;
@@ -13,7 +17,6 @@ public:
     DefaultPawn();    
      ~DefaultPawn();
    
-    SceneComponent* m_pSceneComponent = nullptr;
     MovementComponent* m_pMovementComponent = nullptr;
     CameraComponent* m_pCameraComponent = nullptr;
     SphereComponent* m_pSphereComponent = nullptr;
