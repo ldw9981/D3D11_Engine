@@ -23,10 +23,7 @@ void Bone::Update(float DeltaTime)
 	}
 
 	// 부모 노드가 있다면 부모 노드의 WorldMatrix를 곱해서 자신의 WorldMatrix를 만든다.
-	if (m_pParent != nullptr)
-		m_World = m_Local * m_pParent->m_World;
-	else
-		m_World = m_Local;
+	__super::Update(DeltaTime);
 
 	for (auto& child : m_Children)
 	{	// 자식 노드들의 Update()를 호출한다.

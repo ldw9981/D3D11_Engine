@@ -16,13 +16,12 @@ void Transform::Update(float DeltaTime)
 {
 	if (m_pParent)
 	{
-		m_World = m_pParent->m_World * m_Local;
+		m_World =  m_Local * m_pParent->m_World;
 	}
 	else
 	{
 		m_World = m_Local;
 	}
-	assert(m_Local.Forward().Length() != 0);
 }
 
 Math::Vector3 Transform::GetWorldPosition()
