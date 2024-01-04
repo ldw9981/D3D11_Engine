@@ -60,4 +60,7 @@ void World::OnEndPlay()
 		actor->OnEndPlay();
 	}
 	m_Actors.clear();
+
+	if (m_pWorldEvent)
+		m_pWorldEvent->OnEndPlay(this);
 }
