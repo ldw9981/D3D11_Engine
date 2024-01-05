@@ -235,6 +235,16 @@ void D3DRenderManager::Update(float DeltaTime)
 			m_Frustum.Transform(m_Frustum, pCamera->m_World);			
 		}	
 	}
+
+	//라이트 업데이트	
+	m_Light.Direction.Normalize();
+	m_pDeviceContext->UpdateSubresource(m_pCBDirectionLight, 0, nullptr, &m_Light, 0, 0);
+
+	// 뷰프로젝션 업데이트
+	m_TransformVP.mView = m_View.Transpose();
+	m_TransformVP.mProjection = m_Projection.Transpose();
+	m_pDeviceContext->UpdateSubresource(m_pCBTransformVP, 0, nullptr, &m_TransformVP, 0, 0);
+
 	m_nDrawComponentCount = 0;
 	for (auto& SkeletalMeshComponent : m_SkeletalMeshComponents)
 	{
@@ -278,21 +288,8 @@ void D3DRenderManager::Render()
 	m_pDeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 	m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);	
 	m_pDeviceContext->RSSetState(nullptr);
-
-	m_pDeviceContext->PSSetSamplers(0, 1, &m_pSamplerLinear);
-	m_pDeviceContext->PSSetSamplers(1, 1, &m_pSamplerLinear);	// !수정필요!! samplerSpecularBRDF 샘플러 설정해야함.
-
-	//라이트 업데이트	
-	m_Light.Direction.Normalize();
-	m_pDeviceContext->UpdateSubresource(m_pCBDirectionLight, 0, nullptr, &m_Light, 0, 0);
-
-	// 뷰프로젝션 업데이트
-	m_TransformVP.mView = m_View.Transpose();
-	m_TransformVP.mProjection = m_Projection.Transpose();
-	m_pDeviceContext->UpdateSubresource(m_pCBTransformVP, 0, nullptr, &m_TransformVP, 0, 0);
 	
-	m_pDeviceContext->VSSetConstantBuffers(0, 1, &m_pCBTransformW); //?????????????
-
+	
 	RenderSkeletalMeshInstance();
 	RenderStaticMeshInstance();	
 	RenderDebugDraw();	
@@ -429,6 +426,7 @@ void D3DRenderManager::RenderSkeletalMeshInstance()
 	m_pDeviceContext->IASetInputLayout(m_pSkeletalMeshInputLayout);
 	m_pDeviceContext->VSSetShader(m_pSkeletalMeshVertexShader, nullptr, 0);
 	m_pDeviceContext->PSSetShader(m_pPixelShader, nullptr, 0);
+	m_pDeviceContext->VSSetConstantBuffers(0, 1, &m_pCBTransformW);  //debugdraw에서 변경시켜서 설정한다.
 
 	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
 	m_SkeletalMeshInstance.sort([](const SkeletalMeshInstance* lhs, const SkeletalMeshInstance* rhs)
@@ -460,6 +458,7 @@ void D3DRenderManager::RenderStaticMeshInstance()
 	m_pDeviceContext->IASetInputLayout(m_pStaticMeshInputLayout);
 	m_pDeviceContext->VSSetShader(m_pStaticMeshVertexShader, nullptr, 0);
 	m_pDeviceContext->PSSetShader(m_pPixelShader, nullptr, 0);
+	m_pDeviceContext->VSSetConstantBuffers(0, 1, &m_pCBTransformW); //debugdraw에서 변경시켜서 설정한다.
 
 	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
 	m_StaticMeshInstance.sort([](const StaticMeshInstance* lhs, const StaticMeshInstance* rhs)
@@ -801,6 +800,9 @@ void D3DRenderManager::CreateSamplerState()
 	sampDesc.MinLOD = 0;
 	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 	HR_T(m_pDevice->CreateSamplerState(&sampDesc, &m_pSamplerLinear));
+
+	m_pDeviceContext->PSSetSamplers(0, 1, &m_pSamplerLinear);
+	m_pDeviceContext->PSSetSamplers(1, 1, &m_pSamplerLinear);	// !수정필요!! samplerSpecularBRDF 샘플러 설정해야함.
 }
 
 void D3DRenderManager::CreateRasterizerState()
