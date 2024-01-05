@@ -121,7 +121,7 @@ public:
 	std::list<SkeletalMeshInstance*>	m_SkeletalMeshInstance;		//  렌더링할 모델들의 포인터 저장해둔다. 
 	std::list<SkeletalMeshComponent*>	m_SkeletalMeshComponents;		//  렌더링할 모델들의 포인터 저장해둔다.
 	std::list<StaticMeshComponent*>		m_StaticMeshComponents;		//  렌더링할 모델들의 포인터 저장해둔다
-	std::list<CollisionComponent*>		m_CollisionComponents;		//  렌더링할 모델들의 포인터 저장해둔다
+
 	std::list<IImGuiRenderable*>		m_ImGuiRenders;
 	std::list<DebugRay>					m_DebugDrawLines;
 	std::weak_ptr<CameraComponent>		m_pCamera;
@@ -151,8 +151,6 @@ public:
 	void RemoveSkeletalMeshComponent(SkeletalMeshComponent* pSkeletalMeshComponent);
 	void AddStaticMeshComponent(StaticMeshComponent* pStaticMeshComponent);
 	void RemoveStaticMeshComponent(StaticMeshComponent* pStaticMeshComponent);
-	void AddCollisionComponent(CollisionComponent* pCollisionComponent);
-	void RemoveCollisionComponent(CollisionComponent* pCollisionComponent);
 
 	// ImGui 디버깅 정보 텍스트 그리기
 	void AddImguiRenderable(IImGuiRenderable* pIImGuiRenderable);

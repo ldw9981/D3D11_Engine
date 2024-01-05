@@ -27,7 +27,7 @@
 #include "BoxComponent.h"
 #include "SphereComponent.h"
 #include "OrientedBoxComponent.h"
-
+#include "CollisionManager.h"
 #include "DebugDraw.h"
 
 #pragma comment(lib,"d3d11.lib")
@@ -330,6 +330,7 @@ void D3DRenderManager::RenderDebugDraw()
 
 	if (m_bDrawDebugCollision)
 	{
+		const std::list<CollisionComponent*>& m_CollisionComponents = CollisionManager::Instance->m_CollisionComponents;
 		for (auto& CollisionComponent : m_CollisionComponents)
 		{
 			switch (CollisionComponent->m_ColliderType)
@@ -692,16 +693,6 @@ void D3DRenderManager::AddStaticMeshComponent(StaticMeshComponent* pStaticMeshCo
 void D3DRenderManager::RemoveStaticMeshComponent(StaticMeshComponent* pStaticMeshComponent)
 {
 	m_StaticMeshComponents.erase(pStaticMeshComponent->m_ItRenderManager);
-}
-
-void D3DRenderManager::AddCollisionComponent(CollisionComponent* pCollisionComponent)
-{
-	pCollisionComponent->m_ItRenderManager = m_CollisionComponents.insert(m_CollisionComponents.end(), pCollisionComponent);
-}
-
-void D3DRenderManager::RemoveCollisionComponent(CollisionComponent* pCollisionComponent)
-{
-	m_CollisionComponents.erase(pCollisionComponent->m_ItRenderManager);
 }
 
 void D3DRenderManager::AddImguiRenderable(IImGuiRenderable* pIImGuiRenderable)

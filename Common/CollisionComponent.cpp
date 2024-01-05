@@ -1,19 +1,16 @@
 #include "pch.h"
 #include "CollisionComponent.h"
-#include "D3DRenderManager.h"
 #include "CollisionManager.h"
 #include "Actor.h"
 
 CollisionComponent::CollisionComponent()
-{
-	D3DRenderManager::Instance->AddCollisionComponent(this);
+{	
 	CollisionManager::Instance->AddCollisionComponent(this);
 }
 
 CollisionComponent::~CollisionComponent()
 {
 	CollisionManager::Instance->RemoveCollisionComponent(this);
-	D3DRenderManager::Instance->RemoveCollisionComponent(this);
 }
 
 void CollisionComponent::ProcessOverlap()
