@@ -189,9 +189,12 @@ public:
 private:
 	void CreateSkeletalMesh_VS_IL();
 	void CreateStaticMesh_VS_IL();
-	void CreatePS();
+	void CreatePixelShader();
 	void CreateIBL();
 	void CreateConstantBuffer();
+	void CreateSamplerState();
+	void CreateRasterizerState();
+	void CreateBlendState();
 
 	void AddMeshInstance(SkeletalMeshComponent* pModel);
 	void AddMeshInstance(StaticMeshComponent* pModel);

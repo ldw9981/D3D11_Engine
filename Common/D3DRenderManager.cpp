@@ -152,36 +152,12 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 
 	m_pDeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
 
-
-	//7. 알파블렌딩을 위한 블렌드 상태 생성
-	D3D11_BLEND_DESC blendDesc = {};
-	blendDesc.AlphaToCoverageEnable = false;
-	blendDesc.IndependentBlendEnable = false;
-	D3D11_RENDER_TARGET_BLEND_DESC rtBlendDesc = {};
-	rtBlendDesc.BlendEnable = true; // 블렌드 사용 여부
-	// FinalRGB = SrcRGB *SrcBlend + DestRGB*DestBlend
-	rtBlendDesc.BlendOp = D3D11_BLEND_OP_ADD;
-	rtBlendDesc.SrcBlend = D3D11_BLEND_SRC_ALPHA;	// SrcBlend는 SrcColor의 알파값
-	rtBlendDesc.DestBlend = D3D11_BLEND_INV_SRC_ALPHA;	// DestBlend는 (1-SourceColor.a)
-	// FinalAlpha = (SrcAlpha * SrcBlendAlpha) + (DestAlpha * DestBlendAlpha)
-	rtBlendDesc.BlendOpAlpha = D3D11_BLEND_OP_ADD;
-	rtBlendDesc.SrcBlendAlpha = D3D11_BLEND_ONE;	// SrcBlendAlpha = 1
-	rtBlendDesc.DestBlendAlpha = D3D11_BLEND_ONE;	// DestBlendAlpha = 1	
-	rtBlendDesc.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL; // 렌더타겟에 RGBA 모두 Write
-	blendDesc.RenderTarget[0] = rtBlendDesc;
-	HR_T(m_pDevice->CreateBlendState(&blendDesc, &m_pAlphaBlendState));
-
 	/*
 		ImGui 초기화.
 	*/
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-
-
-	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();
-	//ImGui::StyleColorsLight();
-
 	// Setup Platform/Renderer backends
 	ImGui_ImplWin32_Init(m_hWnd);
 	ImGui_ImplDX11_Init(this->m_pDevice, this->m_pDeviceContext);
@@ -189,45 +165,14 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	// * Render() 에서 파이프라인에 바인딩할 버텍스 셰이더 생성
 	CreateSkeletalMesh_VS_IL();
 	CreateStaticMesh_VS_IL();
-
-	// * Render() 에서 파이프라인에 바인딩할 픽셀 셰이더 생성
-	CreatePS();
-
-
-	// 6. Render() 에서 파이프라인에 바인딩할 상수 버퍼 생성
-	// Create the constant buffer
+	CreatePixelShader();
 	CreateConstantBuffer();
+	CreateSamplerState();
+	CreateRasterizerState();
+	CreateBlendState();
 	
-
-	// 7. 텍스처 샘플러 생성
-	D3D11_SAMPLER_DESC sampDesc = {};
-	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	sampDesc.MinLOD = 0;
-	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	HR_T(m_pDevice->CreateSamplerState(&sampDesc, &m_pSamplerLinear));
-
-
-	D3D11_RASTERIZER_DESC rasterizerDesc = {};
-	rasterizerDesc.AntialiasedLineEnable = true;
-	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-	rasterizerDesc.CullMode = D3D11_CULL_BACK;
-	rasterizerDesc.FrontCounterClockwise = true;
-	rasterizerDesc.DepthClipEnable = true;
-	HR_T(m_pDevice->CreateRasterizerState(&rasterizerDesc, &m_pRasterizerState));
-
-	// Initialize the world matrix
-	m_World = XMMatrixIdentity();
-	XMVECTOR Eye = XMVectorSet(0.0f, 0.0f, -1000.0f, 0.0f);
-	XMVECTOR At = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	m_View = XMMatrixLookAtLH(Eye, At, Up);
+	// 화면 크기가 바뀌면 다시계산해야함
 	m_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, m_Viewport.Width / (FLOAT)m_Viewport.Height, 1.0f, 10000.0f);
-
-	// 프로젝션 행렬이 바뀌면 다시 값을 계산해야한다.  
 	BoundingFrustum::CreateFromMatrix(m_Frustum, m_Projection);
 
 	DebugDraw::Initialize(m_pDevice, m_pDeviceContext);
@@ -627,7 +572,7 @@ void D3DRenderManager::CreateStaticMesh_VS_IL()
 	SAFE_RELEASE(vertexShaderBuffer);
 }
 
-void D3DRenderManager::CreatePS()
+void D3DRenderManager::CreatePixelShader()
 {
 	HRESULT hr;
 	ID3D10Blob* pixelShaderBuffer = nullptr;
@@ -842,6 +787,52 @@ void D3DRenderManager::CreateConstantBuffer()
 	m_pDeviceContext->PSSetConstantBuffers(1, 1, &m_pCBTransformVP);
 	m_pDeviceContext->PSSetConstantBuffers(2, 1, &m_pCBDirectionLight);
 	m_pDeviceContext->PSSetConstantBuffers(3, 1, &m_pGpuCbMaterial);
+}
+
+void D3DRenderManager::CreateSamplerState()
+{
+	// 7. 텍스처 샘플러 생성
+	D3D11_SAMPLER_DESC sampDesc = {};
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sampDesc.MinLOD = 0;
+	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	HR_T(m_pDevice->CreateSamplerState(&sampDesc, &m_pSamplerLinear));
+}
+
+void D3DRenderManager::CreateRasterizerState()
+{
+	D3D11_RASTERIZER_DESC rasterizerDesc = {};
+	rasterizerDesc.AntialiasedLineEnable = true;
+	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+	rasterizerDesc.CullMode = D3D11_CULL_BACK;
+	rasterizerDesc.FrontCounterClockwise = true;
+	rasterizerDesc.DepthClipEnable = true;
+	HR_T(m_pDevice->CreateRasterizerState(&rasterizerDesc, &m_pRasterizerState));
+}
+
+void D3DRenderManager::CreateBlendState()
+{
+	//7. 알파블렌딩을 위한 블렌드 상태 생성
+	D3D11_BLEND_DESC blendDesc = {};
+	blendDesc.AlphaToCoverageEnable = false;
+	blendDesc.IndependentBlendEnable = false;
+	D3D11_RENDER_TARGET_BLEND_DESC rtBlendDesc = {};
+	rtBlendDesc.BlendEnable = true; // 블렌드 사용 여부
+	// FinalRGB = SrcRGB *SrcBlend + DestRGB*DestBlend
+	rtBlendDesc.BlendOp = D3D11_BLEND_OP_ADD;
+	rtBlendDesc.SrcBlend = D3D11_BLEND_SRC_ALPHA;	// SrcBlend는 SrcColor의 알파값
+	rtBlendDesc.DestBlend = D3D11_BLEND_INV_SRC_ALPHA;	// DestBlend는 (1-SourceColor.a)
+	// FinalAlpha = (SrcAlpha * SrcBlendAlpha) + (DestAlpha * DestBlendAlpha)
+	rtBlendDesc.BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	rtBlendDesc.SrcBlendAlpha = D3D11_BLEND_ONE;	// SrcBlendAlpha = 1
+	rtBlendDesc.DestBlendAlpha = D3D11_BLEND_ONE;	// DestBlendAlpha = 1	
+	rtBlendDesc.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL; // 렌더타겟에 RGBA 모두 Write
+	blendDesc.RenderTarget[0] = rtBlendDesc;
+	HR_T(m_pDevice->CreateBlendState(&blendDesc, &m_pAlphaBlendState));
 }
 
 void D3DRenderManager::AddDebugVector4ToImGuiWindow(const std::string& header, const Vector4& value)
