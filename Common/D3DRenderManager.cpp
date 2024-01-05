@@ -196,35 +196,8 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 
 	// 6. Render() 에서 파이프라인에 바인딩할 상수 버퍼 생성
 	// Create the constant buffer
-
-	D3D11_BUFFER_DESC bd = {};
-	bd = {};
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(CB_TransformW);
-	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	bd.CPUAccessFlags = 0;
-	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, &m_pCBTransformW));
-
-	bd = {};
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(CB_TransformVP);
-	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	bd.CPUAccessFlags = 0;
-	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, &m_pCBTransformVP));
-
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(CB_DirectionLight);
-	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	bd.CPUAccessFlags = 0;
-	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, &m_pCBDirectionLight));
-
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(CB_Marterial);
-	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	bd.CPUAccessFlags = 0;
-	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, &m_pGpuCbMaterial));
-
-	m_cbMatrixPallete.Create(m_pDevice);
+	CreateConstantBuffer();
+	
 
 	// 7. 텍스처 샘플러 생성
 	D3D11_SAMPLER_DESC sampDesc = {};
@@ -360,24 +333,6 @@ void D3DRenderManager::Render()
 	m_pDeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 	m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);	
 	m_pDeviceContext->RSSetState(nullptr);
-	
-
-	// 버텍스셰이더 설정 (StaticMesh-SkeletalMesh에 따라 Render직전에 바뀐다)
-	// 버텍스 셰이더 상수 설정
-	m_pDeviceContext->VSSetConstantBuffers(0, 1, &m_pCBTransformW);
-	m_pDeviceContext->VSSetConstantBuffers(1, 1, &m_pCBTransformVP);
-	m_pDeviceContext->VSSetConstantBuffers(2, 1, &m_pCBDirectionLight);
-	// 3 material
-	auto buffer = m_cbMatrixPallete.GetBuffer();
-	m_pDeviceContext->VSSetConstantBuffers(4, 1, &buffer);
-
-	// 픽셀셰이더 설정
-	m_pDeviceContext->PSSetShader(m_pPixelShader, nullptr, 0);
-	// 픽셀셰이더 상수설정
-	m_pDeviceContext->VSSetConstantBuffers(0, 1, &m_pCBTransformW);
-	m_pDeviceContext->PSSetConstantBuffers(1, 1, &m_pCBTransformVP);
-	m_pDeviceContext->PSSetConstantBuffers(2, 1, &m_pCBDirectionLight);
-	m_pDeviceContext->PSSetConstantBuffers(3, 1, &m_pGpuCbMaterial);
 
 	m_pDeviceContext->PSSetSamplers(0, 1, &m_pSamplerLinear);
 	m_pDeviceContext->PSSetSamplers(1, 1, &m_pSamplerLinear);	// !수정필요!! samplerSpecularBRDF 샘플러 설정해야함.
@@ -390,14 +345,13 @@ void D3DRenderManager::Render()
 	m_TransformVP.mView = m_View.Transpose();
 	m_TransformVP.mProjection = m_Projection.Transpose();
 	m_pDeviceContext->UpdateSubresource(m_pCBTransformVP, 0, nullptr, &m_TransformVP, 0, 0);
+	
+	m_pDeviceContext->VSSetConstantBuffers(0, 1, &m_pCBTransformW); //?????????????
 
 	RenderSkeletalMeshInstance();
-	RenderStaticMeshInstance();
-	
-	RenderDebugDraw();
-	
+	RenderStaticMeshInstance();	
+	RenderDebugDraw();	
 	RenderImGui();
-
 	m_pSwapChain->Present(0, 0);	// Present our back buffer to our front buffer
 }
 
@@ -529,6 +483,7 @@ void D3DRenderManager::RenderSkeletalMeshInstance()
 {
 	m_pDeviceContext->IASetInputLayout(m_pSkeletalMeshInputLayout);
 	m_pDeviceContext->VSSetShader(m_pSkeletalMeshVertexShader, nullptr, 0);
+	m_pDeviceContext->PSSetShader(m_pPixelShader, nullptr, 0);
 
 	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
 	m_SkeletalMeshInstance.sort([](const SkeletalMeshInstance* lhs, const SkeletalMeshInstance* rhs)
@@ -559,6 +514,7 @@ void D3DRenderManager::RenderStaticMeshInstance()
 {
 	m_pDeviceContext->IASetInputLayout(m_pStaticMeshInputLayout);
 	m_pDeviceContext->VSSetShader(m_pStaticMeshVertexShader, nullptr, 0);
+	m_pDeviceContext->PSSetShader(m_pPixelShader, nullptr, 0);
 
 	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
 	m_StaticMeshInstance.sort([](const StaticMeshInstance* lhs, const StaticMeshInstance* rhs)
@@ -841,6 +797,51 @@ void D3DRenderManager::AddDebugDrawLine(const Math::Vector3& origin, const Math:
 	debugDrawLine.color = color;
 	debugDrawLine.time = time;
 	m_DebugDrawLines.push_back(debugDrawLine);
+}
+
+void D3DRenderManager::CreateConstantBuffer()
+{
+	D3D11_BUFFER_DESC bd = {};
+	bd = {};
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof(CB_TransformW);
+	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bd.CPUAccessFlags = 0;
+	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, &m_pCBTransformW));
+
+	bd = {};
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof(CB_TransformVP);
+	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bd.CPUAccessFlags = 0;
+	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, &m_pCBTransformVP));
+
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof(CB_DirectionLight);
+	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bd.CPUAccessFlags = 0;
+	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, &m_pCBDirectionLight));
+
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof(CB_Marterial);
+	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bd.CPUAccessFlags = 0;
+	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, &m_pGpuCbMaterial));
+
+	m_cbMatrixPallete.Create(m_pDevice);
+
+	m_pDeviceContext->VSSetConstantBuffers(0, 1, &m_pCBTransformW);
+	m_pDeviceContext->VSSetConstantBuffers(1, 1, &m_pCBTransformVP);
+	m_pDeviceContext->VSSetConstantBuffers(2, 1, &m_pCBDirectionLight);
+	// 3 material
+	auto buffer = m_cbMatrixPallete.GetBuffer();
+	m_pDeviceContext->VSSetConstantBuffers(4, 1, &buffer);
+
+	// 픽셀셰이더 상수설정
+	m_pDeviceContext->PSSetConstantBuffers(0, 1, &m_pCBTransformW);
+	m_pDeviceContext->PSSetConstantBuffers(1, 1, &m_pCBTransformVP);
+	m_pDeviceContext->PSSetConstantBuffers(2, 1, &m_pCBDirectionLight);
+	m_pDeviceContext->PSSetConstantBuffers(3, 1, &m_pGpuCbMaterial);
 }
 
 void D3DRenderManager::AddDebugVector4ToImGuiWindow(const std::string& header, const Vector4& value)

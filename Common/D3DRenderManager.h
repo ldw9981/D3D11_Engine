@@ -191,6 +191,7 @@ private:
 	void CreateStaticMesh_VS_IL();
 	void CreatePS();
 	void CreateIBL();
+	void CreateConstantBuffer();
 
 	void AddMeshInstance(SkeletalMeshComponent* pModel);
 	void AddMeshInstance(StaticMeshComponent* pModel);
