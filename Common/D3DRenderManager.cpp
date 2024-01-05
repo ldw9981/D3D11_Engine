@@ -191,7 +191,7 @@ void D3DRenderManager::Uninitialize()
 	SAFE_RELEASE(m_pCBDirectionLight);
 	SAFE_RELEASE(m_pCBTransformW);
 	SAFE_RELEASE(m_pCBTransformVP);
-	SAFE_RELEASE(m_pGpuCbMaterial);	
+	SAFE_RELEASE(m_pCBMaterial);	
 	SAFE_RELEASE(m_pRasterizerState);
 	SAFE_RELEASE(m_pAlphaBlendState);
 	SAFE_RELEASE(m_pSamplerLinear);
@@ -629,7 +629,7 @@ void D3DRenderManager::ApplyMaterial(Material* pMaterial)
 	else
 		m_pDeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);	// 설정해제 , 다른옵션은 기본값
 
-	m_pDeviceContext->UpdateSubresource(m_pGpuCbMaterial, 0, nullptr, &m_CpuCbMaterial, 0, 0);
+	m_pDeviceContext->UpdateSubresource(m_pCBMaterial, 0, nullptr, &m_CpuCbMaterial, 0, 0);
 }
 
 void  D3DRenderManager::GetVideoMemoryInfo(std::string& out)
@@ -770,7 +770,7 @@ void D3DRenderManager::CreateConstantBuffer()
 	bd.ByteWidth = sizeof(CB_Marterial);
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bd.CPUAccessFlags = 0;
-	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, &m_pGpuCbMaterial));
+	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, &m_pCBMaterial));
 
 	m_cbMatrixPallete.Create(m_pDevice);
 
@@ -785,7 +785,7 @@ void D3DRenderManager::CreateConstantBuffer()
 	m_pDeviceContext->PSSetConstantBuffers(0, 1, &m_pCBTransformW);
 	m_pDeviceContext->PSSetConstantBuffers(1, 1, &m_pCBTransformVP);
 	m_pDeviceContext->PSSetConstantBuffers(2, 1, &m_pCBDirectionLight);
-	m_pDeviceContext->PSSetConstantBuffers(3, 1, &m_pGpuCbMaterial);
+	m_pDeviceContext->PSSetConstantBuffers(3, 1, &m_pCBMaterial);
 }
 
 void D3DRenderManager::CreateSamplerState()
