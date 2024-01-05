@@ -530,6 +530,7 @@ void D3DRenderManager::RenderSkeletalMeshInstance()
 	m_pDeviceContext->IASetInputLayout(m_pSkeletalMeshInputLayout);
 	m_pDeviceContext->VSSetShader(m_pSkeletalMeshVertexShader, nullptr, 0);
 
+	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
 	m_SkeletalMeshInstance.sort([](const SkeletalMeshInstance* lhs, const SkeletalMeshInstance* rhs)
 		{
 			return lhs->m_pMaterial < rhs->m_pMaterial;
@@ -538,6 +539,7 @@ void D3DRenderManager::RenderSkeletalMeshInstance()
 	Material* pPrevMaterial = nullptr;
 	for (const auto& meshInstance : m_SkeletalMeshInstance)
 	{
+		// 머터리얼이 이전 머터리얼과 다를때만 파이프라인에 텍스쳐를 변경한다.
 		if (pPrevMaterial != meshInstance->m_pMaterial)
 		{
 			ApplyMaterial(meshInstance->m_pMaterial);	// 머터리얼 적용
@@ -558,6 +560,7 @@ void D3DRenderManager::RenderStaticMeshInstance()
 	m_pDeviceContext->IASetInputLayout(m_pStaticMeshInputLayout);
 	m_pDeviceContext->VSSetShader(m_pStaticMeshVertexShader, nullptr, 0);
 
+	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
 	m_StaticMeshInstance.sort([](const StaticMeshInstance* lhs, const StaticMeshInstance* rhs)
 		{
 			return lhs->m_pMaterial < rhs->m_pMaterial;
@@ -566,6 +569,7 @@ void D3DRenderManager::RenderStaticMeshInstance()
 	Material* pPrevMaterial = nullptr;
 	for (const auto& meshInstance : m_StaticMeshInstance)
 	{
+		// 머터리얼이 이전 머터리얼과 다를때만 파이프라인에 텍스쳐를 변경한다.
 		if (pPrevMaterial != meshInstance->m_pMaterial)
 		{
 			ApplyMaterial(meshInstance->m_pMaterial);	// 머터리얼 적용
