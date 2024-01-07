@@ -159,6 +159,6 @@ MaterialTexture::~MaterialTexture()
 
 void MaterialTexture::Create(const std::wstring& filePath)
 {
-	HR_T(CreateTextureFromFile(D3DRenderManager::m_pDevice, filePath.c_str(), &m_pTextureSRV));
+	HR_T(D3DRenderManager::Instance->CreateTextureFromFile(filePath.c_str(), &m_pTextureSRV));
 	m_FilePath = filePath;
 }

@@ -82,21 +82,21 @@ public:
 	ComPtr<IDXGIAdapter3> m_pDXGIAdapter;		// 비디오카드 정보에 접근 가능한 인터페이스
 	// 렌더링 파이프라인을 구성하는 필수 객체의 인터페이스
 	static ID3D11Device* m_pDevice;						// 디바이스
-	ID3D11DeviceContext* m_pDeviceContext = nullptr;		// 즉시 디바이스 컨텍스트
-	IDXGISwapChain* m_pSwapChain = nullptr;					// 스왑체인
-	ID3D11RenderTargetView* m_pRenderTargetView = nullptr;	// 렌더링 타겟뷰
-	ID3D11DepthStencilView* m_pDepthStencilView = nullptr;	// 깊이/스텐실 뷰
+	ComPtr<ID3D11DeviceContext> m_pDeviceContext = nullptr;		// 즉시 디바이스 컨텍스트
+	ComPtr<IDXGISwapChain> m_pSwapChain = nullptr;					// 스왑체인
+	ComPtr<ID3D11RenderTargetView> m_pRenderTargetView = nullptr;	// 렌더링 타겟뷰
+	ComPtr<ID3D11DepthStencilView> m_pDepthStencilView = nullptr;	// 깊이/스텐실 뷰
 
 	// 렌더링 파이프라인에 적용하는 리소스 객체의 인터페이스
-	ID3D11VertexShader* m_pSkeletalMeshVertexShader = nullptr;	// SkeletalMesh 정점 셰이더.
-	ID3D11InputLayout* m_pSkeletalMeshInputLayout = nullptr;	// SkeletalMesh 입력 레이아웃.	
-	ID3D11VertexShader* m_pStaticMeshVertexShader = nullptr;	// StaticMesh 정점 셰이더.
-	ID3D11InputLayout* m_pStaticMeshInputLayout = nullptr;		// StaticMesh 입력 레이아웃.
+	ComPtr<ID3D11VertexShader> m_pSkeletalMeshVertexShader = nullptr;	// SkeletalMesh 정점 셰이더.
+	ComPtr<ID3D11InputLayout> m_pSkeletalMeshInputLayout = nullptr;	// SkeletalMesh 입력 레이아웃.	
+	ComPtr<ID3D11VertexShader> m_pStaticMeshVertexShader = nullptr;	// StaticMesh 정점 셰이더.
+	ComPtr<ID3D11InputLayout> m_pStaticMeshInputLayout = nullptr;		// StaticMesh 입력 레이아웃.
 
-	ID3D11PixelShader* m_pPixelShader = nullptr;		// 픽셀 셰이더.	
-	ID3D11SamplerState* m_pSamplerLinear = nullptr;		// 샘플러 상태.
-	ID3D11BlendState* m_pAlphaBlendState = nullptr;		// 블렌드 상태 변경 (반투명처리를위한 블렌드상태)
-	ID3D11RasterizerState* m_pRasterizerState = nullptr; // MSAA활성화를 위해
+	ComPtr<ID3D11PixelShader> m_pPixelShader = nullptr;		// 픽셀 셰이더.	
+	ComPtr<ID3D11SamplerState> m_pSamplerLinear = nullptr;		// 샘플러 상태.
+	ComPtr<ID3D11BlendState> m_pAlphaBlendState = nullptr;		// 블렌드 상태 변경 (반투명처리를위한 블렌드상태)
+	ComPtr<ID3D11RasterizerState> m_pRasterizerState = nullptr; // MSAA활성화를 위해
 
 	ID3D11Buffer* m_pCBMaterial = nullptr;				// 상수 버퍼: 변환행렬
 	ID3D11Buffer* m_pCBTransformW = nullptr;				// 상수 버퍼: 변환행렬
@@ -164,6 +164,11 @@ public:
 	
 	//Geometry 디버깅 정보  그리기
 	void AddDebugDrawLine(const Math::Vector3& origin, const Math::Vector3& direction, bool normalize, const Math::Vector3& color, float time);
+
+	ComPtr<ID3D11SamplerState> CreateSamplerState(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE addressMode) const;
+
+	HRESULT CreateTextureFromFile(const wchar_t* szFileName, ID3D11ShaderResourceView** textureView, ID3D11Resource** texture = nullptr);
+	HRESULT CreateSamplerStateE(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE addressMode, ID3D11SamplerState** ppSamplerState);
 private:
 	void CreateSkeletalMesh_VS_IL();
 	void CreateStaticMesh_VS_IL();
@@ -181,6 +186,4 @@ private:
 	void RenderImGui();
 	void RenderSkeletalMeshInstance();
 	void RenderStaticMeshInstance();
-
-	ComPtr<ID3D11SamplerState> CreateSamplerState(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE addressMode) const;
 };

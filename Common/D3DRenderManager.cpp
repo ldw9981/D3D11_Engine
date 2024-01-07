@@ -29,6 +29,8 @@
 #include "OrientedBoxComponent.h"
 #include "CollisionManager.h"
 #include "DebugDraw.h"
+#include <Directxtk/DDSTextureLoader.h>
+#include <Directxtk/WICTextureLoader.h>
 
 #pragma comment(lib,"d3d11.lib")
 #pragma comment(lib,"d3dcompiler.lib")
@@ -37,6 +39,8 @@
 
 
 D3DRenderManager* D3DRenderManager::Instance = nullptr;
+
+
 
 ID3D11Device* D3DRenderManager::m_pDevice = nullptr;
 
@@ -108,12 +112,12 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 		D3D11_SDK_VERSION, &swapDesc, &m_pSwapChain, &m_pDevice, NULL, &m_pDeviceContext));
 
 	// 4. 렌더타겟뷰 생성.  (백버퍼를 이용하는 렌더타겟뷰)	
-	ID3D11Texture2D* pBackBufferTexture = nullptr;
-	HR_T(m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBufferTexture));
-	HR_T(m_pDevice->CreateRenderTargetView(pBackBufferTexture, NULL, &m_pRenderTargetView));  // 텍스처는 내부 참조 증가
-	SAFE_RELEASE(pBackBufferTexture);	//외부 참조 카운트를 감소시킨다.
+	ComPtr<ID3D11Texture2D> pBackBufferTexture; 
+	HR_T(m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)pBackBufferTexture.GetAddressOf()));
+	HR_T(m_pDevice->CreateRenderTargetView(pBackBufferTexture.Get(), NULL, m_pRenderTargetView.GetAddressOf()));  // 텍스처는 내부 참조 증가
+	
 	// 렌더 타겟을 최종 출력 파이프라인에 바인딩합니다.
-	m_pDeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, NULL);
+	m_pDeviceContext->OMSetRenderTargets(1, m_pRenderTargetView.GetAddressOf(), NULL);
 
 	//5. 뷰포트 설정.	
 	m_Viewport = {};
@@ -139,18 +143,17 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	descDepth.CPUAccessFlags = 0;
 	descDepth.MiscFlags = 0;
 
-	ID3D11Texture2D* textureDepthStencil = nullptr;
-	HR_T(m_pDevice->CreateTexture2D(&descDepth, nullptr, &textureDepthStencil));
+	ComPtr<ID3D11Texture2D> textureDepthStencil;
+	HR_T(m_pDevice->CreateTexture2D(&descDepth, nullptr, textureDepthStencil.GetAddressOf()));
 
 	// Create the depth stencil view
 	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
 	descDSV.Format = descDepth.Format;
 	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	descDSV.Texture2D.MipSlice = 0;
-	HR_T(m_pDevice->CreateDepthStencilView(textureDepthStencil, &descDSV, &m_pDepthStencilView));
-	SAFE_RELEASE(textureDepthStencil);
+	HR_T(m_pDevice->CreateDepthStencilView(textureDepthStencil.Get(), &descDSV, m_pDepthStencilView.GetAddressOf()));
 
-	m_pDeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
+	m_pDeviceContext->OMSetRenderTargets(1, m_pRenderTargetView.GetAddressOf(), m_pDepthStencilView.Get());
 
 	/*
 		ImGui 초기화.
@@ -160,7 +163,7 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	ImGui::StyleColorsDark();
 	// Setup Platform/Renderer backends
 	ImGui_ImplWin32_Init(m_hWnd);
-	ImGui_ImplDX11_Init(this->m_pDevice, this->m_pDeviceContext);
+	ImGui_ImplDX11_Init(m_pDevice, m_pDeviceContext.Get());
 
 	// * Render() 에서 파이프라인에 바인딩할 버텍스 셰이더 생성
 	CreateSkeletalMesh_VS_IL();
@@ -187,33 +190,18 @@ void D3DRenderManager::Uninitialize()
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
 
-	//	SAFE_RELEASE(m_cbMatrixPallete.GetBuffer()); //ComPtr
+	
 	SAFE_RELEASE(m_pCBDirectionLight);
 	SAFE_RELEASE(m_pCBTransformW);
 	SAFE_RELEASE(m_pCBTransformVP);
 	SAFE_RELEASE(m_pCBMaterial);	
-	SAFE_RELEASE(m_pRasterizerState);
-	SAFE_RELEASE(m_pAlphaBlendState);
-	SAFE_RELEASE(m_pSamplerLinear);
-	SAFE_RELEASE(m_pPixelShader);
-	SAFE_RELEASE(m_pSkeletalMeshInputLayout);
-	SAFE_RELEASE(m_pSkeletalMeshVertexShader);
 
-	SAFE_RELEASE(m_pStaticMeshInputLayout);
-	SAFE_RELEASE(m_pStaticMeshVertexShader);
-
-	// Cleanup DirectX
-	SAFE_RELEASE(m_pRenderTargetView);
-	SAFE_RELEASE(m_pDepthStencilView);
-	SAFE_RELEASE(m_pSwapChain);
-	SAFE_RELEASE(m_pDeviceContext);
 #ifdef DEBUG_D3D11_LIVEDEVICE
-	ID3D11Debug* pD3D11Dbug = nullptr;
+	ComPtr<ID3D11Debug> pD3D11Dbug;
 	HRESULT hr;
-	hr = m_pDevice->QueryInterface(IID_PPV_ARGS(&pD3D11Dbug));
-	pD3D11Dbug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
-	pD3D11Dbug->Release();
-#endif // DEBUG_D3D11_LIVEDEVICE
+	hr = m_pDevice->QueryInterface(IID_PPV_ARGS(pD3D11Dbug.GetAddressOf()));
+	pD3D11Dbug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);	
+#endif // DEBUG_D3D11_LIVEDEVICE	
 	SAFE_RELEASE(m_pDevice);
 }
 
@@ -284,8 +272,8 @@ void D3DRenderManager::Render()
 {	
 	// Clear the back buffer
 	const float clear_color_with_alpha[4] = { m_ClearColor.x , m_ClearColor.y , m_ClearColor.z, 1.0f };
-	m_pDeviceContext->ClearRenderTargetView(m_pRenderTargetView, clear_color_with_alpha);
-	m_pDeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	m_pDeviceContext->ClearRenderTargetView(m_pRenderTargetView.Get(), clear_color_with_alpha);
+	m_pDeviceContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 	m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);	
 	m_pDeviceContext->RSSetState(nullptr);
 	
@@ -304,7 +292,7 @@ void D3DRenderManager::RenderDebugDraw()
 	m_pDeviceContext->OMSetBlendState( DebugDraw::g_States->Opaque(), nullptr, 0xFFFFFFFF);	
 	//m_pDeviceContext->RSSetState(DebugDraw::g_States->CullNone());
 
-	DebugDraw::g_BatchEffect->Apply(m_pDeviceContext);
+	DebugDraw::g_BatchEffect->Apply(m_pDeviceContext.Get());
 	DebugDraw::g_BatchEffect->SetView(m_View);
 	DebugDraw::g_BatchEffect->SetProjection(m_Projection);
 
@@ -424,9 +412,9 @@ void D3DRenderManager::RenderImGui()
 
 void D3DRenderManager::RenderSkeletalMeshInstance()
 {
-	m_pDeviceContext->IASetInputLayout(m_pSkeletalMeshInputLayout);
-	m_pDeviceContext->VSSetShader(m_pSkeletalMeshVertexShader, nullptr, 0);
-	m_pDeviceContext->PSSetShader(m_pPixelShader, nullptr, 0);
+	m_pDeviceContext->IASetInputLayout(m_pSkeletalMeshInputLayout.Get());
+	m_pDeviceContext->VSSetShader(m_pSkeletalMeshVertexShader.Get(), nullptr, 0);
+	m_pDeviceContext->PSSetShader(m_pPixelShader.Get(), nullptr, 0);
 	m_pDeviceContext->VSSetConstantBuffers(0, 1, &m_pCBTransformW);  //debugdraw에서 변경시켜서 설정한다.
 
 	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
@@ -446,19 +434,19 @@ void D3DRenderManager::RenderSkeletalMeshInstance()
 		}
 		// 행렬팔레트 업데이트						
 		meshInstance->UpdateMatrixPallete(&m_MatrixPalette);
-		m_cbMatrixPallete.SetData(m_pDeviceContext, m_MatrixPalette);
+		m_cbMatrixPallete.SetData(m_pDeviceContext.Get(), m_MatrixPalette);
 
 		// Draw
-		meshInstance->Render(m_pDeviceContext);
+		meshInstance->Render(m_pDeviceContext.Get());
 	}
 	m_SkeletalMeshInstance.clear();
 }
 
 void D3DRenderManager::RenderStaticMeshInstance()
 {
-	m_pDeviceContext->IASetInputLayout(m_pStaticMeshInputLayout);
-	m_pDeviceContext->VSSetShader(m_pStaticMeshVertexShader, nullptr, 0);
-	m_pDeviceContext->PSSetShader(m_pPixelShader, nullptr, 0);
+	m_pDeviceContext->IASetInputLayout(m_pStaticMeshInputLayout.Get());
+	m_pDeviceContext->VSSetShader(m_pStaticMeshVertexShader.Get(), nullptr, 0);
+	m_pDeviceContext->PSSetShader(m_pPixelShader.Get(), nullptr, 0);
 	m_pDeviceContext->VSSetConstantBuffers(0, 1, &m_pCBTransformW); //debugdraw에서 변경시켜서 설정한다.
 
 	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
@@ -481,7 +469,7 @@ void D3DRenderManager::RenderStaticMeshInstance()
 		m_pDeviceContext->UpdateSubresource(m_pCBTransformW, 0, nullptr, &m_TransformW, 0, 0);
 
 		// Draw
-		meshInstance->Render(m_pDeviceContext);
+		meshInstance->Render(m_pDeviceContext.Get());
 	}
 	m_StaticMeshInstance.clear();
 }
@@ -500,6 +488,38 @@ Microsoft::WRL::ComPtr<ID3D11SamplerState> D3DRenderManager::CreateSamplerState(
 	ComPtr<ID3D11SamplerState> samplerState;
 	HR_T(m_pDevice->CreateSamplerState(&desc, &samplerState));
 	return samplerState;
+}
+
+HRESULT D3DRenderManager::CreateTextureFromFile(const wchar_t* szFileName, ID3D11ShaderResourceView** textureView, ID3D11Resource** texture)
+{
+	HRESULT hr = S_OK;
+
+	// Load the Texture
+	hr = DirectX::CreateDDSTextureFromFile(m_pDevice, szFileName, texture, textureView);
+	if (FAILED(hr))
+	{
+		hr = DirectX::CreateWICTextureFromFile(m_pDevice, szFileName, texture, textureView);
+		if (FAILED(hr))
+		{
+			MessageBoxW(NULL, GetComErrorString(hr), szFileName, MB_OK);
+			return hr;
+		}
+	}
+	return S_OK;
+}
+
+HRESULT D3DRenderManager::CreateSamplerStateE(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE addressMode, ID3D11SamplerState** ppSamplerState)
+{
+	D3D11_SAMPLER_DESC desc = {};
+	desc.Filter = filter;
+	desc.AddressU = addressMode;
+	desc.AddressV = addressMode;
+	desc.AddressW = addressMode;
+	desc.MaxAnisotropy = (filter == D3D11_FILTER_ANISOTROPIC) ? D3D11_REQ_MAXANISOTROPY : 1;
+	desc.MinLOD = 0;
+	desc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	return m_pDevice->CreateSamplerState(&desc, ppSamplerState);
 }
 
 void D3DRenderManager::CreateSkeletalMesh_VS_IL()
@@ -574,18 +594,10 @@ void D3DRenderManager::CreateStaticMesh_VS_IL()
 
 void D3DRenderManager::CreatePixelShader()
 {
-	HRESULT hr;
-	ID3D10Blob* pixelShaderBuffer = nullptr;
-	hr = CompileShaderFromFile(L"07_PixelShader.hlsl", nullptr, "main", "ps_5_0", &pixelShaderBuffer);
-	if (FAILED(hr))
-	{
-		hr = D3DReadFileToBlob(L"07_PixelShader.cso", &pixelShaderBuffer);
-	}
-	HR_T(hr);
-
+	ComPtr<ID3D10Blob> pixelShaderBuffer; //.Get()  포인터변수의 값       .GetAddressOf() 포인터변수의 주소
+	HR_T(CompileShaderFromFile(L"07_PixelShader.hlsl", nullptr, "main", "ps_5_0", pixelShaderBuffer.GetAddressOf()) );
 	HR_T(m_pDevice->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
 		pixelShaderBuffer->GetBufferSize(), NULL, &m_pPixelShader));
-	SAFE_RELEASE(pixelShaderBuffer);
 }
 
 void D3DRenderManager::CreateIBL()
@@ -626,7 +638,7 @@ void D3DRenderManager::ApplyMaterial(Material* pMaterial)
 	m_CpuCbMaterial.UseRoughnessMap = pMaterial->m_pRoughness != nullptr ? true : false;
 
 	if (m_CpuCbMaterial.UseOpacityMap && m_pAlphaBlendState != nullptr)
-		m_pDeviceContext->OMSetBlendState(m_pAlphaBlendState, nullptr, 0xffffffff); // 알파블렌드 상태설정 , 다른옵션은 기본값 
+		m_pDeviceContext->OMSetBlendState(m_pAlphaBlendState.Get(), nullptr, 0xffffffff); // 알파블렌드 상태설정 , 다른옵션은 기본값 
 	else
 		m_pDeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);	// 설정해제 , 다른옵션은 기본값
 
@@ -790,7 +802,7 @@ void D3DRenderManager::CreateSamplerState()
 	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 	sampDesc.MinLOD = 0;
 	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	HR_T(m_pDevice->CreateSamplerState(&sampDesc, &m_pSamplerLinear));
+	HR_T(m_pDevice->CreateSamplerState(&sampDesc, &m_pSamplerLinear));	
 
 	m_pDeviceContext->PSSetSamplers(0, 1, &m_pSamplerLinear);
 	m_pDeviceContext->PSSetSamplers(1, 1, &m_pSamplerLinear);	// !수정필요!! samplerSpecularBRDF 샘플러 설정해야함.
