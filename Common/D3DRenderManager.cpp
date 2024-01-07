@@ -175,7 +175,7 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	CreateBlendState();
 	
 	// 화면 크기가 바뀌면 다시계산해야함
-	m_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, m_Viewport.Width / (FLOAT)m_Viewport.Height, 1.0f, 10000.0f);
+	m_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, m_Viewport.Width / (FLOAT)m_Viewport.Height, 1.0f, 100000.0f);
 	BoundingFrustum::CreateFromMatrix(m_Frustum, m_Projection);
 
 	DebugDraw::Initialize(m_pDevice, m_pDeviceContext);
@@ -274,17 +274,17 @@ void D3DRenderManager::Render()
 	const float clear_color_with_alpha[4] = { m_ClearColor.x , m_ClearColor.y , m_ClearColor.z, 1.0f };
 	m_pDeviceContext->ClearRenderTargetView(m_pRenderTargetView.Get(), clear_color_with_alpha);
 	m_pDeviceContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-	m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);	
-	m_pDeviceContext->RSSetState(nullptr);
+	m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);		
 	
 	
 	RenderSkeletalMeshInstance();
 	RenderStaticMeshInstance();	
 	RenderDebugDraw();
+	
 	if (m_pEnvironmentMeshComponent.expired() == false)
 		RenderEnvironment();
 
-	RenderImGui();
+	//RenderImGui();
 	m_pSwapChain->Present(0, 0);	// Present our back buffer to our front buffer
 }
 
@@ -484,6 +484,7 @@ void D3DRenderManager::RenderEnvironment()
 	m_pDeviceContext->IASetInputLayout(m_pStaticMeshInputLayout.Get());
 	m_pDeviceContext->VSSetShader(m_pEnvironmentVertexShader.Get(), nullptr, 0);
 	m_pDeviceContext->PSSetShader(m_pEnvironmentPixelShader.Get(), nullptr, 0);
+	m_pDeviceContext->VSSetConstantBuffers(0, 1, &m_pCBTransformW); //debugdraw에서 변경시켜서 설정한다.
 	m_pDeviceContext->RSSetState(m_pRasterizerStateCCW.Get());
 
 	auto component = m_pEnvironmentMeshComponent.lock();	
