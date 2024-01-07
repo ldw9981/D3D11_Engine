@@ -29,11 +29,11 @@ bool StaticMeshComponent::ReadSceneResourceFromFBX(std::string filePath)
 	{
 		return false;
 	}
-	SetSceneResource(sceneResource);
+	CreateMeshInstance(sceneResource);
 	return true;
 }
 
-void StaticMeshComponent::SetSceneResource(std::shared_ptr<StaticMeshSceneResource> val)
+void StaticMeshComponent::CreateMeshInstance(std::shared_ptr<StaticMeshSceneResource> val)
 {
 	assert(val);
 	m_SceneResource = val;
@@ -59,8 +59,7 @@ Material* StaticMeshComponent::GetMaterial(UINT index)
 
 void StaticMeshComponent::OnBeginPlay()
 {
-	if(!m_SceneFilePath.empty())
-		ReadSceneResourceFromFBX(m_SceneFilePath);
+	__super::OnBeginPlay();
 }
 
 void StaticMeshComponent::OnEndPlay()

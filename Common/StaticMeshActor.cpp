@@ -22,10 +22,7 @@ StaticMeshActor::~StaticMeshActor()
 void StaticMeshActor::OnBeginPlay()
 {
 	__super::OnBeginPlay();
-	if (!m_SceneFilePath.empty())
-	{
-		m_pStaticMeshComponent->ReadSceneResourceFromFBX(m_SceneFilePath);
-	}
+	
 
 	m_pBoxComponent->m_Geomety = m_pStaticMeshComponent->m_BoundingBox;	
 }

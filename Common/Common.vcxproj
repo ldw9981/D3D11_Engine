@@ -149,6 +149,8 @@
     <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="DebugDraw.h" />
     <ClInclude Include="DefaultPawn.h" />
+    <ClInclude Include="EnvironmentActor.h" />
+    <ClInclude Include="EnvironmentMeshComponent.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="MeshResource.h" />
     <ClInclude Include="MovementComponent.h" />
@@ -177,7 +179,7 @@
     <ClInclude Include="StaticMeshComponent.h" />
     <ClInclude Include="StaticMeshInstance.h" />
     <ClInclude Include="StaticMeshResource.h" />
-    <ClInclude Include="Texture2D.h" />
+    <ClInclude Include="TextureResource.h" />
     <ClInclude Include="TimeSystem.h" />
     <ClInclude Include="Bone.h" />
     <ClInclude Include="Transform.h" />
@@ -192,6 +194,8 @@
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="DebugDraw.cpp" />
     <ClCompile Include="DefaultPawn.cpp" />
+    <ClCompile Include="EnvironmentActor.cpp" />
+    <ClCompile Include="EnvironmentMeshComponent.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="MeshResource.cpp" />
     <ClCompile Include="MovementComponent.cpp" />
@@ -225,7 +229,7 @@
     <ClCompile Include="StaticMeshComponent.cpp" />
     <ClCompile Include="StaticMeshInstance.cpp" />
     <ClCompile Include="StaticMeshResource.cpp" />
-    <ClCompile Include="Texture2D.cpp" />
+    <ClCompile Include="TextureResource.cpp" />
     <ClCompile Include="TimeSystem.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>

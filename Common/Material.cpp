@@ -103,61 +103,61 @@ void Material::Create(const aiMaterial* pMaterial)
 	if (!path.empty())
 	{	
 		finalPath = basePath + path.filename().wstring();		
-		m_pBaseColor = ResourceManager::Instance->CreateMaterialTexture(finalPath);		
+		m_pBaseColor = ResourceManager::Instance->CreateTextureResource(finalPath);		
 	}	
 
 	path = ToWString(textureProperties[aiTextureType_NORMALS].second);
 	if (!path.empty())
 	{
 		finalPath = basePath + path.filename().wstring();
-		m_pNormal = ResourceManager::Instance->CreateMaterialTexture(finalPath);
+		m_pNormal = ResourceManager::Instance->CreateTextureResource(finalPath);
 	}
 
 	path = ToWString(textureProperties[aiTextureType_SPECULAR].second);
 	if (!path.empty())
 	{
 		finalPath = basePath + path.filename().wstring();
-		m_pSpecular = ResourceManager::Instance->CreateMaterialTexture(finalPath);
+		m_pSpecular = ResourceManager::Instance->CreateTextureResource(finalPath);
 	}
 
 	path = ToWString(textureProperties[aiTextureType_EMISSIVE].second);
 	if (!path.empty())
 	{
 		finalPath = basePath + path.filename().wstring();
-		m_pEmissive = ResourceManager::Instance->CreateMaterialTexture(finalPath);
+		m_pEmissive = ResourceManager::Instance->CreateTextureResource(finalPath);
 	}
 
 	path = ToWString(textureProperties[aiTextureType_OPACITY].second);
 	if (!path.empty())
 	{
 		finalPath = basePath + path.filename().wstring();
-		m_pOpacity = ResourceManager::Instance->CreateMaterialTexture(finalPath);
+		m_pOpacity = ResourceManager::Instance->CreateTextureResource(finalPath);
 	}
 
 	path = ToWString(textureProperties[aiTextureType_METALNESS].second);
 	if (!path.empty())
 	{
 		finalPath = basePath + path.filename().wstring();
-		m_pMetalness = ResourceManager::Instance->CreateMaterialTexture(finalPath);
+		m_pMetalness = ResourceManager::Instance->CreateTextureResource(finalPath);
 	}
 
 	path = ToWString(textureProperties[aiTextureType_SHININESS].second);
 	if (!path.empty())
 	{
 		finalPath = basePath + path.filename().wstring();
-		m_pRoughness = ResourceManager::Instance->CreateMaterialTexture(finalPath);
+		m_pRoughness = ResourceManager::Instance->CreateTextureResource(finalPath);
 	}
 }
 
-MaterialTexture::MaterialTexture()
+TextureResource::TextureResource()
 {
 }
 
-MaterialTexture::~MaterialTexture()
+TextureResource::~TextureResource()
 {
 }
 
-void MaterialTexture::Create(const std::wstring& filePath)
+void TextureResource::Create(const std::wstring& filePath)
 {
 	HR_T(D3DRenderManager::Instance->CreateTextureFromFile(filePath.c_str(), &m_pTextureSRV));
 	m_FilePath = filePath;

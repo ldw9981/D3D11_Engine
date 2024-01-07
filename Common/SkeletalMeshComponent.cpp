@@ -21,7 +21,7 @@ SkeletalMeshComponent::~SkeletalMeshComponent()
 	D3DRenderManager::Instance->RemoveSkeletalMeshComponent(this);
 }
 
-void SkeletalMeshComponent::SetSceneResource(std::shared_ptr<SkeletalMeshSceneResource> val)
+void SkeletalMeshComponent::CreateMeshInstance(std::shared_ptr<SkeletalMeshSceneResource> val)
 {
 	m_SceneResource = val;
 
@@ -64,7 +64,7 @@ bool SkeletalMeshComponent::ReadSceneResourceFromFBX(std::string filePath)
 		return false;
 	}
 	m_SceneFilePath = filePath;
-	SetSceneResource(resource);
+	CreateMeshInstance(resource);
 	return true;
 }
 

@@ -11,8 +11,8 @@
 #include "../Common/DefaultPawn.h"
 #include "../Common/Pawn.h"
 #include "../Common/BoxComponent.h"
-
-
+#include "../Common/EnvironmentActor.h"
+#include "../Common/EnvironmentMeshComponent.h"
 
 const Math::Vector3 START_POSITION = { 0.f, 0.f, -1000.f};
 
@@ -33,6 +33,12 @@ TutorialApp::~TutorialApp()
 bool TutorialApp::Initialize(UINT Width, UINT Height)
 {
 	__super::Initialize(Width, Height);
+	{
+		m_pEnvironmentActor = m_World.CreateGameObject<EnvironmentActor>().get();
+		EnvironmentMeshComponent* pComponent = (EnvironmentMeshComponent*)m_pEnvironmentActor->GetComponentPtrByName("EnvironmentMeshComponent");
+		pComponent->ReadEnvironmentMeshFromFBX("../Resource/EnvironmentCube.fbx");
+		pComponent->ReadCubeTextureFromDDS(L"../Resource/Cubemap.dds");
+	}
 	
 	IncreaseSkeletalMeshModel();
 	IncreaseStaticMeshModel();

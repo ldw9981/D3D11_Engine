@@ -15,6 +15,7 @@ using namespace DirectX;
 
 class PlayerController;
 class DefaultPawn;
+class EnvironmentActor;
 class TutorialApp :
     public GameApp,public IImGuiRenderable,public IWorldEvent
 {
@@ -26,6 +27,7 @@ public:
 	std::list<Actor*> m_SpawnedActors;
 	PlayerController* m_pPlayerController = nullptr;
 	DefaultPawn* m_pDefaultPawn = nullptr;
+	EnvironmentActor* m_pEnvironmentActor = nullptr;
 
 	virtual bool Initialize(UINT Width, UINT Height);
 	virtual void Update();

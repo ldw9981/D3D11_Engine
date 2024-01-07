@@ -71,6 +71,8 @@ class StaticMeshComponent;
 class SkeletalMeshComponent;
 class CameraComponent;
 class CollisionComponent;
+class EnvironmentMeshComponent;
+
 class D3DRenderManager
 {
 public:
@@ -125,6 +127,8 @@ public:
 	std::list<IImGuiRenderable*>		m_ImGuiRenders;
 	std::list<DebugRay>					m_DebugDrawLines;
 	std::weak_ptr<CameraComponent>		m_pCamera;
+	std::weak_ptr<EnvironmentMeshComponent> m_pEnvironmentMeshComponent;
+
 	BoundingFrustum m_Frustum;
 	int m_nDrawComponentCount = 0;
 	bool m_bFreezeCulling = false;
@@ -140,8 +144,11 @@ public:
 	void GetVideoMemoryInfo(std::string& out);
 	void GetSystemMemoryInfo(std::string& out);
 
-	std::weak_ptr<CameraComponent> Camera() const { return m_pCamera; }
+	std::weak_ptr<CameraComponent> GetCamera() const { return m_pCamera; }
 	void SetCamera(std::weak_ptr<CameraComponent> val) { m_pCamera = val; }
+	std::weak_ptr<EnvironmentMeshComponent> GetEnvironmentMeshComponent() const;
+	void SetEnvironmentMeshComponent(std::weak_ptr<EnvironmentMeshComponent> val);
+
 	bool GetFreezeCulling() const { return m_bFreezeCulling; }
 	void SetFreezeCulling(bool val) { m_bFreezeCulling = val; }
 	void CreateMousePickingRay(float ScreenX,float ScreenY,Math::Vector3 & Origin, Math::Vector3& Direction);

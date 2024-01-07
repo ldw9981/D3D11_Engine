@@ -10,12 +10,12 @@
 
 ResourceManager* ResourceManager::Instance = nullptr;
 
-std::shared_ptr<MaterialTexture> ResourceManager::CreateMaterialTexture(std::wstring filePath)
+std::shared_ptr<TextureResource> ResourceManager::CreateTextureResource(std::wstring filePath)
 {	
 	auto it = m_MaterialTextureMap.find(filePath);
 	if (it != m_MaterialTextureMap.end())
 	{
-		std::shared_ptr<MaterialTexture> resourcePtr = it->second.lock();
+		std::shared_ptr<TextureResource> resourcePtr = it->second.lock();
 		if (resourcePtr)  //UseCount가 1이상이라 메모리가 아직 살아있다면 resourcePtr를 리턴한다.
 		{
 			return resourcePtr;
@@ -33,7 +33,7 @@ std::shared_ptr<MaterialTexture> ResourceManager::CreateMaterialTexture(std::wst
 		return nullptr;
 	};
 
-	std::shared_ptr<MaterialTexture> pTextureRV = std::make_shared<MaterialTexture>();
+	std::shared_ptr<TextureResource> pTextureRV = std::make_shared<TextureResource>();
 	pTextureRV->Create(filePath);
 	m_MaterialTextureMap[filePath] = pTextureRV;	
 	return pTextureRV;

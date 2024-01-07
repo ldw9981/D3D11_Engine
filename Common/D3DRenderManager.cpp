@@ -23,6 +23,7 @@
 
 #include "SkeletalMeshComponent.h"
 #include "CameraComponent.h"
+#include "EnvironmentMeshComponent.h"
 #include "CollisionComponent.h"
 #include "BoxComponent.h"
 #include "SphereComponent.h"
@@ -651,6 +652,16 @@ void D3DRenderManager::GetSystemMemoryInfo(std::string& out)
 	pmc.cb = sizeof(PROCESS_MEMORY_COUNTERS_EX);
 	GetProcessMemoryInfo(hProcess, (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc));
 	out = std::to_string( (pmc.PagefileUsage) / 1024 / 1024) + " MB";	
+}
+
+std::weak_ptr<EnvironmentMeshComponent> D3DRenderManager::GetEnvironmentMeshComponent() const
+{
+	return m_pEnvironmentMeshComponent;
+}
+
+void D3DRenderManager::SetEnvironmentMeshComponent(std::weak_ptr<EnvironmentMeshComponent> val)
+{
+	m_pEnvironmentMeshComponent = val;
 }
 
 void D3DRenderManager::AddDebugStringToImGuiWindow(const std::string& header,const std::string& str)

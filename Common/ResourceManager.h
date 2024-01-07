@@ -1,6 +1,6 @@
 #pragma once
 
-class MaterialTexture;
+class TextureResource;
 class StaticMeshSceneResource;
 class SkeletalMeshSceneResource;
 struct AnimationResource;
@@ -15,7 +15,7 @@ public:
 	
 	std::map<std::string, std::weak_ptr<StaticMeshSceneResource>> m_StaticMeshSceneMap;
 	std::map<std::string, std::weak_ptr<SkeletalMeshSceneResource>> m_SkeletalMeshSceneMap;
-	std::map<std::wstring ,std::weak_ptr<MaterialTexture>> m_MaterialTextureMap;	// Texture	
+	std::map<std::wstring ,std::weak_ptr<TextureResource>> m_MaterialTextureMap;	// Texture	
 	std::map<std::string, std::weak_ptr<AnimationResource>> m_AnimationMap;	// Animation
 
 	// FBX파일 경로로 스테틱 메시,머터리얼 정보 얻어오기
@@ -25,7 +25,7 @@ public:
 	std::shared_ptr<SkeletalMeshSceneResource> CreateSkeletalMeshSceneResource(std::string filePath);
 
 	// 같은 머터리얼 내에서도 같은 텍스처를 사용할수 있으므로 공유 목록에서 파일경로 확인해서 얻어오기
-	std::shared_ptr<MaterialTexture> CreateMaterialTexture(std::wstring filePath);	
+	std::shared_ptr<TextureResource> CreateTextureResource(std::wstring filePath);	
 
 	// FBX파일 경로로 애니메이션 정보 얻어오기
 	std::shared_ptr<AnimationResource> CreateAnimationResource(std::string filePath);

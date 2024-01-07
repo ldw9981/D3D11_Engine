@@ -18,7 +18,6 @@ public:
 	BoxComponent* m_pBoxComponent = nullptr;
 	StaticMeshComponent* m_pStaticMeshComponent=nullptr;
 
-	std::string m_SceneFilePath;
 	virtual void OnBeginPlay();
 };
 

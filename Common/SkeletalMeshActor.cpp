@@ -17,10 +17,6 @@ SkeletalMeshActor::SkeletalMeshActor()
 void SkeletalMeshActor::OnBeginPlay()
 {
 	__super::OnBeginPlay();
-	if (!m_SceneFilePath.empty())
-	{
-		m_pSkeletalMeshComponent->ReadSceneResourceFromFBX(m_SceneFilePath);
-	}
 	m_pBoxComponent->m_Geomety = m_pSkeletalMeshComponent->m_BoundingBox;
 }
 

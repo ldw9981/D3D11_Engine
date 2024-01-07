@@ -32,7 +32,7 @@ protected:
 	std::list< SkeletalMeshComponent*>::iterator m_ItRenderManager;
 
 public:
-	void SetSceneResource(std::shared_ptr<SkeletalMeshSceneResource> val);
+	void CreateMeshInstance(std::shared_ptr<SkeletalMeshSceneResource> val);
 	std::shared_ptr<SkeletalMeshSceneResource> GetSceneResource() const;
 	bool ReadSceneResourceFromFBX(std::string filePath);	
 	bool AddSceneAnimationFromFBX(std::string filePath);

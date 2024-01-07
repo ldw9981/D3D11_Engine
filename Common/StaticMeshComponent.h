@@ -23,7 +23,7 @@ public:
 	virtual void Update(float DeltaTime) override;
 	
 	bool ReadSceneResourceFromFBX(std::string filePath);
-	void SetSceneResource(std::shared_ptr<StaticMeshSceneResource> val);
+	void CreateMeshInstance(std::shared_ptr<StaticMeshSceneResource> val);
 	
 	Material* GetMaterial(UINT index);
 
