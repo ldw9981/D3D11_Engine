@@ -97,7 +97,7 @@ public:
 	ComPtr<ID3D11PixelShader> m_pPBRPixelShader;		// 픽셀 셰이더.	
 
 	ComPtr<ID3D11VertexShader> m_pEnvironmentVertexShader;	// Environment 정점 셰이더.
-	ComPtr<ID3D11VertexShader> m_pEnvironmentPixelShader;	// Environment 정점 셰이더.
+	ComPtr<ID3D11PixelShader> m_pEnvironmentPixelShader;	// Environment 정점 셰이더.
 
 	ComPtr<ID3D11SamplerState> m_pSamplerLinear;		// 샘플러 상태.
 	ComPtr<ID3D11BlendState> m_pAlphaBlendState;		// 블렌드 상태 변경 (반투명처리를위한 블렌드상태)
@@ -197,5 +197,5 @@ private:
 	void RenderImGui();
 	void RenderSkeletalMeshInstance();
 	void RenderStaticMeshInstance();
-	void RenderEnvironmentMesh();
+	void RenderEnvironment();
 };

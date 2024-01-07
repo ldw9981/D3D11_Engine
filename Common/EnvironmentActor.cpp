@@ -6,12 +6,9 @@ EnvironmentActor::EnvironmentActor()
 {
 	auto pComponent = CreateComponent<EnvironmentMeshComponent>("EnvironmentMeshComponent");
 	m_pEnvironmentMeshComponent = pComponent.get();
-	SetRootComponent(m_pEnvironmentMeshComponent);	
+	m_pEnvironmentMeshComponent->SetLocalScale(Math::Vector3(10000.f, 10000.f, 10000.f));
 
-	// 등록된것이 없으면 등록한다
-	auto pMesh = D3DRenderManager::Instance->GetEnvironmentMeshComponent();
-	if(pMesh.expired())
-		D3DRenderManager::Instance->SetEnvironmentMeshComponent(pComponent);
+	SetRootComponent(m_pEnvironmentMeshComponent);	
 }
 
 EnvironmentActor::~EnvironmentActor()

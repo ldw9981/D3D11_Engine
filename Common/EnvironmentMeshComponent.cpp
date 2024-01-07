@@ -24,6 +24,7 @@ bool EnvironmentMeshComponent::ReadEnvironmentMeshFromFBX(std::string filePath)
 	{
 		return false;
 	}
+	m_MeshInstance.Create(&m_SceneResource->m_StaticMeshResources[0], &m_World, nullptr);
 	return true;
 }
 

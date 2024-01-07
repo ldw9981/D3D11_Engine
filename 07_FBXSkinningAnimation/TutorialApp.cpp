@@ -38,6 +38,9 @@ bool TutorialApp::Initialize(UINT Width, UINT Height)
 		EnvironmentMeshComponent* pComponent = (EnvironmentMeshComponent*)m_pEnvironmentActor->GetComponentPtrByName("EnvironmentMeshComponent");
 		pComponent->ReadEnvironmentMeshFromFBX("../Resource/EnvironmentCube.fbx");
 		pComponent->ReadCubeTextureFromDDS(L"../Resource/Cubemap.dds");
+		
+		auto wpComponent = m_pEnvironmentActor->GetComponentWeakPtrByName("EnvironmentMeshComponent");
+		D3DRenderManager::Instance->SetEnvironmentMeshComponent(std::dynamic_pointer_cast<EnvironmentMeshComponent>(wpComponent.lock()));
 	}
 	
 	IncreaseSkeletalMeshModel();

@@ -280,7 +280,10 @@ void D3DRenderManager::Render()
 	
 	RenderSkeletalMeshInstance();
 	RenderStaticMeshInstance();	
-	RenderDebugDraw();	
+	RenderDebugDraw();
+	if (m_pEnvironmentMeshComponent.expired() == false)
+		RenderEnvironment();
+
 	RenderImGui();
 	m_pSwapChain->Present(0, 0);	// Present our back buffer to our front buffer
 }
@@ -416,6 +419,7 @@ void D3DRenderManager::RenderSkeletalMeshInstance()
 	m_pDeviceContext->VSSetShader(m_pSkeletalMeshVertexShader.Get(), nullptr, 0);
 	m_pDeviceContext->PSSetShader(m_pPBRPixelShader.Get(), nullptr, 0);
 	m_pDeviceContext->VSSetConstantBuffers(0, 1, &m_pCBTransformW);  //debugdraw에서 변경시켜서 설정한다.
+	m_pDeviceContext->RSSetState(m_pRasterizerStateCW.Get());
 
 	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
 	m_SkeletalMeshInstance.sort([](const SkeletalMeshInstance* lhs, const SkeletalMeshInstance* rhs)
@@ -448,6 +452,7 @@ void D3DRenderManager::RenderStaticMeshInstance()
 	m_pDeviceContext->VSSetShader(m_pStaticMeshVertexShader.Get(), nullptr, 0);
 	m_pDeviceContext->PSSetShader(m_pPBRPixelShader.Get(), nullptr, 0);
 	m_pDeviceContext->VSSetConstantBuffers(0, 1, &m_pCBTransformW); //debugdraw에서 변경시켜서 설정한다.
+	m_pDeviceContext->RSSetState(m_pRasterizerStateCW.Get());
 
 	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
 	m_StaticMeshInstance.sort([](const StaticMeshInstance* lhs, const StaticMeshInstance* rhs)
@@ -474,9 +479,17 @@ void D3DRenderManager::RenderStaticMeshInstance()
 	m_StaticMeshInstance.clear();
 }
 
-void D3DRenderManager::RenderEnvironmentMesh()
+void D3DRenderManager::RenderEnvironment()
 {
+	m_pDeviceContext->IASetInputLayout(m_pStaticMeshInputLayout.Get());
+	m_pDeviceContext->VSSetShader(m_pEnvironmentVertexShader.Get(), nullptr, 0);
+	m_pDeviceContext->PSSetShader(m_pEnvironmentPixelShader.Get(), nullptr, 0);
+	m_pDeviceContext->RSSetState(m_pRasterizerStateCCW.Get());
 
+	auto component = m_pEnvironmentMeshComponent.lock();	
+	m_TransformW.mWorld = component->m_World.Transpose();
+	m_pDeviceContext->UpdateSubresource(m_pCBTransformW, 0, nullptr, &m_TransformW, 0, 0);
+	component->m_MeshInstance.Render(m_pDeviceContext.Get());
 }
 
 Microsoft::WRL::ComPtr<ID3D11SamplerState> D3DRenderManager::CreateSamplerState(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE addressMode) const
@@ -655,6 +668,8 @@ std::weak_ptr<EnvironmentMeshComponent> D3DRenderManager::GetEnvironmentMeshComp
 void D3DRenderManager::SetEnvironmentMeshComponent(std::weak_ptr<EnvironmentMeshComponent> val)
 {
 	m_pEnvironmentMeshComponent = val;
+	auto component = m_pEnvironmentMeshComponent.lock();
+	m_pDeviceContext->PSSetShaderResources(7, 1, component->m_CubeTextureResource->m_pTextureSRV.GetAddressOf()); // Shared.hlsli 에서 텍스처 slot7 확인
 }
 
 void D3DRenderManager::AddDebugStringToImGuiWindow(const std::string& header,const std::string& str)
@@ -842,7 +857,6 @@ void D3DRenderManager::CreateBlendState()
 
 void D3DRenderManager::CreateEnvironment()
 {
-	HRESULT hr;
 	// 2. Render() 에서 파이프라인에 바인딩할 InputLayout 생성 	
 	D3D_SHADER_MACRO defines[] =
 	{
@@ -854,8 +868,8 @@ void D3DRenderManager::CreateEnvironment()
 	HR_T(m_pDevice->CreateVertexShader(buffer->GetBufferPointer(),buffer->GetBufferSize(), NULL, m_pEnvironmentVertexShader.GetAddressOf()));
 	buffer.Reset();
 
-	HR_T(CompileShaderFromFile(L"../Resource/PS_Environment.hlsl", nullptr, "main", "vs_5_0", buffer.GetAddressOf()));
-	HR_T(m_pDevice->CreateVertexShader(buffer->GetBufferPointer(),buffer->GetBufferSize(), NULL, m_pEnvironmentVertexShader.GetAddressOf()));
+	HR_T(CompileShaderFromFile(L"../Resource/PS_Environment.hlsl", nullptr, "main", "ps_5_0", buffer.GetAddressOf()));
+	HR_T(m_pDevice->CreatePixelShader(buffer->GetBufferPointer(),buffer->GetBufferSize(), NULL, m_pEnvironmentPixelShader.GetAddressOf()));
 }
 
 void D3DRenderManager::AddDebugVector4ToImGuiWindow(const std::string& header, const Vector4& value)
