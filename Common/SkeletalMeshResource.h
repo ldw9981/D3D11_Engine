@@ -3,6 +3,7 @@
 #include "StaticMeshResource.h"
 #include "AnimationResource.h"
 #include "Material.h"
+#include "MeshResource.h"
 
 struct BoneWeightVertex
 {
@@ -45,7 +46,7 @@ struct BoneReference
 struct aiMesh;
 class Bone;
 
-class SkeletalMeshResource : public StaticMeshResource
+class SkeletalMeshResource : public MeshResource
 {
 public:
 	SkeletalMeshResource();

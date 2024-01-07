@@ -21,8 +21,7 @@ StaticMeshResource::StaticMeshResource()
 
 StaticMeshResource::~StaticMeshResource()
 {
-	SAFE_RELEASE(m_pVertexBuffer);
-	SAFE_RELEASE(m_pIndexBuffer);
+
 }
 
 void StaticMeshResource::Create(aiMesh* mesh)
@@ -42,7 +41,6 @@ void StaticMeshResource::Create(aiMesh* mesh)
 	}
 	CreateVertexBuffer(&m_Vertices[0], (UINT)m_Vertices.size());
 
-
 	// 인덱스 정보 생성
 	m_Faces.resize(mesh->mNumFaces);
 	for (UINT i = 0; i < mesh->mNumFaces; ++i)
@@ -56,21 +54,7 @@ void StaticMeshResource::Create(aiMesh* mesh)
 }
 
 
-void StaticMeshResource::CreateIndexBuffer(Face* faces, UINT faceCount)
-{
-	// 인덱스 개수 저장.
-	m_FaceCount = faceCount;
 
-	D3D11_BUFFER_DESC bd = {};
-	bd.ByteWidth = sizeof(Face) * faceCount;
-	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.CPUAccessFlags = 0;
-
-	D3D11_SUBRESOURCE_DATA ibData = {};
-	ibData.pSysMem = faces;
-	HR_T(D3DRenderManager::m_pDevice->CreateBuffer(&bd, &ibData, &m_pIndexBuffer));
-}
 
 bool StaticMeshSceneResource::Create(std::string filePath)
 {

@@ -159,6 +159,9 @@
     <ClInclude Include="OrientedBoxComponent.h">
       <Filter>헤더 파일\Framework</Filter>
     </ClInclude>
+    <ClInclude Include="MeshResource.h">
+      <Filter>헤더 파일\Rendering</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp">
@@ -280,6 +283,9 @@
     </ClCompile>
     <ClCompile Include="BoxComponent.cpp">
       <Filter>소스 파일\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshResource.cpp">
+      <Filter>소스 파일\Rendering</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
