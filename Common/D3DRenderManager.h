@@ -94,11 +94,16 @@ public:
 	ComPtr<ID3D11InputLayout> m_pSkeletalMeshInputLayout;	// SkeletalMesh 입력 레이아웃.	
 	ComPtr<ID3D11VertexShader> m_pStaticMeshVertexShader;	// StaticMesh 정점 셰이더.
 	ComPtr<ID3D11InputLayout> m_pStaticMeshInputLayout;		// StaticMesh 입력 레이아웃.
+	ComPtr<ID3D11PixelShader> m_pPBRPixelShader;		// 픽셀 셰이더.	
 
-	ComPtr<ID3D11PixelShader> m_pPixelShader;		// 픽셀 셰이더.	
+	ComPtr<ID3D11VertexShader> m_pEnvironmentVertexShader;	// Environment 정점 셰이더.
+	ComPtr<ID3D11VertexShader> m_pEnvironmentPixelShader;	// Environment 정점 셰이더.
+
 	ComPtr<ID3D11SamplerState> m_pSamplerLinear;		// 샘플러 상태.
 	ComPtr<ID3D11BlendState> m_pAlphaBlendState;		// 블렌드 상태 변경 (반투명처리를위한 블렌드상태)
-	ComPtr<ID3D11RasterizerState> m_pRasterizerState; // MSAA활성화를 위해
+	ComPtr<ID3D11RasterizerState> m_pRasterizerStateCCW; // 컬 모드 CCW
+	ComPtr<ID3D11RasterizerState> m_pRasterizerStateCW; // 컬 모드 CW
+
 
 	ID3D11Buffer* m_pCBMaterial = nullptr;				// 상수 버퍼: 변환행렬
 	ID3D11Buffer* m_pCBTransformW = nullptr;				// 상수 버퍼: 변환행렬
@@ -177,14 +182,13 @@ public:
 	HRESULT CreateTextureFromFile(const wchar_t* szFileName, ID3D11ShaderResourceView** textureView, ID3D11Resource** texture = nullptr);
 	HRESULT CreateSamplerStateE(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE addressMode, ID3D11SamplerState** ppSamplerState);
 private:
-	void CreateSkeletalMesh_VS_IL();
-	void CreateStaticMesh_VS_IL();
-	void CreatePixelShader();
+	void CreatePBR();
 	void CreateIBL();
 	void CreateConstantBuffer();
 	void CreateSamplerState();
 	void CreateRasterizerState();
 	void CreateBlendState();
+	void CreateEnvironment();
 
 	void AddMeshInstance(SkeletalMeshComponent* pModel);
 	void AddMeshInstance(StaticMeshComponent* pModel);
@@ -193,4 +197,5 @@ private:
 	void RenderImGui();
 	void RenderSkeletalMeshInstance();
 	void RenderStaticMeshInstance();
+	void RenderEnvironmentMesh();
 };

@@ -37,13 +37,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="07_PixelShader.hlsl" />
-    <FxCompile Include="07_VertexShader.hlsl" />
-  </ItemGroup>
-  <ItemGroup>
     <Text Include="readme.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Shared.hlsli" />
   </ItemGroup>
 </Project>

@@ -37,6 +37,9 @@
     <Filter Include="헤더 파일\Utility">
       <UniqueIdentifier>{43209d82-fae4-4486-9fae-b4b51f6fab30}</UniqueIdentifier>
     </Filter>
+    <Filter Include="HLSL">
+      <UniqueIdentifier>{b4fdbb3d-7fa5-4003-b80a-489a180f0059}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor.h">
@@ -304,5 +307,22 @@
     <None Include="ClassDiagram.cd">
       <Filter>헤더 파일\Utility</Filter>
     </None>
+    <None Include="..\Resource\Shared.hlsli">
+      <Filter>HLSL</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Resource\VS_Environment.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resource\VS_PBR.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resource\PS_Environment.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resource\PS_PBR.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

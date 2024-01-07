@@ -167,9 +167,8 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	ImGui_ImplDX11_Init(m_pDevice, m_pDeviceContext.Get());
 
 	// * Render() 에서 파이프라인에 바인딩할 버텍스 셰이더 생성
-	CreateSkeletalMesh_VS_IL();
-	CreateStaticMesh_VS_IL();
-	CreatePixelShader();
+	CreatePBR();
+	CreateEnvironment();
 	CreateConstantBuffer();
 	CreateSamplerState();
 	CreateRasterizerState();
@@ -415,7 +414,7 @@ void D3DRenderManager::RenderSkeletalMeshInstance()
 {
 	m_pDeviceContext->IASetInputLayout(m_pSkeletalMeshInputLayout.Get());
 	m_pDeviceContext->VSSetShader(m_pSkeletalMeshVertexShader.Get(), nullptr, 0);
-	m_pDeviceContext->PSSetShader(m_pPixelShader.Get(), nullptr, 0);
+	m_pDeviceContext->PSSetShader(m_pPBRPixelShader.Get(), nullptr, 0);
 	m_pDeviceContext->VSSetConstantBuffers(0, 1, &m_pCBTransformW);  //debugdraw에서 변경시켜서 설정한다.
 
 	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
@@ -447,7 +446,7 @@ void D3DRenderManager::RenderStaticMeshInstance()
 {
 	m_pDeviceContext->IASetInputLayout(m_pStaticMeshInputLayout.Get());
 	m_pDeviceContext->VSSetShader(m_pStaticMeshVertexShader.Get(), nullptr, 0);
-	m_pDeviceContext->PSSetShader(m_pPixelShader.Get(), nullptr, 0);
+	m_pDeviceContext->PSSetShader(m_pPBRPixelShader.Get(), nullptr, 0);
 	m_pDeviceContext->VSSetConstantBuffers(0, 1, &m_pCBTransformW); //debugdraw에서 변경시켜서 설정한다.
 
 	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
@@ -473,6 +472,11 @@ void D3DRenderManager::RenderStaticMeshInstance()
 		meshInstance->Render(m_pDeviceContext.Get());
 	}
 	m_StaticMeshInstance.clear();
+}
+
+void D3DRenderManager::RenderEnvironmentMesh()
+{
+
 }
 
 Microsoft::WRL::ComPtr<ID3D11SamplerState> D3DRenderManager::CreateSamplerState(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE addressMode) const
@@ -523,74 +527,63 @@ HRESULT D3DRenderManager::CreateSamplerStateE(D3D11_FILTER filter, D3D11_TEXTURE
 	return m_pDevice->CreateSamplerState(&desc, ppSamplerState);
 }
 
-void D3DRenderManager::CreateSkeletalMesh_VS_IL()
+void D3DRenderManager::CreatePBR()
 {
 	HRESULT hr;
-	// 2. Render() 에서 파이프라인에 바인딩할 InputLayout 생성 	
 	D3D_SHADER_MACRO defines[] =
 	{
 		{"VERTEX_SKINNING",""}, // 매크로 이름과 값을 설정
 		{nullptr, nullptr}    // 배열의 끝을 나타내기 위해 nullptr로 끝낸다.
 	};
-	ComPtr<ID3D10Blob> vertexShaderBuffer = nullptr;
-	HR_T( CompileShaderFromFile(L"07_VertexShader.hlsl", defines, "main", "vs_5_0", vertexShaderBuffer.GetAddressOf()));
+	ComPtr<ID3D10Blob> CompiledBuffer = nullptr;
 
-	
-
-	D3D11_INPUT_ELEMENT_DESC layout[] =
+	// 1. SkeletalMesh  PBR VertexShader
 	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TANGENT" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "BITANGENT" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "BLENDINDICES" , 0, DXGI_FORMAT_R32G32B32A32_SINT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "BLENDWEIGHTS" , 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
-	hr = m_pDevice->CreateInputLayout(layout, ARRAYSIZE(layout),
-		vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(),m_pSkeletalMeshInputLayout.GetAddressOf());
+		HR_T(CompileShaderFromFile(L"../Resource/VS_PBR.hlsl", defines, "main", "vs_5_0", CompiledBuffer.GetAddressOf()));
+		D3D11_INPUT_ELEMENT_DESC layout[] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "NORMAL" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TANGENT" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "BITANGENT" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "BLENDINDICES" , 0, DXGI_FORMAT_R32G32B32A32_SINT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "BLENDWEIGHTS" , 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+		hr = m_pDevice->CreateInputLayout(layout, ARRAYSIZE(layout),
+			CompiledBuffer->GetBufferPointer(), CompiledBuffer->GetBufferSize(), m_pSkeletalMeshInputLayout.GetAddressOf());
 
-	// 3. Render() 에서 파이프라인에 바인딩할  버텍스 셰이더 생성
-	HR_T(m_pDevice->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(),
-		vertexShaderBuffer->GetBufferSize(), NULL, m_pSkeletalMeshVertexShader.GetAddressOf()));
-	
+		HR_T(m_pDevice->CreateVertexShader(CompiledBuffer->GetBufferPointer(),
+			CompiledBuffer->GetBufferSize(), NULL, m_pSkeletalMeshVertexShader.GetAddressOf()));
+	}
+
+    // 2. StaticMesh  PBR VertexShader	
+	{
+		CompiledBuffer.Reset();
+		HR_T(CompileShaderFromFile(L"../Resource/VS_PBR.hlsl", nullptr, "main", "vs_5_0", CompiledBuffer.GetAddressOf()));
+		D3D11_INPUT_ELEMENT_DESC layout[] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "NORMAL" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TANGENT" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "BITANGENT" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+		HR_T(m_pDevice->CreateInputLayout(layout, ARRAYSIZE(layout),
+			CompiledBuffer->GetBufferPointer(), CompiledBuffer->GetBufferSize(), m_pStaticMeshInputLayout.GetAddressOf()));
+
+		HR_T(m_pDevice->CreateVertexShader(CompiledBuffer->GetBufferPointer(),
+			CompiledBuffer->GetBufferSize(), NULL, m_pStaticMeshVertexShader.GetAddressOf()));
+	}
+
+
+    // 3. PBR PixelShader
+	CompiledBuffer.Reset();
+	HR_T(CompileShaderFromFile(L"../Resource/PS_PBR.hlsl", nullptr, "main", "ps_5_0", CompiledBuffer.GetAddressOf()));
+	HR_T(m_pDevice->CreatePixelShader(CompiledBuffer->GetBufferPointer(),
+		CompiledBuffer->GetBufferSize(), NULL, m_pPBRPixelShader.GetAddressOf()));
 }
 
-void D3DRenderManager::CreateStaticMesh_VS_IL()
-{
-	HRESULT hr;
-	// 2. Render() 에서 파이프라인에 바인딩할 InputLayout 생성 	
-	D3D_SHADER_MACRO defines[] =
-	{
-		{"",""}, // 매크로 이름과 값을 설정
-		{nullptr, nullptr}    // 배열의 끝을 나타내기 위해 nullptr로 끝낸다.
-	};
-	ComPtr<ID3D10Blob> vertexShaderBuffer = nullptr;
-	HR_T( CompileShaderFromFile(L"07_VertexShader.hlsl", nullptr, "main", "vs_5_0", vertexShaderBuffer.GetAddressOf()));
-	
-	D3D11_INPUT_ELEMENT_DESC layout[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TANGENT" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },	
-		{ "BITANGENT" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
-	hr = m_pDevice->CreateInputLayout(layout, ARRAYSIZE(layout),
-		vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), m_pStaticMeshInputLayout.GetAddressOf());
-
-	// 3. Render() 에서 파이프라인에 바인딩할  버텍스 셰이더 생성
-	HR_T(m_pDevice->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(),
-		vertexShaderBuffer->GetBufferSize(), NULL, m_pStaticMeshVertexShader.GetAddressOf()));
-}
-
-void D3DRenderManager::CreatePixelShader()
-{
-	ComPtr<ID3D10Blob> pixelShaderBuffer; //.Get()  포인터변수의 값       .GetAddressOf() 포인터변수의 주소
-	HR_T(CompileShaderFromFile(L"07_PixelShader.hlsl", nullptr, "main", "ps_5_0", pixelShaderBuffer.GetAddressOf()) );
-	HR_T(m_pDevice->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
-		pixelShaderBuffer->GetBufferSize(), NULL,m_pPixelShader.GetAddressOf()));
-}
 
 void D3DRenderManager::CreateIBL()
 {
@@ -812,13 +805,18 @@ void D3DRenderManager::CreateSamplerState()
 
 void D3DRenderManager::CreateRasterizerState()
 {
+	HRESULT hr = 0;
+
 	D3D11_RASTERIZER_DESC rasterizerDesc = {};
 	rasterizerDesc.AntialiasedLineEnable = true;
 	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
 	rasterizerDesc.CullMode = D3D11_CULL_BACK;
 	rasterizerDesc.FrontCounterClockwise = true;
 	rasterizerDesc.DepthClipEnable = true;
-	HR_T(m_pDevice->CreateRasterizerState(&rasterizerDesc, m_pRasterizerState.GetAddressOf()));
+	HR_T(m_pDevice->CreateRasterizerState(&rasterizerDesc, m_pRasterizerStateCCW.GetAddressOf()));
+
+	rasterizerDesc.FrontCounterClockwise = false;
+	HR_T(m_pDevice->CreateRasterizerState(&rasterizerDesc, m_pRasterizerStateCW.GetAddressOf()));
 }
 
 void D3DRenderManager::CreateBlendState()
@@ -840,6 +838,24 @@ void D3DRenderManager::CreateBlendState()
 	rtBlendDesc.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL; // 렌더타겟에 RGBA 모두 Write
 	blendDesc.RenderTarget[0] = rtBlendDesc;
 	HR_T(m_pDevice->CreateBlendState(&blendDesc, m_pAlphaBlendState.GetAddressOf()));
+}
+
+void D3DRenderManager::CreateEnvironment()
+{
+	HRESULT hr;
+	// 2. Render() 에서 파이프라인에 바인딩할 InputLayout 생성 	
+	D3D_SHADER_MACRO defines[] =
+	{
+		{"",""}, // 매크로 이름과 값을 설정
+		{nullptr, nullptr}    // 배열의 끝을 나타내기 위해 nullptr로 끝낸다.
+	};
+	ComPtr<ID3D10Blob> buffer = nullptr;
+	HR_T(CompileShaderFromFile(L"../Resource/VS_Environment.hlsl", nullptr, "main", "vs_5_0", buffer.GetAddressOf()));
+	HR_T(m_pDevice->CreateVertexShader(buffer->GetBufferPointer(),buffer->GetBufferSize(), NULL, m_pEnvironmentVertexShader.GetAddressOf()));
+	buffer.Reset();
+
+	HR_T(CompileShaderFromFile(L"../Resource/PS_Environment.hlsl", nullptr, "main", "vs_5_0", buffer.GetAddressOf()));
+	HR_T(m_pDevice->CreateVertexShader(buffer->GetBufferPointer(),buffer->GetBufferSize(), NULL, m_pEnvironmentVertexShader.GetAddressOf()));
 }
 
 void D3DRenderManager::AddDebugVector4ToImGuiWindow(const std::string& header, const Vector4& value)
