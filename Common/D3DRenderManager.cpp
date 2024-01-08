@@ -284,7 +284,7 @@ void D3DRenderManager::Render()
 	if (m_pEnvironmentMeshComponent.expired() == false)
 		RenderEnvironment();
 
-	//RenderImGui();
+	RenderImGui();
 	m_pSwapChain->Present(0, 0);	// Present our back buffer to our front buffer
 }
 
