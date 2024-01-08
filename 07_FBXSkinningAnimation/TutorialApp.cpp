@@ -37,7 +37,7 @@ bool TutorialApp::Initialize(UINT Width, UINT Height)
 		m_pEnvironmentActor = m_World.CreateGameObject<EnvironmentActor>().get();
 		EnvironmentMeshComponent* pComponent = (EnvironmentMeshComponent*)m_pEnvironmentActor->GetComponentPtrByName("EnvironmentMeshComponent");
 		pComponent->ReadEnvironmentMeshFromFBX("../Resource/EnvironmentCube.fbx");
-		pComponent->ReadCubeTextureFromDDS(L"../Resource/Cubemap.dds");
+		pComponent->ReadCubeTextureFromDDS(L"../Resource/DaySkyEnvHDR.dds");
 		pComponent->SetLocalScale(Vector3(100.0f, 100.0f, 100.0f));
 		
 		auto wpComponent = m_pEnvironmentActor->GetComponentWeakPtrByName("EnvironmentMeshComponent");
