@@ -30,16 +30,13 @@
 #include "OrientedBoxComponent.h"
 #include "CollisionManager.h"
 #include "DebugDraw.h"
-//#include <Directxtk/DDSTextureLoader.h>
-//#include <Directxtk/WICTextureLoader.h>
+#include <Directxtk/DDSTextureLoader.h>
+#include <Directxtk/WICTextureLoader.h>
 #include <DirectXTex.h>
-
-
 
 #pragma comment(lib,"d3d11.lib")
 #pragma comment(lib,"d3dcompiler.lib")
 #pragma comment(lib,"dxgi.lib")
-
 
 
 
@@ -288,7 +285,7 @@ void D3DRenderManager::Render()
 	if (m_pEnvironmentMeshComponent.expired() == false)
 		RenderEnvironment();
 
-	RenderImGui();
+	//RenderImGui();
 	m_pSwapChain->Present(0, 0);	// Present our back buffer to our front buffer
 }
 
@@ -518,10 +515,10 @@ HRESULT D3DRenderManager::CreateTextureFromFile(const wchar_t* szFileName, ID3D1
 	std::filesystem::path path(szFileName);
 	std::wstring strExtension = path.extension();
 	std::transform(strExtension.begin(), strExtension.end(), strExtension.begin(), ::towlower);
-	
+
 	DirectX::TexMetadata metadata1;
 	DirectX::ScratchImage scratchImage;
-	
+
 	HRESULT hr = S_OK;
 	if (strExtension == L".dds")
 	{
@@ -533,15 +530,15 @@ HRESULT D3DRenderManager::CreateTextureFromFile(const wchar_t* szFileName, ID3D1
 	}
 	else if (strExtension == L".hdr")
 	{
-		HR_T(hr = DirectX::LoadFromHDRFile(szFileName, &metadata1, scratchImage) );
-	}		
+		HR_T(hr = DirectX::LoadFromHDRFile(szFileName, &metadata1, scratchImage));
+	}
 	else // ±‚≈∏..
 	{
 		HR_T(hr = DirectX::LoadFromWICFile(szFileName, DirectX::WIC_FLAGS_NONE, &metadata1, scratchImage));
 	}
-	
-	HR_T(hr = DirectX::CreateShaderResourceView(m_pDevice,scratchImage.GetImages(), scratchImage.GetImageCount(), metadata1, textureView));
-	return S_OK;
+
+	HR_T(hr = DirectX::CreateShaderResourceView(m_pDevice, scratchImage.GetImages(), scratchImage.GetImageCount(), metadata1, textureView));
+	return hr;
 }
 
 HRESULT D3DRenderManager::CreateSamplerStateE(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE addressMode, ID3D11SamplerState** ppSamplerState)

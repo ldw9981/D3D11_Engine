@@ -43,6 +43,7 @@ void StaticMeshComponent::CreateMeshInstance(std::shared_ptr<StaticMeshSceneReso
 	{
 		StaticMeshResource* meshResource = &m_SceneResource->m_StaticMeshResources[i];
 		UINT materialIndex = meshResource->m_MaterialIndex;
+		assert(materialIndex < m_SceneResource->m_Materials.size());
 		Material* material = &m_SceneResource->m_Materials[materialIndex];
 		m_MeshInstances[i].Create(meshResource,&m_World,material);		//material resource 
 	}		
