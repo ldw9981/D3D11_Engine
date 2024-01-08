@@ -619,29 +619,19 @@ void D3DRenderManager::CreateIBL()
 }
 
 void D3DRenderManager::ApplyMaterial(Material* pMaterial)
-{
-	if(pMaterial->m_pBaseColor)
-		m_pDeviceContext->PSSetShaderResources(0, 1, pMaterial->m_pBaseColor->m_pTextureSRV.GetAddressOf());	
+{		
+	ID3D11ShaderResourceView* pNullSRV[7] = { 
+		pMaterial->m_pBaseColor != nullptr ? pMaterial->m_pBaseColor->m_pTextureSRV.Get() : nullptr,
+		pMaterial->m_pNormal != nullptr ? pMaterial->m_pNormal->m_pTextureSRV.Get() : nullptr,
+		pMaterial->m_pSpecular != nullptr ? pMaterial->m_pSpecular->m_pTextureSRV.Get() : nullptr,
+		pMaterial->m_pEmissive != nullptr ? pMaterial->m_pEmissive->m_pTextureSRV.Get() : nullptr,
+		pMaterial->m_pOpacity != nullptr ? pMaterial->m_pOpacity->m_pTextureSRV.Get() : nullptr,
+		pMaterial->m_pMetalness != nullptr ? pMaterial->m_pMetalness->m_pTextureSRV.Get() : nullptr,
+		pMaterial->m_pRoughness != nullptr ? pMaterial->m_pRoughness->m_pTextureSRV.Get() : nullptr ,
+		};
+	
+	m_pDeviceContext->PSSetShaderResources(0, 7, pNullSRV); // 한번에 7개의 텍스처를 설정한다.
 
-	if (pMaterial->m_pNormal)
-		m_pDeviceContext->PSSetShaderResources(1, 1, pMaterial->m_pNormal->m_pTextureSRV.GetAddressOf());
-
-	if (pMaterial->m_pSpecular)
-		m_pDeviceContext->PSSetShaderResources(2, 1, pMaterial->m_pSpecular->m_pTextureSRV.GetAddressOf());
-
-	if (pMaterial->m_pEmissive)
-		m_pDeviceContext->PSSetShaderResources(3, 1, pMaterial->m_pEmissive->m_pTextureSRV.GetAddressOf());
-
-	if (pMaterial->m_pOpacity)
-		m_pDeviceContext->PSSetShaderResources(4, 1, pMaterial->m_pOpacity->m_pTextureSRV.GetAddressOf());
-
-	if (pMaterial->m_pMetalness)
-		m_pDeviceContext->PSSetShaderResources(5, 1, pMaterial->m_pMetalness->m_pTextureSRV.GetAddressOf());
-
-	if (pMaterial->m_pRoughness)
-		m_pDeviceContext->PSSetShaderResources(6, 1, pMaterial->m_pRoughness->m_pTextureSRV.GetAddressOf());
-
-		
 	m_CpuCbMaterial.UseBaseColorMap = pMaterial->m_pBaseColor != nullptr ? true : false;
 	m_CpuCbMaterial.UseNormalMap = pMaterial->m_pNormal != nullptr ? true : false;
 	m_CpuCbMaterial.UseSpecularMap = pMaterial->m_pSpecular != nullptr ? true : false;
