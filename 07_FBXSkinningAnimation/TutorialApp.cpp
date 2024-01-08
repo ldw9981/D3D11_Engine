@@ -115,7 +115,7 @@ void TutorialApp::IncreaseStaticMeshModel()
 {
 	auto StActor = m_World.CreateGameObject<StaticMeshActor>();
 	StaticMeshComponent* pStaticMeshComponent = (StaticMeshComponent*)StActor->GetComponentPtrByName("StaticMeshComponent");
-	pStaticMeshComponent->ReadSceneResourceFromFBX("../Resource/angel_armor.FBX");
+	pStaticMeshComponent->ReadSceneResourceFromFBX("../Resource/char.FBX");
 	pStaticMeshComponent->SetBoundingBoxCenterOffset(Vector3(0.0f, pStaticMeshComponent->m_BoundingBox.Extents.y, 0.0f));
 	BoxComponent* pCollisionComponent = (BoxComponent*)StActor->GetComponentPtrByName("BoxComponent");
 	pCollisionComponent->SetLocalPosition(Vector3(0.0f, pStaticMeshComponent->m_BoundingBox.Extents.y, 0.0f));

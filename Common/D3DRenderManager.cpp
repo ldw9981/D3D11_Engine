@@ -30,12 +30,16 @@
 #include "OrientedBoxComponent.h"
 #include "CollisionManager.h"
 #include "DebugDraw.h"
-#include <Directxtk/DDSTextureLoader.h>
-#include <Directxtk/WICTextureLoader.h>
+//#include <Directxtk/DDSTextureLoader.h>
+//#include <Directxtk/WICTextureLoader.h>
+#include <DirectXTex.h>
+
+
 
 #pragma comment(lib,"d3d11.lib")
 #pragma comment(lib,"d3dcompiler.lib")
 #pragma comment(lib,"dxgi.lib")
+
 
 
 
@@ -511,19 +515,32 @@ Microsoft::WRL::ComPtr<ID3D11SamplerState> D3DRenderManager::CreateSamplerState(
 
 HRESULT D3DRenderManager::CreateTextureFromFile(const wchar_t* szFileName, ID3D11ShaderResourceView** textureView, ID3D11Resource** texture)
 {
+	std::filesystem::path path(szFileName);
+	std::wstring strExtension = path.extension();
+	std::transform(strExtension.begin(), strExtension.end(), strExtension.begin(), ::towlower);
+	
+	DirectX::TexMetadata metadata1;
+	DirectX::ScratchImage scratchImage;
+	
 	HRESULT hr = S_OK;
-
-	// Load the Texture
-	hr = DirectX::CreateDDSTextureFromFile(m_pDevice, szFileName, texture, textureView);
-	if (FAILED(hr))
+	if (strExtension == L".dds")
 	{
-		hr = DirectX::CreateWICTextureFromFile(m_pDevice, szFileName, texture, textureView);
-		if (FAILED(hr))
-		{
-			MessageBoxW(NULL, GetComErrorString(hr), szFileName, MB_OK);
-			return hr;
-		}
+		HR_T(hr = DirectX::LoadFromDDSFile(szFileName, DirectX::DDS_FLAGS_NONE, &metadata1, scratchImage));
 	}
+	else if (strExtension == L".tga")
+	{
+		HR_T(hr = DirectX::LoadFromTGAFile(szFileName, &metadata1, scratchImage));
+	}
+	else if (strExtension == L".hdr")
+	{
+		HR_T(hr = DirectX::LoadFromHDRFile(szFileName, &metadata1, scratchImage) );
+	}		
+	else // ±‚≈∏..
+	{
+		HR_T(hr = DirectX::LoadFromWICFile(szFileName, DirectX::WIC_FLAGS_NONE, &metadata1, scratchImage));
+	}
+	
+	HR_T(hr = DirectX::CreateShaderResourceView(m_pDevice,scratchImage.GetImages(), scratchImage.GetImageCount(), metadata1, textureView));
 	return S_OK;
 }
 
