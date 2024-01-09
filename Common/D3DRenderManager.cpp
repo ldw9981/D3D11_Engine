@@ -285,7 +285,7 @@ void D3DRenderManager::Render()
 	if (m_pEnvironmentMeshComponent.expired() == false)
 		RenderEnvironment();
 
-	//RenderImGui();
+	RenderImGui();
 	m_pSwapChain->Present(0, 0);	// Present our back buffer to our front buffer
 }
 
@@ -615,7 +615,7 @@ void D3DRenderManager::CreatePBR()
 
 void D3DRenderManager::CreateIBL()
 {
-
+  
 }
 
 void D3DRenderManager::ApplyMaterial(Material* pMaterial)
@@ -679,6 +679,7 @@ void D3DRenderManager::SetEnvironment(std::weak_ptr<EnvironmentMeshComponent> va
 	m_pDeviceContext->PSSetShaderResources(8, 1, component->m_IBLDiffuseTextureResource->m_pTextureSRV.GetAddressOf());
 	m_pDeviceContext->PSSetShaderResources(9, 1, component->m_IBLSpecularTextureResource->m_pTextureSRV.GetAddressOf());
 	m_pDeviceContext->PSSetShaderResources(10, 1, component->m_IBLBRDFTextureResource->m_pTextureSRV.GetAddressOf());	
+	m_CpuCbMaterial.UseIBL = true;
 }
 
 void D3DRenderManager::AddDebugStringToImGuiWindow(const std::string& header,const std::string& str)
@@ -823,8 +824,18 @@ void D3DRenderManager::CreateSamplerState()
 	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 	HR_T(m_pDevice->CreateSamplerState(&sampDesc, m_pSamplerLinear.GetAddressOf()));	
 
+	sampDesc = {};
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	sampDesc.MaxAnisotropy = (sampDesc.Filter == D3D11_FILTER_ANISOTROPIC) ? D3D11_REQ_MAXANISOTROPY : 1;
+	sampDesc.MinLOD = 0;
+	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	HR_T(m_pDevice->CreateSamplerState(&sampDesc, m_pSamplerSpecularBRDF.GetAddressOf()));
+
 	m_pDeviceContext->PSSetSamplers(0, 1, m_pSamplerLinear.GetAddressOf());
-	m_pDeviceContext->PSSetSamplers(1, 1, m_pSamplerLinear.GetAddressOf());	// !수정필요!! samplerSpecularBRDF 샘플러 설정해야함.
+	m_pDeviceContext->PSSetSamplers(1, 1, m_pSamplerSpecularBRDF.GetAddressOf());	// !수정필요!! samplerSpecularBRDF 샘플러 설정해야함.
 }
 
 void D3DRenderManager::CreateRasterizerState()
