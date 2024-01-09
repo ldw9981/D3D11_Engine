@@ -30,8 +30,6 @@
 #include "OrientedBoxComponent.h"
 #include "CollisionManager.h"
 #include "DebugDraw.h"
-#include <Directxtk/DDSTextureLoader.h>
-#include <Directxtk/WICTextureLoader.h>
 #include <DirectXTex.h>
 
 #pragma comment(lib,"d3d11.lib")
