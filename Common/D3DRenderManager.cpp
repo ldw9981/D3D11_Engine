@@ -47,6 +47,7 @@ D3DRenderManager* D3DRenderManager::Instance = nullptr;
 ID3D11Device* D3DRenderManager::m_pDevice = nullptr;
 
 D3DRenderManager::D3DRenderManager()
+ :m_Viewport {}
 {
 	assert(Instance == nullptr);
 	Instance = this;
@@ -234,6 +235,11 @@ void D3DRenderManager::Update(float DeltaTime)
 	m_TransformVP.mProjection = m_Projection.Transpose();
 	m_pDeviceContext->UpdateSubresource(m_pCBTransformVP, 0, nullptr, &m_TransformVP, 0, 0);
 
+	m_pDeviceContext->UpdateSubresource(m_pCBIBL, 0, nullptr, &m_IBL, 0, 0);
+	m_pDeviceContext->UpdateSubresource(m_pCBPost, 0, nullptr, &m_Post, 0, 0);
+
+	
+
 	m_nDrawComponentCount = 0;
 	for (auto& SkeletalMeshComponent : m_SkeletalMeshComponents)
 	{
@@ -392,6 +398,16 @@ void D3DRenderManager::RenderImGui()
 		ImGui::Text("Light");
 		ImGui::SliderFloat3("LightDirection", (float*)&m_Light.Direction, -1.0f, 1.0f);
 		ImGui::ColorEdit3("LightRadiance", (float*)&m_Light.Radiance);
+		
+		ImGui::Text("IBL");
+		static bool bUseIBL = m_IBL.UseIBL;
+		ImGui::Checkbox("UseIBL", &bUseIBL);
+		m_IBL.UseIBL = bUseIBL ? 1 : 0;
+
+		ImGui::SliderFloat("AmbientOcculusion", &m_IBL.AmbientOcclusion, 0.0f, 1.0f);
+
+		ImGui::Text("Post");
+		ImGui::SliderFloat("Gamma", &m_Post.Gamma, 0.0f, 2.2f);
 
 		ImGui::Text("BackBuffer");
 		ImGui::ColorEdit3("clear color", (float*)&m_ClearColor); // Edit 3 floats representing a color	
@@ -679,7 +695,8 @@ void D3DRenderManager::SetEnvironment(std::weak_ptr<EnvironmentMeshComponent> va
 	m_pDeviceContext->PSSetShaderResources(8, 1, component->m_IBLDiffuseTextureResource->m_pTextureSRV.GetAddressOf());
 	m_pDeviceContext->PSSetShaderResources(9, 1, component->m_IBLSpecularTextureResource->m_pTextureSRV.GetAddressOf());
 	m_pDeviceContext->PSSetShaderResources(10, 1, component->m_IBLBRDFTextureResource->m_pTextureSRV.GetAddressOf());	
-	m_CpuCbMaterial.UseIBL = true;
+	m_IBL.UseIBL = true;
+	m_pDeviceContext->UpdateSubresource(m_pCBIBL, 0, nullptr, &m_IBL, 0, 0);
 }
 
 void D3DRenderManager::AddDebugStringToImGuiWindow(const std::string& header,const std::string& str)
@@ -795,6 +812,19 @@ void D3DRenderManager::CreateConstantBuffer()
 	bd.CPUAccessFlags = 0;
 	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, &m_pCBMaterial));
 
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof(CB_IBL);
+	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bd.CPUAccessFlags = 0;
+	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, &m_pCBIBL));
+
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof(CB_Post);
+	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bd.CPUAccessFlags = 0;
+	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, &m_pCBPost));
+
+
 	m_cbMatrixPallete.Create(m_pDevice);
 
 	m_pDeviceContext->VSSetConstantBuffers(0, 1, &m_pCBTransformW);
@@ -809,6 +839,13 @@ void D3DRenderManager::CreateConstantBuffer()
 	m_pDeviceContext->PSSetConstantBuffers(1, 1, &m_pCBTransformVP);
 	m_pDeviceContext->PSSetConstantBuffers(2, 1, &m_pCBDirectionLight);
 	m_pDeviceContext->PSSetConstantBuffers(3, 1, &m_pCBMaterial);
+
+	m_pDeviceContext->PSSetConstantBuffers(5, 1, &m_pCBIBL);
+	m_pDeviceContext->UpdateSubresource(m_pCBIBL, 0, nullptr, &m_IBL, 0, 0);
+
+	m_pDeviceContext->PSSetConstantBuffers(6, 1, &m_pCBPost);
+	m_pDeviceContext->UpdateSubresource(m_pCBPost, 0, nullptr, &m_Post, 0, 0);
+	
 }
 
 void D3DRenderManager::CreateSamplerState()

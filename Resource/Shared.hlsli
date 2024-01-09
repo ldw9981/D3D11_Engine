@@ -49,13 +49,26 @@ cbuffer Material : register(b3)
     int UseOpacityMap;
     int UseMetalnessMap;
     int UseRoughnessMap;
-    int UseIBL;
+    int padMaterial;
 }
 
 cbuffer MatrixPalette : register(b4)
 {
     matrix MatrixPaletteArray[128];
 }
+
+cbuffer IBL : register(b5)
+{
+    int UseIBL;                 // 4  
+    float AmbientOcclusion ;    // 4
+    float2 padCB_IBL;           // 8	16
+};
+
+cbuffer Post : register(b6)
+{
+    float Gamma;
+    float3 padCB_Post; // 12	16
+};
 
 
 //--------------------------------------------------------------------------------------

@@ -177,10 +177,11 @@ float4 main(PS_INPUT input) : SV_Target
 
 		// Total ambient lighting contribution.
         ambientLighting = diffuseIBL + specularIBL;
+		ambientLighting *= AmbientOcclusion;
     }	
 	
     float3 final = directLighting + ambientLighting + emissive ;
-    float3 GammaCorrect = pow(final, float(1.0 / 2.2).rrr);
+    float3 GammaCorrect = pow(final, float(1.0 / Gamma).rrr);
     float3 output = GammaCorrect;
 
     return float4(output, Opacity);

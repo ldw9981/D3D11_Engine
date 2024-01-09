@@ -41,11 +41,22 @@ struct CB_Marterial
 	int UseEmissiveMap = true;					// 4 16byte	
 	int UseOpacityMap = true;					// 4
 	int UseMetalnessMap = true;					// 4
-	int UseRoughnessMap = true;					// 4
-	int UseIBL = false;							// 4  16byte
+	int UseRoughnessMap = true;					// 4	
+	int pad;									// 4 16
 };
 
+struct CB_IBL
+{
+	int UseIBL = false;							// 4  16byte
+	float AmbientOcclusion = 1.0f;				// 4
+	Vector2 pad;								// 12	16
+};
 
+struct CB_Post
+{
+	float Gamma = 2.2f;
+	Vector3 pad;								// 12	16
+};
 
 
 class IImGuiRenderable
@@ -111,7 +122,11 @@ public:
 	ID3D11Buffer* m_pCBTransformW = nullptr;				// 상수 버퍼: 변환행렬
 	ID3D11Buffer* m_pCBTransformVP = nullptr;				// 상수 버퍼: 변환행렬
 	ID3D11Buffer* m_pCBDirectionLight = nullptr;		// 상수 버퍼: 방향광
+	ID3D11Buffer* m_pCBIBL = nullptr; // DirectXTK의 상수버퍼 클래스 활용
+	ID3D11Buffer* m_pCBPost = nullptr; // DirectXTK의 상수버퍼 클래스 활용
+
 	ConstantBuffer<CB_MatrixPalette> m_cbMatrixPallete; // DirectXTK의 상수버퍼 클래스 활용
+
 
 	// 렌더링 파이프라인에 적용하는 정보
 	Matrix  m_View;					// 뷰좌표계 공간으로 변환을 위한 행렬.
@@ -123,6 +138,9 @@ public:
 	CB_TransformVP m_TransformVP;
 	CB_Marterial m_CpuCbMaterial;
 	CB_DirectionLight m_Light;
+	CB_IBL m_IBL;
+	CB_Post m_Post;
+
 	CB_MatrixPalette m_MatrixPalette;
 	D3D11_VIEWPORT m_Viewport;
 	HWND m_hWnd = nullptr;
