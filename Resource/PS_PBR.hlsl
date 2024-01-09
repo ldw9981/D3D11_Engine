@@ -154,7 +154,7 @@ float4 main(PS_INPUT input) : SV_Target
         float3 irradiance = txIBL_Diffuse.Sample(samplerLinear, N).rgb;
 
 		// Calculate Fresnel term for ambient lighting.
-		// Since we use pre-filtered cubemap(s) and irradiance is coming from many directions
+		// Since we use pre-filtered cubemap(s) and irradiance is coming from many directions 
 		// use cosLo instead of angle with light's half-vector (cosLh above).
 		// See: https://seblagarde.wordpress.com/2011/08/17/hello-world/
         float3 F = fresnelSchlick(F0, cosLo);
@@ -163,6 +163,7 @@ float4 main(PS_INPUT input) : SV_Target
         float3 kd = lerp(1.0 - F, 0.0, metalness);
 
 		// Irradiance map contains exitant radiance assuming Lambertian BRDF, no need to scale by 1/PI here either.
+		// txIBL_Diffuse 맵에는 Lambertian BRDF를 가정하여 포함되어 있으며 여기에서도 1/PI로 크기를 조정할 필요가 없습니다.
         float3 diffuseIBL = kd * albedo * irradiance;
 
 		// Sample pre-filtered specular reflection environment at correct mipmap level.
@@ -176,8 +177,7 @@ float4 main(PS_INPUT input) : SV_Target
         float3 specularIBL = (F0 * specularBRDF.x + specularBRDF.y) * specularIrradiance;
 
 		// Total ambient lighting contribution.
-        ambientLighting = diffuseIBL + specularIBL;
-		ambientLighting *= AmbientOcclusion;
+        ambientLighting = (diffuseIBL + specularIBL) * AmbientOcclusion;
     }	
 	
     float3 final = directLighting + ambientLighting + emissive ;
