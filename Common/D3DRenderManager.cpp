@@ -190,7 +190,8 @@ void D3DRenderManager::Uninitialize()
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
 
-	
+	SAFE_RELEASE(m_pCBPost);
+	SAFE_RELEASE(m_pCBIBL);
 	SAFE_RELEASE(m_pCBDirectionLight);
 	SAFE_RELEASE(m_pCBTransformW);
 	SAFE_RELEASE(m_pCBTransformVP);
@@ -866,10 +867,10 @@ void D3DRenderManager::CreateSamplerState()
 	sampDesc.MaxAnisotropy = (sampDesc.Filter == D3D11_FILTER_ANISOTROPIC) ? D3D11_REQ_MAXANISOTROPY : 1;
 	sampDesc.MinLOD = 0;
 	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	HR_T(m_pDevice->CreateSamplerState(&sampDesc, m_pSamplerSpecularBRDF.GetAddressOf()));
+	HR_T(m_pDevice->CreateSamplerState(&sampDesc, m_pSamplerClamp.GetAddressOf()));
 
 	m_pDeviceContext->PSSetSamplers(0, 1, m_pSamplerLinear.GetAddressOf());
-	m_pDeviceContext->PSSetSamplers(1, 1, m_pSamplerSpecularBRDF.GetAddressOf());	// !수정필요!! samplerSpecularBRDF 샘플러 설정해야함.
+	m_pDeviceContext->PSSetSamplers(1, 1, m_pSamplerClamp.GetAddressOf());	
 }
 
 void D3DRenderManager::CreateRasterizerState()
