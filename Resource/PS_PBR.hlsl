@@ -176,7 +176,8 @@ float4 main(PS_INPUT input) : SV_Target
         float3 specularIrradiance = txIBL_Specular.SampleLevel(samplerLinear, Lr, roughness * specularTextureLevels).rgb;
 
 		// Split-sum approximation factors for Cook-Torrance specular BRDF.
-        float2 specularBRDF = txIBL_SpecularBRDF_LUT.Sample(samplerSpecularBRDF, float2(cosLo, roughness)).rg;
+		// dot(Normal,View) , roughness를 텍셀좌표로 샘플링하여 미리계산된 x,y값을 가저온다.
+        float2 specularBRDF = txIBL_SpecularBRDF_LUT.Sample(samplerClamp, float2(cosLo, roughness)).rg;
 
 		// Total specular IBL contribution.
         float3 specularIBL = (F0 * specularBRDF.x + specularBRDF.y) * specularIrradiance;
@@ -186,7 +187,7 @@ float4 main(PS_INPUT input) : SV_Target
     }	
 	
     float3 final = directLighting + ambientLighting + emissive ;
-    float3 GammaCorrect = pow(final, float(1.0 / Gamma).rrr);
+    float3 GammaCorrect = pow(final, float(1.0 / Gamma));
     float3 output = GammaCorrect;
 
     return float4(output, Opacity);

@@ -16,7 +16,7 @@ Texture2D txIBL_SpecularBRDF_LUT : register(t10);
 
 
 SamplerState samplerLinear : register(s0);
-SamplerState samplerSpecularBRDF : register(s1);
+SamplerState samplerClamp : register(s1);
 
 cbuffer TransformW : register(b0)
 {
