@@ -37,10 +37,10 @@ bool TutorialApp::Initialize(UINT Width, UINT Height)
 		m_pEnvironmentActor = m_World.CreateGameObject<EnvironmentActor>().get();
 		EnvironmentMeshComponent* pComponent = (EnvironmentMeshComponent*)m_pEnvironmentActor->GetComponentPtrByName("EnvironmentMeshComponent");
 		pComponent->ReadEnvironmentMeshFromFBX("../Resource/EnvironmentCube.fbx");
-		pComponent->ReadEnvironmentTextureFromDDS(L"../Resource/DaySkyEnvHDR.dds");
-		pComponent->ReadIBLDiffuseTextureFromDDS(L"../Resource/DaySkyDiffuseHDR.dds");
-		pComponent->ReadIBLSpecularTextureFromDDS(L"../Resource/DaySkySpecularHDR.dds");
-		pComponent->ReadIBLBRDFTextureFromDDS(L"../Resource/DaySkyBRDF.dds");
+		pComponent->ReadEnvironmentTextureFromDDS(L"../Resource/BakerSampleEnvHDR.dds");
+		pComponent->ReadIBLDiffuseTextureFromDDS(L"../Resource/BakerSampleDiffuseHDR.dds");
+		pComponent->ReadIBLSpecularTextureFromDDS(L"../Resource/BakerSampleSpecularHDR.dds");
+		pComponent->ReadIBLBRDFTextureFromDDS(L"../Resource/BakerSampleBRDF.dds");
 
 		pComponent->SetLocalScale(Vector3(100.0f, 100.0f, 100.0f));
 		

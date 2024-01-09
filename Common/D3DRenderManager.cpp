@@ -282,15 +282,14 @@ void D3DRenderManager::Render()
 	m_pDeviceContext->ClearRenderTargetView(m_pRenderTargetView.Get(), clear_color_with_alpha);
 	m_pDeviceContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 	m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);		
-	
-	
+		
 	RenderSkeletalMeshInstance();
-	RenderStaticMeshInstance();	
-	RenderDebugDraw();
+	RenderStaticMeshInstance();		
 	
 	if (m_pEnvironmentMeshComponent.expired() == false)
 		RenderEnvironment();
 
+	RenderDebugDraw();
 	RenderImGui();
 	m_pSwapChain->Present(0, 0);	// Present our back buffer to our front buffer
 }
