@@ -50,6 +50,7 @@ bool TutorialApp::Initialize(UINT Width, UINT Height)
 	
 	IncreaseSkeletalMeshModel();
 	IncreaseStaticMeshModel();
+	IncreaseStaticMeshModel();
 
 	m_pPlayerController = m_World.CreateGameObject<PlayerController>().get();
 	m_pDefaultPawn = m_World.CreateGameObject<DefaultPawn>().get();
@@ -103,11 +104,10 @@ void TutorialApp::IncreaseSkeletalMeshModel()
 	BoxComponent* pCollisionComponent = (BoxComponent*)SkActor->GetComponentPtrByName("BoxComponent");
 	pCollisionComponent->SetLocalPosition(Vector3(0.0f, pSkeletalMeshComponent->m_BoundingBox.Extents.y, 0.0f));
 
-	int range = 1000;
-	float posx = (float)(rand() % range) - range * 0.5f;
-	float posy = (float)(rand() % range) - range * 0.5f;
+	int range = 500;
+	float posx = (float)(rand() % range) - range * 0.5f;	
 	float posz = (float)(rand() % range) - range * 0.5f;
-	SkActor->SetWorldPosition(Math::Vector3(posx, posy, posz));
+	SkActor->SetWorldPosition(Math::Vector3(posx, 0.0f, posz));
 
 	auto pRsc = pSkeletalMeshComponent->GetSceneResource();
 	int playindex = rand() % pRsc-> m_Animations.size();
@@ -118,21 +118,22 @@ void TutorialApp::IncreaseSkeletalMeshModel()
 
 void TutorialApp::IncreaseStaticMeshModel()
 {
-	auto StActor = m_World.CreateGameObject<StaticMeshActor>();
-	StaticMeshComponent* pStaticMeshComponent = (StaticMeshComponent*)StActor->GetComponentPtrByName("StaticMeshComponent");
-	pStaticMeshComponent->ReadSceneResourceFromFBX("../Resource/char.FBX");
-	pStaticMeshComponent->SetBoundingBoxCenterOffset(Vector3(0.0f, pStaticMeshComponent->m_BoundingBox.Extents.y, 0.0f));
-	BoxComponent* pCollisionComponent = (BoxComponent*)StActor->GetComponentPtrByName("BoxComponent");
-	pCollisionComponent->SetLocalPosition(Vector3(0.0f, pStaticMeshComponent->m_BoundingBox.Extents.y, 0.0f));
+	std::string fbx[2]= { "../Resource/char.FBX", "../Resource/cerberus.FBX" };
+	for (int i=0; i < 2; ++i)
+	{
+		auto StActor = m_World.CreateGameObject<StaticMeshActor>();
+		StaticMeshComponent* pStaticMeshComponent = (StaticMeshComponent*)StActor->GetComponentPtrByName("StaticMeshComponent");
+		pStaticMeshComponent->ReadSceneResourceFromFBX(fbx[i]);
+		pStaticMeshComponent->SetBoundingBoxCenterOffset(Vector3(0.0f, pStaticMeshComponent->m_BoundingBox.Extents.y, 0.0f));
+		BoxComponent* pCollisionComponent = (BoxComponent*)StActor->GetComponentPtrByName("BoxComponent");
+		pCollisionComponent->SetLocalPosition(Vector3(0.0f, pStaticMeshComponent->m_BoundingBox.Extents.y, 0.0f));
 
-	int range = 1000;
-	float posx = (float)(rand() % range) - range * 0.5f;
-	float posy = (float)(rand() % range) - range * 0.5f;
-	float posz = (float)(rand() % range) - range * 0.5f;
-	StActor->SetWorldPosition(Math::Vector3(posx, posy, posz));
-
-
-	m_SpawnedActors.push_back(StActor.get());
+		int range = 500;
+		float posx = (float)(rand() % range) - range * 0.5f;
+		float posz = (float)(rand() % range) - range * 0.5f;
+		StActor->SetWorldPosition(Math::Vector3(posx, 0.0f, posz));
+		m_SpawnedActors.push_back(StActor.get());
+	}
 }
 
 void TutorialApp::DecreaseModel()
