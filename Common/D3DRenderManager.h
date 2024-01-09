@@ -152,7 +152,7 @@ public:
 	std::weak_ptr<CameraComponent> GetCamera() const { return m_pCamera; }
 	void SetCamera(std::weak_ptr<CameraComponent> val) { m_pCamera = val; }
 	std::weak_ptr<EnvironmentMeshComponent> GetEnvironmentMeshComponent() const;
-	void SetEnvironmentMeshComponent(std::weak_ptr<EnvironmentMeshComponent> val);
+	void SetEnvironment(std::weak_ptr<EnvironmentMeshComponent> val);
 
 	bool GetFreezeCulling() const { return m_bFreezeCulling; }
 	void SetFreezeCulling(bool val) { m_bFreezeCulling = val; }

@@ -151,7 +151,7 @@ float4 main(PS_INPUT input) : SV_Target
     if (UseIBL)
     {
 		// Sample diffuse irradiance at normal direction.
-        float3 irradiance = txIBL_Irradiance.Sample(samplerLinear, N).rgb;
+        float3 irradiance = txIBL_Diffuse.Sample(samplerLinear, N).rgb;
 
 		// Calculate Fresnel term for ambient lighting.
 		// Since we use pre-filtered cubemap(s) and irradiance is coming from many directions

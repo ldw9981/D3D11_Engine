@@ -37,15 +37,15 @@ bool TutorialApp::Initialize(UINT Width, UINT Height)
 		m_pEnvironmentActor = m_World.CreateGameObject<EnvironmentActor>().get();
 		EnvironmentMeshComponent* pComponent = (EnvironmentMeshComponent*)m_pEnvironmentActor->GetComponentPtrByName("EnvironmentMeshComponent");
 		pComponent->ReadEnvironmentMeshFromFBX("../Resource/EnvironmentCube.fbx");
-		pComponent->ReadCubeTextureFromDDS(L"../Resource/BakerSampleEnvHDR.dds");
-		pComponent->ReadIrradianceTextureFromDDS(L"../Resource/BakerSampleDiffuseHDR.dds");
-		pComponent->ReadRadianceTextureFromDDS(L"../Resource/BakerSampleSpecularHDR.dds");
-		
+		pComponent->ReadEnvironmentTextureFromDDS(L"../Resource/BakerSampleEnvHDR.dds");
+		pComponent->ReadIBLDiffuseTextureFromDDS(L"../Resource/BakerSampleDiffuseHDR.dds");
+		pComponent->ReadIBLSpecularTextureFromDDS(L"../Resource/BakerSampleSpecularHDR.dds");
+		pComponent->ReadIBLBRDFTextureFromDDS(L"../Resource/BakerSampleBRDF.dds");
 
 		pComponent->SetLocalScale(Vector3(100.0f, 100.0f, 100.0f));
 		
 		auto wpComponent = m_pEnvironmentActor->GetComponentWeakPtrByName("EnvironmentMeshComponent");
-		D3DRenderManager::Instance->SetEnvironmentMeshComponent(std::dynamic_pointer_cast<EnvironmentMeshComponent>(wpComponent.lock()));
+		D3DRenderManager::Instance->SetEnvironment(std::dynamic_pointer_cast<EnvironmentMeshComponent>(wpComponent.lock()));
 	}
 	
 	IncreaseSkeletalMeshModel();

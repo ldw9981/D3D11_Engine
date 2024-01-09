@@ -670,11 +670,15 @@ std::weak_ptr<EnvironmentMeshComponent> D3DRenderManager::GetEnvironmentMeshComp
 	return m_pEnvironmentMeshComponent;
 }
 
-void D3DRenderManager::SetEnvironmentMeshComponent(std::weak_ptr<EnvironmentMeshComponent> val)
+void D3DRenderManager::SetEnvironment(std::weak_ptr<EnvironmentMeshComponent> val)
 {
 	m_pEnvironmentMeshComponent = val;
 	auto component = m_pEnvironmentMeshComponent.lock();
-	m_pDeviceContext->PSSetShaderResources(7, 1, component->m_EnvironmentTextureResource->m_pTextureSRV.GetAddressOf()); // Shared.hlsli 에서 텍스처 slot7 확인
+	// Shared.hlsli 에서 텍스처 slot7 확인
+	m_pDeviceContext->PSSetShaderResources(7, 1, component->m_EnvironmentTextureResource->m_pTextureSRV.GetAddressOf()); 
+	m_pDeviceContext->PSSetShaderResources(8, 1, component->m_IBLDiffuseTextureResource->m_pTextureSRV.GetAddressOf());
+	m_pDeviceContext->PSSetShaderResources(9, 1, component->m_IBLSpecularTextureResource->m_pTextureSRV.GetAddressOf());
+	m_pDeviceContext->PSSetShaderResources(10, 1, component->m_IBLBRDFTextureResource->m_pTextureSRV.GetAddressOf());	
 }
 
 void D3DRenderManager::AddDebugStringToImGuiWindow(const std::string& header,const std::string& str)
