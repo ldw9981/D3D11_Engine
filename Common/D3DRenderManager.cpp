@@ -190,13 +190,6 @@ void D3DRenderManager::Uninitialize()
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
 
-	SAFE_RELEASE(m_pCBPost);
-	SAFE_RELEASE(m_pCBIBL);
-	SAFE_RELEASE(m_pCBDirectionLight);
-	SAFE_RELEASE(m_pCBTransformW);
-	SAFE_RELEASE(m_pCBTransformVP);
-	SAFE_RELEASE(m_pCBMaterial);	
-
 #ifdef DEBUG_D3D11_LIVEDEVICE
 	ComPtr<ID3D11Debug> pD3D11Dbug;
 	HRESULT hr;
@@ -227,15 +220,15 @@ void D3DRenderManager::Update(float DeltaTime)
 
 	//라이트 업데이트	
 	m_Light.Direction.Normalize();
-	m_pDeviceContext->UpdateSubresource(m_pCBDirectionLight, 0, nullptr, &m_Light, 0, 0);
+	m_pDeviceContext->UpdateSubresource(m_pCBDirectionLight.Get(), 0, nullptr, &m_Light, 0, 0);
 
 	// 뷰프로젝션 업데이트
 	m_TransformVP.mView = m_View.Transpose();
 	m_TransformVP.mProjection = m_Projection.Transpose();
-	m_pDeviceContext->UpdateSubresource(m_pCBTransformVP, 0, nullptr, &m_TransformVP, 0, 0);
+	m_pDeviceContext->UpdateSubresource(m_pCBTransformVP.Get(), 0, nullptr, &m_TransformVP, 0, 0);
 
-	m_pDeviceContext->UpdateSubresource(m_pCBIBL, 0, nullptr, &m_IBL, 0, 0);
-	m_pDeviceContext->UpdateSubresource(m_pCBPost, 0, nullptr, &m_Post, 0, 0);
+	m_pDeviceContext->UpdateSubresource(m_pCBIBL.Get(), 0, nullptr, &m_IBL, 0, 0);
+	m_pDeviceContext->UpdateSubresource(m_pCBPost.Get(), 0, nullptr, &m_Post, 0, 0);
 
 	
 
@@ -433,7 +426,7 @@ void D3DRenderManager::RenderSkeletalMeshInstance()
 	m_pDeviceContext->IASetInputLayout(m_pSkeletalMeshInputLayout.Get());
 	m_pDeviceContext->VSSetShader(m_pSkeletalMeshVertexShader.Get(), nullptr, 0);
 	m_pDeviceContext->PSSetShader(m_pPBRPixelShader.Get(), nullptr, 0);
-	m_pDeviceContext->VSSetConstantBuffers(0, 1, &m_pCBTransformW);  //debugdraw에서 변경시켜서 설정한다.
+	m_pDeviceContext->VSSetConstantBuffers(0, 1, m_pCBTransformW.GetAddressOf());  //debugdraw에서 변경시켜서 설정한다.
 	m_pDeviceContext->RSSetState(m_pRasterizerStateCW.Get());
 
 	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
@@ -466,7 +459,7 @@ void D3DRenderManager::RenderStaticMeshInstance()
 	m_pDeviceContext->IASetInputLayout(m_pStaticMeshInputLayout.Get());
 	m_pDeviceContext->VSSetShader(m_pStaticMeshVertexShader.Get(), nullptr, 0);
 	m_pDeviceContext->PSSetShader(m_pPBRPixelShader.Get(), nullptr, 0);
-	m_pDeviceContext->VSSetConstantBuffers(0, 1, &m_pCBTransformW); //debugdraw에서 변경시켜서 설정한다.
+	m_pDeviceContext->VSSetConstantBuffers(0, 1, m_pCBTransformW.GetAddressOf()); //debugdraw에서 변경시켜서 설정한다.
 	m_pDeviceContext->RSSetState(m_pRasterizerStateCW.Get());
 
 	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
@@ -486,7 +479,7 @@ void D3DRenderManager::RenderStaticMeshInstance()
 		}
 
 		m_TransformW.mWorld = meshInstance->m_pNodeWorldTransform->Transpose();
-		m_pDeviceContext->UpdateSubresource(m_pCBTransformW, 0, nullptr, &m_TransformW, 0, 0);
+		m_pDeviceContext->UpdateSubresource(m_pCBTransformW.Get(), 0, nullptr, &m_TransformW, 0, 0);
 
 		// Draw
 		meshInstance->Render(m_pDeviceContext.Get());
@@ -499,12 +492,12 @@ void D3DRenderManager::RenderEnvironment()
 	m_pDeviceContext->IASetInputLayout(m_pStaticMeshInputLayout.Get());
 	m_pDeviceContext->VSSetShader(m_pEnvironmentVertexShader.Get(), nullptr, 0);
 	m_pDeviceContext->PSSetShader(m_pEnvironmentPixelShader.Get(), nullptr, 0);
-	m_pDeviceContext->VSSetConstantBuffers(0, 1, &m_pCBTransformW); //debugdraw에서 변경시켜서 설정한다.
+	m_pDeviceContext->VSSetConstantBuffers(0, 1, m_pCBTransformW.GetAddressOf()); //debugdraw에서 변경시켜서 설정한다.
 	m_pDeviceContext->RSSetState(m_pRasterizerStateCCW.Get());
 
 	auto component = m_pEnvironmentMeshComponent.lock();	
 	m_TransformW.mWorld = component->m_World.Transpose();
-	m_pDeviceContext->UpdateSubresource(m_pCBTransformW, 0, nullptr, &m_TransformW, 0, 0);
+	m_pDeviceContext->UpdateSubresource(m_pCBTransformW.Get(), 0, nullptr, &m_TransformW, 0, 0);
 	component->m_MeshInstance.Render(m_pDeviceContext.Get());
 }
 
@@ -659,7 +652,7 @@ void D3DRenderManager::ApplyMaterial(Material* pMaterial)
 	else
 		m_pDeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);	// 설정해제 , 다른옵션은 기본값
 
-	m_pDeviceContext->UpdateSubresource(m_pCBMaterial, 0, nullptr, &m_CpuCbMaterial, 0, 0);
+	m_pDeviceContext->UpdateSubresource(m_pCBMaterial.Get(), 0, nullptr, &m_CpuCbMaterial, 0, 0);
 }
 
 void  D3DRenderManager::GetVideoMemoryInfo(std::string& out)
@@ -694,7 +687,7 @@ void D3DRenderManager::SetEnvironment(std::weak_ptr<EnvironmentMeshComponent> va
 	m_pDeviceContext->PSSetShaderResources(9, 1, component->m_IBLSpecularTextureResource->m_pTextureSRV.GetAddressOf());
 	m_pDeviceContext->PSSetShaderResources(10, 1, component->m_IBLBRDFTextureResource->m_pTextureSRV.GetAddressOf());	
 	m_IBL.UseIBL = true;
-	m_pDeviceContext->UpdateSubresource(m_pCBIBL, 0, nullptr, &m_IBL, 0, 0);
+	m_pDeviceContext->UpdateSubresource(m_pCBIBL.Get(), 0, nullptr, &m_IBL, 0, 0);
 }
 
 void D3DRenderManager::AddDebugStringToImGuiWindow(const std::string& header,const std::string& str)
@@ -789,60 +782,60 @@ void D3DRenderManager::CreateConstantBuffer()
 	bd.ByteWidth = sizeof(CB_TransformW);
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bd.CPUAccessFlags = 0;
-	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, &m_pCBTransformW));
+	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, m_pCBTransformW.GetAddressOf()));
 
 	bd = {};
 	bd.Usage = D3D11_USAGE_DEFAULT;
 	bd.ByteWidth = sizeof(CB_TransformVP);
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bd.CPUAccessFlags = 0;
-	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, &m_pCBTransformVP));
+	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, m_pCBTransformVP.GetAddressOf()));
 
 	bd.Usage = D3D11_USAGE_DEFAULT;
 	bd.ByteWidth = sizeof(CB_DirectionLight);
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bd.CPUAccessFlags = 0;
-	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, &m_pCBDirectionLight));
+	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, m_pCBDirectionLight.GetAddressOf()));
 
 	bd.Usage = D3D11_USAGE_DEFAULT;
 	bd.ByteWidth = sizeof(CB_Marterial);
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bd.CPUAccessFlags = 0;
-	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, &m_pCBMaterial));
+	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, m_pCBMaterial.GetAddressOf()));
 
 	bd.Usage = D3D11_USAGE_DEFAULT;
 	bd.ByteWidth = sizeof(CB_IBL);
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bd.CPUAccessFlags = 0;
-	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, &m_pCBIBL));
+	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, m_pCBIBL.GetAddressOf()));
 
 	bd.Usage = D3D11_USAGE_DEFAULT;
 	bd.ByteWidth = sizeof(CB_Post);
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bd.CPUAccessFlags = 0;
-	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, &m_pCBPost));
+	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, m_pCBPost.GetAddressOf()));
 
 
 	m_cbMatrixPallete.Create(m_pDevice);
 
-	m_pDeviceContext->VSSetConstantBuffers(0, 1, &m_pCBTransformW);
-	m_pDeviceContext->VSSetConstantBuffers(1, 1, &m_pCBTransformVP);
-	m_pDeviceContext->VSSetConstantBuffers(2, 1, &m_pCBDirectionLight);
+	m_pDeviceContext->VSSetConstantBuffers(0, 1, m_pCBTransformW.GetAddressOf());
+	m_pDeviceContext->VSSetConstantBuffers(1, 1, m_pCBTransformVP.GetAddressOf());
+	m_pDeviceContext->VSSetConstantBuffers(2, 1, m_pCBDirectionLight.GetAddressOf());
 	// 3 material
 	auto buffer = m_cbMatrixPallete.GetBuffer();
 	m_pDeviceContext->VSSetConstantBuffers(4, 1, &buffer);
 
 	// 픽셀셰이더 상수설정
-	m_pDeviceContext->PSSetConstantBuffers(0, 1, &m_pCBTransformW);
-	m_pDeviceContext->PSSetConstantBuffers(1, 1, &m_pCBTransformVP);
-	m_pDeviceContext->PSSetConstantBuffers(2, 1, &m_pCBDirectionLight);
-	m_pDeviceContext->PSSetConstantBuffers(3, 1, &m_pCBMaterial);
+	m_pDeviceContext->PSSetConstantBuffers(0, 1, m_pCBTransformW.GetAddressOf());
+	m_pDeviceContext->PSSetConstantBuffers(1, 1, m_pCBTransformVP.GetAddressOf());
+	m_pDeviceContext->PSSetConstantBuffers(2, 1, m_pCBDirectionLight.GetAddressOf());
+	m_pDeviceContext->PSSetConstantBuffers(3, 1, m_pCBMaterial.GetAddressOf());
 
-	m_pDeviceContext->PSSetConstantBuffers(5, 1, &m_pCBIBL);
-	m_pDeviceContext->UpdateSubresource(m_pCBIBL, 0, nullptr, &m_IBL, 0, 0);
+	m_pDeviceContext->PSSetConstantBuffers(5, 1, m_pCBIBL.GetAddressOf());
+	m_pDeviceContext->UpdateSubresource(m_pCBIBL.Get(), 0, nullptr, &m_IBL, 0, 0);
 
-	m_pDeviceContext->PSSetConstantBuffers(6, 1, &m_pCBPost);
-	m_pDeviceContext->UpdateSubresource(m_pCBPost, 0, nullptr, &m_Post, 0, 0);
+	m_pDeviceContext->PSSetConstantBuffers(6, 1, m_pCBPost.GetAddressOf());
+	m_pDeviceContext->UpdateSubresource(m_pCBPost.Get(), 0, nullptr, &m_Post, 0, 0);
 	
 }
 

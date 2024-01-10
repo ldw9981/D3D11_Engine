@@ -118,12 +118,12 @@ public:
 	ComPtr<ID3D11RasterizerState> m_pRasterizerStateCW; // 컬 모드 CW
 
 
-	ID3D11Buffer* m_pCBMaterial = nullptr;				// 상수 버퍼: 변환행렬
-	ID3D11Buffer* m_pCBTransformW = nullptr;				// 상수 버퍼: 변환행렬
-	ID3D11Buffer* m_pCBTransformVP = nullptr;				// 상수 버퍼: 변환행렬
-	ID3D11Buffer* m_pCBDirectionLight = nullptr;		// 상수 버퍼: 방향광
-	ID3D11Buffer* m_pCBIBL = nullptr; // DirectXTK의 상수버퍼 클래스 활용
-	ID3D11Buffer* m_pCBPost = nullptr; // DirectXTK의 상수버퍼 클래스 활용
+	ComPtr<ID3D11Buffer> m_pCBMaterial;				// 상수 버퍼: 변환행렬
+	ComPtr<ID3D11Buffer> m_pCBTransformW;				// 상수 버퍼: 변환행렬
+	ComPtr<ID3D11Buffer> m_pCBTransformVP;				// 상수 버퍼: 변환행렬
+	ComPtr<ID3D11Buffer> m_pCBDirectionLight;		// 상수 버퍼: 방향광
+	ComPtr<ID3D11Buffer> m_pCBIBL; // DirectXTK의 상수버퍼 클래스 활용
+	ComPtr<ID3D11Buffer> m_pCBPost; // DirectXTK의 상수버퍼 클래스 활용
 
 	ConstantBuffer<CB_MatrixPalette> m_cbMatrixPallete; // DirectXTK의 상수버퍼 클래스 활용
 
