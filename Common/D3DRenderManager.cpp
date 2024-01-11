@@ -230,7 +230,7 @@ void D3DRenderManager::Update(float DeltaTime)
 	m_pDeviceContext->UpdateSubresource(m_pCBIBL.Get(), 0, nullptr, &m_IBL, 0, 0);
 	m_pDeviceContext->UpdateSubresource(m_pCBPost.Get(), 0, nullptr, &m_Post, 0, 0);
 
-	
+	m_cbMaterialOverride.SetData(m_pDeviceContext.Get(), m_MaterialOverride);
 
 	m_nDrawComponentCount = 0;
 	for (auto& SkeletalMeshComponent : m_SkeletalMeshComponents)
@@ -390,6 +390,16 @@ void D3DRenderManager::RenderImGui()
 		ImGui::SliderFloat3("LightDirection", (float*)&m_Light.Direction, -1.0f, 1.0f);
 		ImGui::ColorEdit3("LightRadiance", (float*)&m_Light.Radiance);
 		
+		ImGui::Text(" ");
+		ImGui::Text("Material Override");		
+		static bool bUseMarterialOverride = m_MaterialOverride.UseMarterialOverride;
+		ImGui::Checkbox("UseMarterialOverride", &bUseMarterialOverride);
+		m_MaterialOverride.UseMarterialOverride = bUseMarterialOverride ? 1 : 0;
+		ImGui::ColorEdit3("BaseColorOverride", (float*)&m_MaterialOverride.BaseColorOverride);		
+		ImGui::SliderFloat("MatalnessOverride", (float*)&m_MaterialOverride.MetalnessOverride, 0.0f, 1.0f);
+		ImGui::SliderFloat("RoughnessOverride", (float*)&m_MaterialOverride.RoughnessOverride, 0.0f, 1.0f);
+		ImGui::Text(" ");
+
 		ImGui::Text("IBL");
 		static bool bUseIBL = m_IBL.UseIBL;
 		ImGui::Checkbox("UseIBL", &bUseIBL);
@@ -815,13 +825,11 @@ void D3DRenderManager::CreateConstantBuffer()
 	bd.CPUAccessFlags = 0;
 	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, m_pCBPost.GetAddressOf()));
 
-
-	m_cbMatrixPallete.Create(m_pDevice);
-
 	m_pDeviceContext->VSSetConstantBuffers(0, 1, m_pCBTransformW.GetAddressOf());
 	m_pDeviceContext->VSSetConstantBuffers(1, 1, m_pCBTransformVP.GetAddressOf());
 	m_pDeviceContext->VSSetConstantBuffers(2, 1, m_pCBDirectionLight.GetAddressOf());
 	// 3 material
+	m_cbMatrixPallete.Create(m_pDevice);
 	auto buffer = m_cbMatrixPallete.GetBuffer();
 	m_pDeviceContext->VSSetConstantBuffers(4, 1, &buffer);
 
@@ -836,7 +844,13 @@ void D3DRenderManager::CreateConstantBuffer()
 
 	m_pDeviceContext->PSSetConstantBuffers(6, 1, m_pCBPost.GetAddressOf());
 	m_pDeviceContext->UpdateSubresource(m_pCBPost.Get(), 0, nullptr, &m_Post, 0, 0);
-	
+
+	m_cbMaterialOverride.Create(m_pDevice);
+	{
+		auto buffer = m_cbMaterialOverride.GetBuffer();
+		m_pDeviceContext->PSSetConstantBuffers(7, 1, &buffer);
+	}
+
 }
 
 void D3DRenderManager::CreateSamplerState()

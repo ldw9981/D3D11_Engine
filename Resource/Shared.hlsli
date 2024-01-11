@@ -70,6 +70,16 @@ cbuffer Post : register(b6)
     float3 padCB_Post; // 12	16
 };
 
+cbuffer MaterialOverride : register(b7)
+{
+    int UseMarterialOverride;
+    float3 BaseColorOverride; //16
+    float MetalnessOverride;
+    float RoughnessOverride; 
+    float2 MarterialOverridePad; // 16
+};
+
+
 
 //--------------------------------------------------------------------------------------
 struct VS_INPUT

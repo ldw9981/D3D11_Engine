@@ -61,7 +61,6 @@ float4 main(PS_INPUT input) : SV_Target
 	float3 vNormal = normalize(input.NormalWorld);
 	float3 vTangent = normalize(input.TangentWorld);
 	float3 vBiTanget = normalize(input.BiTangentWorld);
-	float Opacity = 1.0f;
 	
 	if (UseNormalMap)
 	{
@@ -72,26 +71,31 @@ float4 main(PS_INPUT input) : SV_Target
 	}
 	
 	// Sample input textures to get shading model params.
-    float3 albedo = txBaseColor.Sample(samplerLinear, input.TexCoord).rgb;
+    float3 albedo = 1.0f;
+    if (UseBaseColorMap)	
+        albedo = txBaseColor.Sample(samplerLinear, input.TexCoord).rgb;
+	
     float metalness = 0.0f;
 	if (UseMetalnessMap)
-    {
         metalness = txMetalness.Sample(samplerLinear, input.TexCoord).r;
-    }    
-	
+    	
     float roughness = 0.0f;
 	if (UseRoughnessMap)
-    {
-        roughness = txRoughness.Sample(samplerLinear, input.TexCoord).r;
-    }   
+		roughness = txRoughness.Sample(samplerLinear, input.TexCoord).r;
+       
     float3 emissive = 0.0f;
     if (UseEmissiveMap)
-    {
-        emissive = txEmissive.Sample(samplerLinear, input.TexCoord).rgb;
-    }
+		emissive = txEmissive.Sample(samplerLinear, input.TexCoord).rgb;
+    
+    float Opacity = 1.0f;
     if (UseOpacityMap)
-    {	
-        Opacity = txOpacity.Sample(samplerLinear, input.TexCoord).a;
+		Opacity = txOpacity.Sample(samplerLinear, input.TexCoord).a; 
+		
+	if (UseMarterialOverride)
+    {
+        albedo = BaseColorOverride;       
+        metalness = MetalnessOverride;
+        roughness = RoughnessOverride;       
     }
 	
 	// Outgoing light direction (vector from world-space fragment position to the "eye").

@@ -42,7 +42,7 @@ struct CB_Marterial
 	int UseOpacityMap = true;					// 4
 	int UseMetalnessMap = true;					// 4
 	int UseRoughnessMap = true;					// 4	
-	int pad;									// 4 16
+	int pad = 0;									// 4 16	
 };
 
 struct CB_IBL
@@ -58,6 +58,14 @@ struct CB_Post
 	Vector3 pad;								// 12	16
 };
 
+struct CB_MarterialOverride
+{
+	int UseMarterialOverride = false;								// 4 
+	Vector3 BaseColorOverride = Vector3(1.0f, 1.0f, 1.0f);	// 12   16	
+	float MetalnessOverride = 0.0f;					// 4
+	float RoughnessOverride = 0.0f;					// 4		
+	Vector2 pad2;					// 8   16byte	
+};
 
 class IImGuiRenderable
 {
@@ -126,7 +134,7 @@ public:
 	ComPtr<ID3D11Buffer> m_pCBPost; // DirectXTK의 상수버퍼 클래스 활용
 
 	ConstantBuffer<CB_MatrixPalette> m_cbMatrixPallete; // DirectXTK의 상수버퍼 클래스 활용
-
+	ConstantBuffer<CB_MarterialOverride> m_cbMaterialOverride;
 
 	// 렌더링 파이프라인에 적용하는 정보
 	Matrix  m_View;					// 뷰좌표계 공간으로 변환을 위한 행렬.
@@ -142,6 +150,7 @@ public:
 	CB_Post m_Post;
 
 	CB_MatrixPalette m_MatrixPalette;
+	CB_MarterialOverride m_MaterialOverride;
 	D3D11_VIEWPORT m_Viewport;
 	HWND m_hWnd = nullptr;
 	std::list<StaticMeshInstance*>		m_StaticMeshInstance;		//  렌더링할 모델들의 포인터 저장해둔다. 
