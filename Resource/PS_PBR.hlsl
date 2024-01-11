@@ -131,7 +131,7 @@ float4 main(PS_INPUT input) : SV_Target
 	float3 F = fresnelSchlick(F0, max(0.0, dot(Lh, Lo)));  //최소값 F0 , 최대값은 1.0,1.0,1.0  
 	
 	// Calculate normal distribution for specular BRDF.
-	float D = ndfGGX(cosLh, max(0.01, roughness));		// 러프니스 0 이되면 값이0이 되므로 0이면 최소값사용
+	float D = ndfGGX(cosLh, max(0.1, roughness));		// 러프니스 0 이되면 값이0이 되므로 0이면 최소값사용 쉐이더토이도 0.1이다 
 	// Calculate geometric attenuation for specular BRDF.
 	float G = gaSchlickGGX(cosLi, cosLo, roughness);
 			
