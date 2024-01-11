@@ -118,17 +118,21 @@ void TutorialApp::IncreaseSkeletalMeshModel()
 
 void TutorialApp::IncreaseStaticMeshModel()
 {
-	std::string fbx[2]= { "../Resource/char.FBX", "../Resource/cerberus.FBX" };
-	for (int i=0; i < 2; ++i)
+	std::vector<std::string> staticMesh;
+	staticMesh.push_back("../Resource/char.FBX");
+	staticMesh.push_back("../Resource/cerberus.FBX");
+	staticMesh.push_back("../Resource/sphere.FBX");
+	
+	for (int i=0; i < staticMesh.size(); ++i)
 	{
 		auto StActor = m_World.CreateGameObject<StaticMeshActor>();
 		StaticMeshComponent* pStaticMeshComponent = (StaticMeshComponent*)StActor->GetComponentPtrByName("StaticMeshComponent");
-		pStaticMeshComponent->ReadSceneResourceFromFBX(fbx[i]);
+		pStaticMeshComponent->ReadSceneResourceFromFBX(staticMesh[i]);
 		pStaticMeshComponent->SetBoundingBoxCenterOffset(Vector3(0.0f, pStaticMeshComponent->m_BoundingBox.Extents.y, 0.0f));
 		BoxComponent* pCollisionComponent = (BoxComponent*)StActor->GetComponentPtrByName("BoxComponent");
 		pCollisionComponent->SetLocalPosition(Vector3(0.0f, pStaticMeshComponent->m_BoundingBox.Extents.y, 0.0f));
 
-		int range = 500;
+		int range = 800;
 		float posx = (float)(rand() % range) - range * 0.5f;
 		float posz = (float)(rand() % range) - range * 0.5f;
 		StActor->SetWorldPosition(Math::Vector3(posx, 0.0f, posz));
