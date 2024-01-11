@@ -19,7 +19,7 @@ public:
 	Math::Vector3 m_PositionAfter;
 	
 	void AddInputVector(const Math::Vector3& input);
-
+	void SetSpeed(float speed) { m_Speed = speed; }
 	virtual void Update(float DeltaTime);
 	virtual void OnBeginPlay();
 	virtual void OnEndPlay();

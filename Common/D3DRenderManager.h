@@ -47,15 +47,16 @@ struct CB_Marterial
 
 struct CB_IBL
 {
-	int UseIBL = false;							// 4  16byte
+	int UseIBL = true;							// 4  16byte
 	float AmbientOcclusion = 1.0f;				// 4
-	Vector2 pad;								// 12	16
+	Vector2 pad;								// 8	16
 };
 
 struct CB_Post
 {
-	float Gamma = 2.2f;
-	Vector3 pad;								// 12	16
+	int UseGammaCorrection = true;				// 4  16byte
+	float Gamma = 2.2f;							// 4
+	Vector2 pad;								// 8	16
 };
 
 struct CB_MarterialOverride

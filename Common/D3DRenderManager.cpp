@@ -391,24 +391,20 @@ void D3DRenderManager::RenderImGui()
 		ImGui::ColorEdit3("LightRadiance", (float*)&m_Light.Radiance);
 		
 		ImGui::Text(" ");
-		ImGui::Text("Material Override");		
-		static bool bUseMarterialOverride = m_MaterialOverride.UseMarterialOverride;
-		ImGui::Checkbox("UseMarterialOverride", &bUseMarterialOverride);
-		m_MaterialOverride.UseMarterialOverride = bUseMarterialOverride ? 1 : 0;
+		ImGui::Text("Material Override");	
+		ImGui::CheckboxFlags("UseMarterialOverride", &m_MaterialOverride.UseMarterialOverride, 1);
 		ImGui::ColorEdit3("BaseColorOverride", (float*)&m_MaterialOverride.BaseColorOverride);		
 		ImGui::SliderFloat("MatalnessOverride", (float*)&m_MaterialOverride.MetalnessOverride, 0.0f, 1.0f);
 		ImGui::SliderFloat("RoughnessOverride", (float*)&m_MaterialOverride.RoughnessOverride, 0.0f, 1.0f);
 		ImGui::Text(" ");
 
-		ImGui::Text("IBL");
-		static bool bUseIBL = m_IBL.UseIBL;
-		ImGui::Checkbox("UseIBL", &bUseIBL);
-		m_IBL.UseIBL = bUseIBL ? 1 : 0;
-
+		ImGui::Text("IBL");		
+		ImGui::CheckboxFlags("UseIBL", &m_IBL.UseIBL, 1);	// bit flag ¿ŒµÌ
 		ImGui::SliderFloat("AmbientOcculusion", &m_IBL.AmbientOcclusion, 0.0f, 1.0f);
 
 		ImGui::Text("Post");
-		ImGui::SliderFloat("Gamma", &m_Post.Gamma, 0.0f, 2.2f);
+		ImGui::CheckboxFlags("UseGammaCorrection", &m_Post.UseGammaCorrection,1);
+		ImGui::SliderFloat("Gamma", &m_Post.Gamma, 1.0f, 2.2f);
 
 		ImGui::Text("BackBuffer");
 		ImGui::ColorEdit3("clear color", (float*)&m_ClearColor); // Edit 3 floats representing a color	

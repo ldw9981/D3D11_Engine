@@ -66,8 +66,9 @@ cbuffer IBL : register(b5)
 
 cbuffer Post : register(b6)
 {
+    int UseGammaCorrection;
     float Gamma;
-    float3 padCB_Post; // 12	16
+    float2 padCB_Post; // 8	16
 };
 
 cbuffer MaterialOverride : register(b7)
