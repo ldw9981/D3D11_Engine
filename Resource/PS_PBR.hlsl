@@ -191,8 +191,9 @@ float4 main(PS_INPUT input) : SV_Target
     }	
 	
     float3 final = directLighting + ambientLighting + emissive ;
-    float3 GammaCorrect = pow(final, float(1.0 / Gamma));
-    float3 output = GammaCorrect;
+	
+	if (UseGammaCorrection)
+	    final = pow(final, float(1.0 / Gamma));
 
-    return float4(output, Opacity);
+    return float4(final, Opacity);
 }
