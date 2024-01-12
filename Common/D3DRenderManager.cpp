@@ -83,8 +83,6 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	// Create DXGI factory
 	HR_T(CreateDXGIFactory1(__uuidof(IDXGIFactory4), (void**)m_pDXGIFactory.GetAddressOf()));
 	HR_T(m_pDXGIFactory->EnumAdapters(0, reinterpret_cast<IDXGIAdapter**>(m_pDXGIAdapter.GetAddressOf())));
-	
-
 
 	// 스왑체인 속성 설정 구조체 생성.
 	DXGI_SWAP_CHAIN_DESC swapDesc = {};
@@ -100,8 +98,8 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	swapDesc.BufferDesc.RefreshRate.Numerator = 60;
 	swapDesc.BufferDesc.RefreshRate.Denominator = 1;
 	// 샘플링 관련 설정.
-	swapDesc.SampleDesc.Count = 1;
-	swapDesc.SampleDesc.Quality = 0;
+	swapDesc.SampleDesc.Count = m_SampleCount;
+	swapDesc.SampleDesc.Quality = m_SampleQuality;
 
 	UINT creationFlags = 0;
 #ifdef _DEBUG
@@ -111,6 +109,9 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 
 	HR_T(D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, creationFlags, NULL, 0,
 		D3D11_SDK_VERSION, &swapDesc, m_pSwapChain.GetAddressOf(), &m_pDevice, NULL, m_pDeviceContext.GetAddressOf()));
+
+	UINT samplecount, quality;
+	MSAACheck(DXGI_FORMAT_R8G8B8A8_UNORM, samplecount, quality);
 
 	// 4. 렌더타겟뷰 생성.  (백버퍼를 이용하는 렌더타겟뷰)	
 	ComPtr<ID3D11Texture2D> pBackBufferTexture; 
@@ -137,8 +138,8 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	descDepth.MipLevels = 1;
 	descDepth.ArraySize = 1;
 	descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	descDepth.SampleDesc.Count = 1;
-	descDepth.SampleDesc.Quality = 0;
+	descDepth.SampleDesc.Count = m_SampleCount;
+	descDepth.SampleDesc.Quality = m_SampleQuality;
 	descDepth.Usage = D3D11_USAGE_DEFAULT;
 	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	descDepth.CPUAccessFlags = 0;
@@ -150,7 +151,7 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	// Create the depth stencil view
 	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
 	descDSV.Format = descDepth.Format;
-	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
 	descDSV.Texture2D.MipSlice = 0;
 	HR_T(m_pDevice->CreateDepthStencilView(textureDepthStencil.Get(), &descDSV, m_pDepthStencilView.GetAddressOf()));
 
@@ -572,6 +573,32 @@ HRESULT D3DRenderManager::CreateSamplerStateE(D3D11_FILTER filter, D3D11_TEXTURE
 	return m_pDevice->CreateSamplerState(&desc, ppSamplerState);
 }
 
+void D3DRenderManager::MSAACheck(DXGI_FORMAT format, UINT& SampleCount, UINT& Quality) {
+
+	// Check for MSAA Support
+	UINT uQuality = 0;
+	UINT Samples = D3D11_MAX_MULTISAMPLE_SAMPLE_COUNT;
+
+	// Find max number of samples and quality level
+	for (; Samples > 1; Samples /= 2) {
+		m_pDevice->CheckMultisampleQualityLevels(format, Samples, &uQuality);
+		if (uQuality > 0) { break; }
+	}
+
+	// Update
+	if (uQuality > 0) {
+		SampleCount = Samples;
+		Quality = uQuality;
+
+		std::cout << "Found MSAA Quality and Sample Count combination (Samples="
+			<< SampleCount << "; Quality=" << Quality << ")" << std::endl;
+	}
+	else {
+		std::cout << "Failed to find MSAA Quality and Sample Count combination" << std::endl;
+	}
+
+}
+
 void D3DRenderManager::CreatePBR()
 {
 	HRESULT hr;
@@ -886,6 +913,7 @@ void D3DRenderManager::CreateRasterizerState()
 
 	D3D11_RASTERIZER_DESC rasterizerDesc = {};
 	rasterizerDesc.AntialiasedLineEnable = true;
+	rasterizerDesc.MultisampleEnable = true;
 	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
 	rasterizerDesc.CullMode = D3D11_CULL_BACK;
 	rasterizerDesc.FrontCounterClockwise = true;

@@ -169,6 +169,8 @@ public:
     bool m_bWorkCulling = true;
 	bool m_bDrawDebugCulling = false;
 	bool m_bDrawDebugCollision = false;
+	UINT m_SampleQuality = 0;
+	UINT m_SampleCount = 4;
 public:
 	bool Initialize(HWND Handle,UINT Width, UINT Height);
 	void Uninitialize();
@@ -227,4 +229,6 @@ private:
 	void RenderSkeletalMeshInstance();
 	void RenderStaticMeshInstance();
 	void RenderEnvironment();
+
+	void MSAACheck(DXGI_FORMAT format, UINT& SampleCount, UINT& Quality);
 };
