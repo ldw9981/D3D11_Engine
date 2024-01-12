@@ -4,9 +4,16 @@
 
 using namespace Microsoft::WRL;
 
-struct aiMaterial;
-
-
+enum MaterialMapFlags
+{
+	BASECOLOR = 1 << 0,
+	NORMAL = 1 << 1,
+	SPECULAR = 1 << 2,
+	EMISSIVE = 1 << 3,
+	OPACITY = 1 << 4,
+	METALNESS = 1 << 5,
+	ROUGHNESS = 1 << 6		
+};
 
 
 class Material
@@ -26,7 +33,8 @@ public:
 	std::shared_ptr<TextureResource> m_pOpacity;// Åõ¸í¸Ê ¸®¼Ò½º ºä.	
 	std::shared_ptr<TextureResource> m_pMetalness;	// ±Ý¼Ó¼º	
 	std::shared_ptr<TextureResource> m_pRoughness;	// °ÅÄ¥±â
-	
+
+	UINT m_MaterialMapFlags = 0;
 
 	//void ApplyDeviceContext(ID3D11DeviceContext* deviceContext, CB_Marterial* cpuCbMaterial, ID3D11Buffer* gpuCbMarterial, ID3D11BlendState* alphaBlendState);
 };

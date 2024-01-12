@@ -171,6 +171,9 @@
     <ClInclude Include="EnvironmentMeshComponent.h">
       <Filter>헤더 파일\Framework</Filter>
     </ClInclude>
+    <ClInclude Include="MeshInstance.h">
+      <Filter>헤더 파일\Rendering</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp">

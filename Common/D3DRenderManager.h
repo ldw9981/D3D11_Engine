@@ -154,10 +154,15 @@ public:
 	CB_MarterialOverride m_MaterialOverride;
 	D3D11_VIEWPORT m_Viewport;
 	HWND m_hWnd = nullptr;
-	std::list<StaticMeshInstance*>		m_StaticMeshInstance;		//  렌더링할 모델들의 포인터 저장해둔다. 
-	std::list<SkeletalMeshInstance*>	m_SkeletalMeshInstance;		//  렌더링할 모델들의 포인터 저장해둔다. 
-	std::list<SkeletalMeshComponent*>	m_SkeletalMeshComponents;		//  렌더링할 모델들의 포인터 저장해둔다.
-	std::list<StaticMeshComponent*>		m_StaticMeshComponents;		//  렌더링할 모델들의 포인터 저장해둔다
+	std::list<StaticMeshInstance*>		m_StaticMeshInstanceOpaque;			// 불투명 
+	std::list<StaticMeshInstance*>		m_StaticMeshInstanceTranslucent;	// 반투명 
+
+	std::list<SkeletalMeshInstance*>	m_SkeletalMeshInstanceOpaque;			// 불투명 
+	std::list<SkeletalMeshInstance*>	m_SkeletalMeshInstanceTranslucent;		// 반투명 
+
+
+	std::list<SkeletalMeshComponent*>	m_SkeletalMeshComponents;
+	std::list<StaticMeshComponent*>		m_StaticMeshComponents;
 
 	std::list<IImGuiRenderable*>		m_ImGuiRenders;
 	std::list<DebugRay>					m_DebugDrawLines;
@@ -227,8 +232,11 @@ private:
 
 	void RenderDebugDraw();
 	void RenderImGui();
-	void RenderSkeletalMeshInstance();
-	void RenderStaticMeshInstance();
+	void RenderSkeletalMeshInstanceOpaque();
+	void RenderStaticMeshInstanceOpaque();
+	void RenderSkeletalMeshInstanceTranslucent();
+	void RenderStaticMeshInstanceTranslucent();
+
 	void RenderEnvironment();
 
 	void MSAACheck(DXGI_FORMAT format, UINT& SampleCount, UINT& Quality);

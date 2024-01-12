@@ -60,10 +60,19 @@ D3DRenderManager::~D3DRenderManager()
 
 
 void D3DRenderManager::AddMeshInstance(SkeletalMeshComponent* pModel)
-{
+{	
 	for (size_t i = 0; i < pModel->m_MeshInstances.size(); i++)
 	{
-		m_SkeletalMeshInstance.push_back(&pModel->m_MeshInstances[i]);
+		auto* pMeshInstance = &pModel->m_MeshInstances[i];
+
+		if (pMeshInstance->m_pMaterial->m_MaterialMapFlags & MaterialMapFlags::OPACITY)
+		{
+			m_SkeletalMeshInstanceTranslucent.push_back(pMeshInstance);
+		}
+		else
+		{
+			m_SkeletalMeshInstanceOpaque.push_back(pMeshInstance);
+		}
 	}
 }
 
@@ -71,7 +80,16 @@ void D3DRenderManager::AddMeshInstance(StaticMeshComponent* pModel)
 {
 	for (size_t i = 0; i < pModel->m_MeshInstances.size(); i++)
 	{
-		m_StaticMeshInstance.push_back(&pModel->m_MeshInstances[i]);
+		auto* pMeshInstance = &pModel->m_MeshInstances[i];
+
+		if (pMeshInstance->m_pMaterial->m_MaterialMapFlags & MaterialMapFlags::OPACITY)
+		{
+			m_StaticMeshInstanceTranslucent.push_back(pMeshInstance);
+		}
+		else
+		{
+			m_StaticMeshInstanceOpaque.push_back(pMeshInstance);
+		}
 	}
 }
 
@@ -276,11 +294,17 @@ void D3DRenderManager::Render()
 	m_pDeviceContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 	m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);		
 		
-	RenderSkeletalMeshInstance();
-	RenderStaticMeshInstance();		
+	// 불투명 먼저
+	RenderSkeletalMeshInstanceOpaque();
+	RenderStaticMeshInstanceOpaque();			
 	
+	// 환경맵
 	if (m_pEnvironmentMeshComponent.expired() == false)
 		RenderEnvironment();
+
+	// 반투명
+	RenderSkeletalMeshInstanceTranslucent();
+	RenderStaticMeshInstanceTranslucent();
 
 	RenderDebugDraw();
 	RenderImGui();
@@ -428,7 +452,7 @@ void D3DRenderManager::RenderImGui()
 }
 
 
-void D3DRenderManager::RenderSkeletalMeshInstance()
+void D3DRenderManager::RenderSkeletalMeshInstanceOpaque()
 {
 	m_pDeviceContext->IASetInputLayout(m_pSkeletalMeshInputLayout.Get());
 	m_pDeviceContext->VSSetShader(m_pSkeletalMeshVertexShader.Get(), nullptr, 0);
@@ -437,13 +461,13 @@ void D3DRenderManager::RenderSkeletalMeshInstance()
 	m_pDeviceContext->RSSetState(m_pRasterizerStateCW.Get());
 
 	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
-	m_SkeletalMeshInstance.sort([](const SkeletalMeshInstance* lhs, const SkeletalMeshInstance* rhs)
+	m_SkeletalMeshInstanceOpaque.sort([](const SkeletalMeshInstance* lhs, const SkeletalMeshInstance* rhs)
 		{
 			return lhs->m_pMaterial < rhs->m_pMaterial;
 		});
 
 	Material* pPrevMaterial = nullptr;
-	for (const auto& meshInstance : m_SkeletalMeshInstance)
+	for (const auto& meshInstance : m_SkeletalMeshInstanceOpaque)
 	{
 		// 머터리얼이 이전 머터리얼과 다를때만 파이프라인에 텍스쳐를 변경한다.
 		if (pPrevMaterial != meshInstance->m_pMaterial)
@@ -458,10 +482,10 @@ void D3DRenderManager::RenderSkeletalMeshInstance()
 		// Draw
 		meshInstance->Render(m_pDeviceContext.Get());
 	}
-	m_SkeletalMeshInstance.clear();
+	m_SkeletalMeshInstanceOpaque.clear();
 }
 
-void D3DRenderManager::RenderStaticMeshInstance()
+void D3DRenderManager::RenderStaticMeshInstanceOpaque()
 {
 	m_pDeviceContext->IASetInputLayout(m_pStaticMeshInputLayout.Get());
 	m_pDeviceContext->VSSetShader(m_pStaticMeshVertexShader.Get(), nullptr, 0);
@@ -470,13 +494,13 @@ void D3DRenderManager::RenderStaticMeshInstance()
 	m_pDeviceContext->RSSetState(m_pRasterizerStateCW.Get());
 
 	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
-	m_StaticMeshInstance.sort([](const StaticMeshInstance* lhs, const StaticMeshInstance* rhs)
+	m_StaticMeshInstanceOpaque.sort([](const StaticMeshInstance* lhs, const StaticMeshInstance* rhs)
 		{
 			return lhs->m_pMaterial < rhs->m_pMaterial;
 		});
 
 	Material* pPrevMaterial = nullptr;
-	for (const auto& meshInstance : m_StaticMeshInstance)
+	for (const auto& meshInstance : m_StaticMeshInstanceOpaque)
 	{
 		// 머터리얼이 이전 머터리얼과 다를때만 파이프라인에 텍스쳐를 변경한다.
 		if (pPrevMaterial != meshInstance->m_pMaterial)
@@ -491,7 +515,73 @@ void D3DRenderManager::RenderStaticMeshInstance()
 		// Draw
 		meshInstance->Render(m_pDeviceContext.Get());
 	}
-	m_StaticMeshInstance.clear();
+	m_StaticMeshInstanceOpaque.clear();
+}
+
+void D3DRenderManager::RenderSkeletalMeshInstanceTranslucent()
+{
+	m_pDeviceContext->IASetInputLayout(m_pSkeletalMeshInputLayout.Get());
+	m_pDeviceContext->VSSetShader(m_pSkeletalMeshVertexShader.Get(), nullptr, 0);
+	m_pDeviceContext->PSSetShader(m_pPBRPixelShader.Get(), nullptr, 0);
+	m_pDeviceContext->VSSetConstantBuffers(0, 1, m_pCBTransformW.GetAddressOf());  //debugdraw에서 변경시켜서 설정한다.
+	m_pDeviceContext->RSSetState(m_pRasterizerStateCW.Get());
+
+	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
+	m_SkeletalMeshInstanceTranslucent.sort([](const SkeletalMeshInstance* lhs, const SkeletalMeshInstance* rhs)
+		{
+			return lhs->m_pMaterial < rhs->m_pMaterial;
+		});
+
+	Material* pPrevMaterial = nullptr;
+	for (const auto& meshInstance : m_SkeletalMeshInstanceTranslucent)
+	{
+		// 머터리얼이 이전 머터리얼과 다를때만 파이프라인에 텍스쳐를 변경한다.
+		if (pPrevMaterial != meshInstance->m_pMaterial)
+		{
+			ApplyMaterial(meshInstance->m_pMaterial);	// 머터리얼 적용
+			pPrevMaterial = meshInstance->m_pMaterial;
+		}
+		// 행렬팔레트 업데이트						
+		meshInstance->UpdateMatrixPallete(&m_MatrixPalette);
+		m_cbMatrixPallete.SetData(m_pDeviceContext.Get(), m_MatrixPalette);
+
+		// Draw
+		meshInstance->Render(m_pDeviceContext.Get());
+	}
+	m_SkeletalMeshInstanceTranslucent.clear();
+}
+
+void D3DRenderManager::RenderStaticMeshInstanceTranslucent()
+{
+	m_pDeviceContext->IASetInputLayout(m_pStaticMeshInputLayout.Get());
+	m_pDeviceContext->VSSetShader(m_pStaticMeshVertexShader.Get(), nullptr, 0);
+	m_pDeviceContext->PSSetShader(m_pPBRPixelShader.Get(), nullptr, 0);
+	m_pDeviceContext->VSSetConstantBuffers(0, 1, m_pCBTransformW.GetAddressOf()); //debugdraw에서 변경시켜서 설정한다.
+	m_pDeviceContext->RSSetState(m_pRasterizerStateCW.Get());
+
+	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
+	m_StaticMeshInstanceTranslucent.sort([](const StaticMeshInstance* lhs, const StaticMeshInstance* rhs)
+		{
+			return lhs->m_pMaterial < rhs->m_pMaterial;
+		});
+
+	Material* pPrevMaterial = nullptr;
+	for (const auto& meshInstance : m_StaticMeshInstanceTranslucent)
+	{
+		// 머터리얼이 이전 머터리얼과 다를때만 파이프라인에 텍스쳐를 변경한다.
+		if (pPrevMaterial != meshInstance->m_pMaterial)
+		{
+			ApplyMaterial(meshInstance->m_pMaterial);	// 머터리얼 적용
+			pPrevMaterial = meshInstance->m_pMaterial;
+		}
+
+		m_TransformW.mWorld = meshInstance->m_pNodeWorldTransform->Transpose();
+		m_pDeviceContext->UpdateSubresource(m_pCBTransformW.Get(), 0, nullptr, &m_TransformW, 0, 0);
+
+		// Draw
+		meshInstance->Render(m_pDeviceContext.Get());
+	}
+	m_StaticMeshInstanceTranslucent.clear();
 }
 
 void D3DRenderManager::RenderEnvironment()

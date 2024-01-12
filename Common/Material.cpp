@@ -104,6 +104,7 @@ void Material::Create(const aiMaterial* pMaterial)
 	{	
 		finalPath = basePath + path.filename().wstring();		
 		m_pBaseColor = ResourceManager::Instance->CreateTextureResource(finalPath);		
+		m_MaterialMapFlags |= MaterialMapFlags::BASECOLOR;
 	}	
 
 	path = ToWString(textureProperties[aiTextureType_NORMALS].second);
@@ -111,6 +112,7 @@ void Material::Create(const aiMaterial* pMaterial)
 	{
 		finalPath = basePath + path.filename().wstring();
 		m_pNormal = ResourceManager::Instance->CreateTextureResource(finalPath);
+		m_MaterialMapFlags |= MaterialMapFlags::NORMAL;
 	}
 
 	path = ToWString(textureProperties[aiTextureType_SPECULAR].second);
@@ -118,6 +120,7 @@ void Material::Create(const aiMaterial* pMaterial)
 	{
 		finalPath = basePath + path.filename().wstring();
 		m_pSpecular = ResourceManager::Instance->CreateTextureResource(finalPath);
+		m_MaterialMapFlags |= MaterialMapFlags::SPECULAR;
 	}
 
 	path = ToWString(textureProperties[aiTextureType_EMISSIVE].second);
@@ -125,6 +128,7 @@ void Material::Create(const aiMaterial* pMaterial)
 	{
 		finalPath = basePath + path.filename().wstring();
 		m_pEmissive = ResourceManager::Instance->CreateTextureResource(finalPath);
+		m_MaterialMapFlags |= MaterialMapFlags::EMISSIVE;
 	}
 
 	path = ToWString(textureProperties[aiTextureType_OPACITY].second);
@@ -132,6 +136,7 @@ void Material::Create(const aiMaterial* pMaterial)
 	{
 		finalPath = basePath + path.filename().wstring();
 		m_pOpacity = ResourceManager::Instance->CreateTextureResource(finalPath);
+		m_MaterialMapFlags |= MaterialMapFlags::OPACITY;
 	}
 
 	path = ToWString(textureProperties[aiTextureType_METALNESS].second);
@@ -139,6 +144,7 @@ void Material::Create(const aiMaterial* pMaterial)
 	{
 		finalPath = basePath + path.filename().wstring();
 		m_pMetalness = ResourceManager::Instance->CreateTextureResource(finalPath);
+		m_MaterialMapFlags |= MaterialMapFlags::METALNESS;
 	}
 
 	path = ToWString(textureProperties[aiTextureType_SHININESS].second);
@@ -146,6 +152,7 @@ void Material::Create(const aiMaterial* pMaterial)
 	{
 		finalPath = basePath + path.filename().wstring();
 		m_pRoughness = ResourceManager::Instance->CreateTextureResource(finalPath);
+		m_MaterialMapFlags |= MaterialMapFlags::ROUGHNESS;
 	}
 }
 
