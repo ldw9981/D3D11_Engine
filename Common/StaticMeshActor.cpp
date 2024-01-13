@@ -23,6 +23,7 @@ void StaticMeshActor::OnBeginPlay()
 {
 	__super::OnBeginPlay();
 	
+	m_pStaticMeshComponent->m_SceneResource->GetAABB(m_pBoxComponent->m_Geomety.Center, m_pBoxComponent->m_Geomety.Extents);
 
-	m_pBoxComponent->m_Geomety = m_pStaticMeshComponent->m_BoundingBox;	
+
 }

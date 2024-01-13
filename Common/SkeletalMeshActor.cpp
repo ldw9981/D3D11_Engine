@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "SkeletalMeshActor.h"
 #include "SkeletalMeshComponent.h"
+#include "SkeletalMeshResource.h"
 #include "BoxComponent.h"
 #include "Actor.h"
 
@@ -17,6 +18,7 @@ SkeletalMeshActor::SkeletalMeshActor()
 void SkeletalMeshActor::OnBeginPlay()
 {
 	__super::OnBeginPlay();
-	m_pBoxComponent->m_Geomety = m_pSkeletalMeshComponent->m_BoundingBox;
+
+	m_pSkeletalMeshComponent->m_SceneResource->GetAABB(m_pBoxComponent->m_Geomety.Center, m_pBoxComponent->m_Geomety.Extents);
 }
 

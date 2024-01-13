@@ -65,6 +65,8 @@ public:
 
 	Math::Vector3 m_AABBmin;
 	Math::Vector3 m_AABBmax;
+	Math::Vector3 m_BoundingBoxMin;	// 회전을 고려한 느슨한AABB
+	Math::Vector3 m_BoundingBoxMax;	// 회전을 고려한 느슨한AABB
 	std::vector<SkeletalMeshResource> m_SkeletalMeshResources;
 	std::vector<Material> m_Materials;
 	SkeletonResource m_Skeleton;
@@ -76,4 +78,7 @@ public:
 	Material* GetMeshMaterial(UINT index);
 
 	void AddAnimation(std::shared_ptr<AnimationResource> animation);
+
+	void GetAABB(DirectX::XMFLOAT3& center, DirectX::XMFLOAT3& Extents);
+	void GetBoundingBox(DirectX::XMFLOAT3& center, DirectX::XMFLOAT3& Extents);
 };

@@ -104,16 +104,20 @@ bool StaticMeshSceneResource::Create(std::string filePath)
 
 	m_AABBmin = Math::Vector3(FLT_MAX, FLT_MAX, FLT_MAX);
 	m_AABBmax = Math::Vector3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+	
+	float absMax = 0.0f;
 	for (UINT i = 0; i < scene->mNumMeshes; i++)
 	{
 		aiMesh* pMesh = scene->mMeshes[i];
 		Math::Vector3 meshMin = Math::Vector3(pMesh->mAABB.mMin.x, pMesh->mAABB.mMin.y, pMesh->mAABB.mMin.z);
 		Math::Vector3 meshMax = Math::Vector3(pMesh->mAABB.mMax.x, pMesh->mAABB.mMax.y, pMesh->mAABB.mMax.z);
-
+		
 		m_AABBmin = Math::Vector3::Min(m_AABBmin, meshMin);
 		m_AABBmax = Math::Vector3::Max(m_AABBmax, meshMax);
 	}
-
+	absMax = max(m_AABBmax.Length(), m_AABBmin.Length());
+	m_BoundingBoxMin = Math::Vector3(-absMax, -absMax, -absMax);
+	m_BoundingBoxMax = Math::Vector3(absMax, absMax, absMax);
 	importer.FreeScene();	
 	return true;
 }
@@ -124,4 +128,16 @@ Material* StaticMeshSceneResource::GetMeshMaterial(UINT index)
 	UINT mindex = m_StaticMeshResources[index].m_MaterialIndex;
 	assert(mindex < m_Materials.size());
 	return &m_Materials[mindex];
+}
+
+void StaticMeshSceneResource::GetAABB(DirectX::XMFLOAT3& center, DirectX::XMFLOAT3& Extents)
+{
+	center = (m_AABBmin + m_AABBmax) * 0.5f;
+	Extents = (m_AABBmax - m_AABBmin) * 0.5f;
+}
+
+void StaticMeshSceneResource::GetBoundingBox(DirectX::XMFLOAT3& center, DirectX::XMFLOAT3& Extents)
+{
+	center = (m_BoundingBoxMin + m_BoundingBoxMax) * 0.5f;
+	Extents = (m_BoundingBoxMax - m_BoundingBoxMin) * 0.5f;
 }

@@ -20,8 +20,9 @@ public:
 	~SkeletalMeshComponent();
 	
 	void SetSceneFilePath(std::string val) { m_SceneFilePath = val; }
-protected:
+public:
 	std::shared_ptr<SkeletalMeshSceneResource>  m_SceneResource;
+protected:	
 	std::vector<SkeletalMeshInstance> m_MeshInstances;
 	float m_AnimationProressTime = 0.0f;
 	UINT  m_AnimationIndex = 0;
