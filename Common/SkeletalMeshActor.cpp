@@ -19,6 +19,14 @@ void SkeletalMeshActor::OnBeginPlay()
 {
 	__super::OnBeginPlay();
 
-	m_pSkeletalMeshComponent->m_SceneResource->GetAABB(m_pBoxComponent->m_Geomety.Center, m_pBoxComponent->m_Geomety.Extents);
+	Math::Vector3 Center,Extents;
+	float MaxExtent = 0.0f;
+	m_pSkeletalMeshComponent->m_SceneResource->GetAABB(Center, Extents);
+	MaxExtent = max(MaxExtent,Extents.x);
+	MaxExtent = max(MaxExtent,Extents.y);
+	MaxExtent = max(MaxExtent,Extents.z);
+
+	m_pBoxComponent->m_Geomety.Center = Center;
+	m_pBoxComponent->m_Geomety.Extents = Vector3(MaxExtent,MaxExtent,MaxExtent);
 }
 

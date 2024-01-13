@@ -98,11 +98,10 @@ void TutorialApp::IncreaseSkeletalMeshModel()
 	SkeletalMeshComponent* pSkeletalMeshComponent = (SkeletalMeshComponent*)SkActor->GetComponentPtrByName("SkeletalMeshComponent");	
 	pSkeletalMeshComponent->ReadSceneResourceFromFBX("../Resource/Zombie.fbx");
 	pSkeletalMeshComponent->AddSceneAnimationFromFBX("../Resource/Zombie_Run.fbx");
-	pSkeletalMeshComponent->AddSceneAnimationFromFBX("../Resource/SkinningTest.fbx");
-	
+	pSkeletalMeshComponent->AddSceneAnimationFromFBX("../Resource/SkinningTest.fbx");	
 
 	BoxComponent* pCollisionComponent = (BoxComponent*)SkActor->GetComponentPtrByName("BoxComponent");
-	pCollisionComponent->SetLocalPosition(Vector3(0.0f, pSkeletalMeshComponent->m_BoundingBox.Extents.y, 0.0f));
+	pCollisionComponent->SetLocalPosition(Vector3(0.0f, pSkeletalMeshComponent->m_SceneResource->m_AABBmax.y *0.5f, 0.0f));
 
 	int range = 500;
 	float posx = (float)(rand() % range) - range * 0.5f;	
@@ -130,7 +129,7 @@ void TutorialApp::IncreaseStaticMeshModel()
 		pStaticMeshComponent->ReadSceneResourceFromFBX(staticMesh[i]);
 		
 		BoxComponent* pCollisionComponent = (BoxComponent*)StActor->GetComponentPtrByName("BoxComponent");
-		//pCollisionComponent->SetLocalPosition(Vector3(0.0f, pStaticMeshComponent->m_BoundingBox.Extents.y, 0.0f));
+		pCollisionComponent->SetLocalPosition(Vector3(0.0f, pStaticMeshComponent->m_SceneResource->m_AABBmax.y * 0.5f, 0.0f));
 
 		int range = 800;
 		float posx = (float)(rand() % range) - range * 0.5f;
