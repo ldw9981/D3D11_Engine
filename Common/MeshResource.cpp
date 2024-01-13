@@ -10,8 +10,7 @@ MeshResource::MeshResource()
 
 MeshResource::~MeshResource()
 {
-	SAFE_RELEASE(m_pVertexBuffer);
-	SAFE_RELEASE(m_pIndexBuffer);
+
 }
 
 void MeshResource::CreateIndexBuffer(Face* faces, UINT faceCount)
@@ -27,6 +26,6 @@ void MeshResource::CreateIndexBuffer(Face* faces, UINT faceCount)
 
 	D3D11_SUBRESOURCE_DATA ibData = {};
 	ibData.pSysMem = faces;
-	HR_T(D3DRenderManager::m_pDevice->CreateBuffer(&bd, &ibData, &m_pIndexBuffer));
+	HR_T(D3DRenderManager::m_pDevice->CreateBuffer(&bd, &ibData, m_pIndexBuffer.GetAddressOf()));
 }
 

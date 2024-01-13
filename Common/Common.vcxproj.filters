@@ -171,6 +171,9 @@
     <ClInclude Include="MeshInstance.h">
       <Filter>헤더 파일\Rendering</Filter>
     </ClInclude>
+    <ClInclude Include="GeometryGenerator.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp">
@@ -298,6 +301,9 @@
     </ClCompile>
     <ClCompile Include="EnvironmentMeshComponent.cpp">
       <Filter>소스 파일\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="GeometryGenerator.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

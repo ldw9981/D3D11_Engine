@@ -18,8 +18,8 @@ public:
 
 	std::vector<Face>		m_Faces;
 
-	ID3D11Buffer* m_pVertexBuffer = nullptr;
-	ID3D11Buffer* m_pIndexBuffer = nullptr;
+	ComPtr<ID3D11Buffer> m_pVertexBuffer;
+	ComPtr<ID3D11Buffer> m_pIndexBuffer;
 
 	UINT m_VertexCount = 0;
 	UINT m_VertexBufferStride = 0;						// 버텍스 하나의 크기.
@@ -40,7 +40,7 @@ public:
 
 		D3D11_SUBRESOURCE_DATA vbData = {};
 		vbData.pSysMem = vertices;
-		HR_T(D3DRenderManager::m_pDevice->CreateBuffer(&bd, &vbData, &m_pVertexBuffer));
+		HR_T(D3DRenderManager::m_pDevice->CreateBuffer(&bd, &vbData, m_pVertexBuffer.GetAddressOf()));
 
 		// 버텍스 버퍼 정보
 		m_VertexCount = vertexCount;

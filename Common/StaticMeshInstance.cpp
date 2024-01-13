@@ -23,7 +23,8 @@ void StaticMeshInstance::Create(StaticMeshResource* pMeshResource, Math::Matrix*
 
 void StaticMeshInstance::Render(ID3D11DeviceContext* deviceContext)
 {
-	deviceContext->IASetIndexBuffer(m_pMeshResource->m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	deviceContext->IASetVertexBuffers(0, 1, &m_pMeshResource->m_pVertexBuffer, &m_pMeshResource->m_VertexBufferStride, &m_pMeshResource->m_VertexBufferOffset);
+	deviceContext->IASetIndexBuffer(m_pMeshResource->m_pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+	deviceContext->IASetVertexBuffers(0, 1,  m_pMeshResource->m_pVertexBuffer.GetAddressOf(),
+		&m_pMeshResource->m_VertexBufferStride, &m_pMeshResource->m_VertexBufferOffset);
 	deviceContext->DrawIndexed(m_pMeshResource->m_FaceCount*3, 0, 0);
 }
