@@ -128,6 +128,7 @@ void TutorialApp::IncreaseStaticMeshModel()
 		StaticMeshComponent* pStaticMeshComponent = (StaticMeshComponent*)StActor->GetComponentPtrByName("StaticMeshComponent");
 		pStaticMeshComponent->ReadSceneResourceFromFBX(staticMesh[i]);
 		
+
 		BoxComponent* pCollisionComponent = (BoxComponent*)StActor->GetComponentPtrByName("BoxComponent");
 		pCollisionComponent->SetLocalPosition(Vector3(0.0f, pStaticMeshComponent->m_SceneResource->m_AABBmax.y * 0.5f, 0.0f));
 

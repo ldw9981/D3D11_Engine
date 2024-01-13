@@ -6,7 +6,6 @@ enum class ColliderType
 {
 	Box=0,
 	Sphere,
-	OrientedBox,
 	Count
 };
 

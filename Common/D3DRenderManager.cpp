@@ -25,9 +25,8 @@
 #include "CameraComponent.h"
 #include "EnvironmentMeshComponent.h"
 #include "CollisionComponent.h"
-#include "BoxComponent.h"
 #include "SphereComponent.h"
-#include "OrientedBoxComponent.h"
+#include "BoxComponent.h"
 #include "CollisionManager.h"
 #include "DebugDraw.h"
 #include <DirectXTex.h>
@@ -359,13 +358,6 @@ void D3DRenderManager::RenderDebugDraw()
 			{
 				BoxComponent* pBox = static_cast<BoxComponent*>(CollisionComponent);
 				DebugDraw::Draw(DebugDraw::g_Batch.get(), pBox->m_Geomety, pBox->m_bIsOverlapped ? Colors::Red : Colors::Green);
-
-			}
-			break;
-			case ColliderType::OrientedBox:
-			{
-				OrientedBoxComponent* pOrientedBox = static_cast<OrientedBoxComponent*>(CollisionComponent);
-				DebugDraw::Draw(DebugDraw::g_Batch.get(), pOrientedBox->m_Geomety, pOrientedBox->m_bIsOverlapped ? Colors::Red : Colors::Green);
 			}
 			break;
 			}

@@ -143,7 +143,6 @@
   <ItemGroup>
     <ClInclude Include="ActorController.h" />
     <ClInclude Include="AnimationResource.h" />
-    <ClInclude Include="BoxComponent.h" />
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="CollisionComponent.h" />
     <ClInclude Include="CollisionManager.h" />
@@ -155,7 +154,7 @@
     <ClInclude Include="MeshInstance.h" />
     <ClInclude Include="MeshResource.h" />
     <ClInclude Include="MovementComponent.h" />
-    <ClInclude Include="OrientedBoxComponent.h" />
+    <ClInclude Include="BoxComponent.h" />
     <ClInclude Include="Pawn.h" />
     <ClInclude Include="PipelineStateObjects.h" />
     <ClInclude Include="PlayerController.h" />
@@ -189,7 +188,6 @@
   <ItemGroup>
     <ClCompile Include="ActorController.cpp" />
     <ClCompile Include="AnimationResource.cpp" />
-    <ClCompile Include="BoxComponent.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="CollisionComponent.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
@@ -200,7 +198,7 @@
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="MeshResource.cpp" />
     <ClCompile Include="MovementComponent.cpp" />
-    <ClCompile Include="OrientedBoxComponent.cpp" />
+    <ClCompile Include="BoxComponent.cpp" />
     <ClCompile Include="Pawn.cpp" />
     <ClCompile Include="PipelineStateObjects.cpp" />
     <ClCompile Include="PlayerController.cpp" />

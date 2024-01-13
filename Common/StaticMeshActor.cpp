@@ -9,7 +9,7 @@ StaticMeshActor::StaticMeshActor()
 {
 	m_pStaticMeshComponent = CreateComponent<StaticMeshComponent>("StaticMeshComponent").get();
 	SetRootComponent(m_pStaticMeshComponent);
-	m_pBoxComponent = CreateComponent<BoxComponent>("BoxComponent").get();	
+	m_pBoxComponent = CreateComponent<BoxComponent>("BoxComponent").get();
 	m_pBoxComponent->SetParent(m_pStaticMeshComponent);
 	m_pBoxComponent->SetCollisionType(CollisionType::Block);
 }
@@ -24,6 +24,4 @@ void StaticMeshActor::OnBeginPlay()
 	__super::OnBeginPlay();
 	
 	m_pStaticMeshComponent->m_SceneResource->GetAABB(m_pBoxComponent->m_Geomety.Center, m_pBoxComponent->m_Geomety.Extents);
-
-
 }
