@@ -114,9 +114,10 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	// 화면 주사율 설정.
 	swapDesc.BufferDesc.RefreshRate.Numerator = 60;
 	swapDesc.BufferDesc.RefreshRate.Denominator = 1;
-	// 샘플링 관련 설정.
-	swapDesc.SampleDesc.Count = m_SampleCount;
-	swapDesc.SampleDesc.Quality = m_SampleQuality;
+
+	swapDesc.SampleDesc.Count = 1;
+	swapDesc.SampleDesc.Quality = 0;
+	
 
 	UINT creationFlags = 0;
 #ifdef _DEBUG
@@ -125,55 +126,16 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	// 1. 장치 생성.   2.스왑체인 생성. 3.장치 컨텍스트 생성.
 
 	HR_T(D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, creationFlags, NULL, 0,
-		D3D11_SDK_VERSION, &swapDesc, m_pSwapChain.GetAddressOf(), &m_pDevice, NULL, m_pDeviceContext.GetAddressOf()));
+		D3D11_SDK_VERSION, &swapDesc, m_pSwapChain.GetAddressOf(), &m_pDevice, NULL, m_pDeviceContext.GetAddressOf()));		
+			
+	//UINT samplecount, quality;
+	//MSAACheck(DXGI_FORMAT_R8G8B8A8_UNORM, samplecount, quality);
+	//assert(m_SampleQuality > quality && m_SampleCount > samplecount);
 
-	UINT samplecount, quality;
-	MSAACheck(DXGI_FORMAT_R8G8B8A8_UNORM, samplecount, quality);
-
-	// 4. 렌더타겟뷰 생성.  (백버퍼를 이용하는 렌더타겟뷰)	
-	ComPtr<ID3D11Texture2D> pBackBufferTexture; 
-	HR_T(m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)pBackBufferTexture.GetAddressOf()));
-	HR_T(m_pDevice->CreateRenderTargetView(pBackBufferTexture.Get(), NULL, m_pRenderTargetView.GetAddressOf()));  // 텍스처는 내부 참조 증가
+	SetViewPort(Width,Height);
+	CreateBuffers();
 	
-	// 렌더 타겟을 최종 출력 파이프라인에 바인딩합니다.
-	m_pDeviceContext->OMSetRenderTargets(1, m_pRenderTargetView.GetAddressOf(), NULL);
-
-	//5. 뷰포트 설정.	
-	m_Viewport = {};
-	m_Viewport.TopLeftX = 0;
-	m_Viewport.TopLeftY = 0;
-	m_Viewport.Width = (float)Width;
-	m_Viewport.Height = (float)Height;
-	m_Viewport.MinDepth = 0.0f;
-	m_Viewport.MaxDepth = 1.0f;
-	m_pDeviceContext->RSSetViewports(1, &m_Viewport);
-
-	//6. 뎊스&스텐실 뷰 생성
-	D3D11_TEXTURE2D_DESC descDepth = {};
-	descDepth.Width = Width;
-	descDepth.Height = Height;
-	descDepth.MipLevels = 1;
-	descDepth.ArraySize = 1;
-	descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	descDepth.SampleDesc.Count = m_SampleCount;
-	descDepth.SampleDesc.Quality = m_SampleQuality;
-	descDepth.Usage = D3D11_USAGE_DEFAULT;
-	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	descDepth.CPUAccessFlags = 0;
-	descDepth.MiscFlags = 0;
-
-	ComPtr<ID3D11Texture2D> textureDepthStencil;
-	HR_T(m_pDevice->CreateTexture2D(&descDepth, nullptr, textureDepthStencil.GetAddressOf()));
-
-	// Create the depth stencil view
-	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
-	descDSV.Format = descDepth.Format;
-	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
-	descDSV.Texture2D.MipSlice = 0;
-	HR_T(m_pDevice->CreateDepthStencilView(textureDepthStencil.Get(), &descDSV, m_pDepthStencilView.GetAddressOf()));
-
-	m_pDeviceContext->OMSetRenderTargets(1, m_pRenderTargetView.GetAddressOf(), m_pDepthStencilView.Get());
-
+	m_pDeviceContext->OMSetRenderTargets(1, m_pBackBufferRTV.GetAddressOf(), m_pDepthStencilView.Get());
 	/*
 		ImGui 초기화.
 	*/
@@ -289,7 +251,7 @@ void D3DRenderManager::Render()
 {	
 	// Clear the back buffer
 	const float clear_color_with_alpha[4] = { m_ClearColor.x , m_ClearColor.y , m_ClearColor.z, 1.0f };
-	m_pDeviceContext->ClearRenderTargetView(m_pRenderTargetView.Get(), clear_color_with_alpha);
+	m_pDeviceContext->ClearRenderTargetView(m_pBackBufferRTV.Get(), clear_color_with_alpha);
 	m_pDeviceContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 	m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);		
 		
@@ -658,22 +620,34 @@ HRESULT D3DRenderManager::CreateSamplerStateE(D3D11_FILTER filter, D3D11_TEXTURE
 	return m_pDevice->CreateSamplerState(&desc, ppSamplerState);
 }
 
+void D3DRenderManager::SetViewPort(UINT Width, UINT Height)
+{
+	m_Viewport = {};
+	m_Viewport.TopLeftX = 0;
+	m_Viewport.TopLeftY = 0;
+	m_Viewport.Width = (float)Width;
+	m_Viewport.Height = (float)Height;
+	m_Viewport.MinDepth = 0.0f;
+	m_Viewport.MaxDepth = 1.0f;
+	m_pDeviceContext->RSSetViewports(1, &m_Viewport);
+}
+
 void D3DRenderManager::MSAACheck(DXGI_FORMAT format, UINT& SampleCount, UINT& Quality) {
 
 	// Check for MSAA Support
-	UINT uQuality = 0;
+	UINT NumQuality = 0;
 	UINT Samples = D3D11_MAX_MULTISAMPLE_SAMPLE_COUNT;
 
 	// Find max number of samples and quality level
 	for (; Samples > 1; Samples /= 2) {
-		m_pDevice->CheckMultisampleQualityLevels(format, Samples, &uQuality);
-		if (uQuality > 0) { break; }
+		m_pDevice->CheckMultisampleQualityLevels(format, Samples, &NumQuality);
+		if (NumQuality > 0) { break; }
 	}
 
 	// Update
-	if (uQuality > 0) {
+	if (NumQuality > 0) {
 		SampleCount = Samples;
-		Quality = uQuality;
+		Quality = NumQuality-1;
 
 		std::cout << "Found MSAA Quality and Sample Count combination (Samples="
 			<< SampleCount << "; Quality=" << Quality << ")" << std::endl;
@@ -681,6 +655,39 @@ void D3DRenderManager::MSAACheck(DXGI_FORMAT format, UINT& SampleCount, UINT& Qu
 	else {
 		std::cout << "Failed to find MSAA Quality and Sample Count combination" << std::endl;
 	}
+
+}
+
+void D3DRenderManager::CreateBuffers()
+{
+	// 4. 렌더타겟뷰 생성.  (백버퍼를 이용하는 렌더타겟뷰)	
+	ComPtr<ID3D11Texture2D> pBackBufferTexture;
+	HR_T(m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)pBackBufferTexture.GetAddressOf()));
+	HR_T(m_pDevice->CreateRenderTargetView(pBackBufferTexture.Get(), NULL, m_pBackBufferRTV.GetAddressOf()));  // 텍스처는 내부 참조 증가
+
+	//6. 뎊스&스텐실 뷰 생성
+	D3D11_TEXTURE2D_DESC descDepth = {};
+	descDepth.Width = (UINT)m_Viewport.Width;
+	descDepth.Height = (UINT)m_Viewport.Height;
+	descDepth.MipLevels = 1;
+	descDepth.ArraySize = 1;
+	descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	descDepth.SampleDesc.Count = 1;
+	descDepth.SampleDesc.Quality = 0;	
+	descDepth.Usage = D3D11_USAGE_DEFAULT;
+	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	descDepth.CPUAccessFlags = 0;
+	descDepth.MiscFlags = 0;
+
+	ComPtr<ID3D11Texture2D> textureDepthStencil;
+	HR_T(m_pDevice->CreateTexture2D(&descDepth, nullptr, textureDepthStencil.GetAddressOf()));
+
+	// Create the depth stencil view
+	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
+	descDSV.Format = descDepth.Format;
+	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
+	descDSV.Texture2D.MipSlice = 0;
+	HR_T(m_pDevice->CreateDepthStencilView(textureDepthStencil.Get(), &descDSV, m_pDepthStencilView.GetAddressOf()));
 
 }
 

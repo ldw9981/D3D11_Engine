@@ -106,8 +106,16 @@ public:
 	static ID3D11Device* m_pDevice;						// 디바이스
 	ComPtr<ID3D11DeviceContext> m_pDeviceContext;		// 즉시 디바이스 컨텍스트
 	ComPtr<IDXGISwapChain> m_pSwapChain;					// 스왑체인
-	ComPtr<ID3D11RenderTargetView> m_pRenderTargetView;	// 렌더링 타겟뷰
+	ComPtr<ID3D11RenderTargetView> m_pBackBufferRTV;	// 렌더링 타겟뷰
 	ComPtr<ID3D11DepthStencilView> m_pDepthStencilView;	// 깊이/스텐실 뷰
+
+	ComPtr<ID3D11Texture2D>				m_pFloatBuffer;
+	ComPtr<ID3D11RenderTargetView>		m_pFloatBufferRTV;
+	ComPtr<ID3D11ShaderResourceView>	m_pFloatBufferSRV;
+
+	ComPtr<ID3D11Texture2D>				m_pResovedBuffer;
+	ComPtr<ID3D11RenderTargetView>		m_pResovedBufferRTV;
+	ComPtr<ID3D11ShaderResourceView>	m_pResovedBufferSRV;
 
 	// 렌더링 파이프라인에 적용하는 리소스 객체의 인터페이스
 	ComPtr<ID3D11VertexShader> m_pSkeletalMeshVertexShader;	// SkeletalMesh 정점 셰이더.
@@ -175,6 +183,7 @@ public:
     bool m_bWorkCulling = true;
 	bool m_bDrawDebugCulling = false;
 	bool m_bDrawDebugCollision = false;
+	bool m_bUseMSAA = false;
 	UINT m_SampleQuality = 0;
 	UINT m_SampleCount = 4;
 public:
@@ -218,7 +227,9 @@ public:
 
 	HRESULT CreateTextureFromFile(const wchar_t* szFileName, ID3D11ShaderResourceView** textureView, ID3D11Resource** texture = nullptr);
 	HRESULT CreateSamplerStateE(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE addressMode, ID3D11SamplerState** ppSamplerState);
+	void SetViewPort(UINT Width, UINT Height);
 private:
+	void CreateBuffers();
 	void CreatePBR();
 	void CreateIBL();
 	void CreateConstantBuffer();
