@@ -459,6 +459,7 @@ void D3DRenderManager::RenderSkeletalMeshInstanceOpaque()
 	m_pDeviceContext->PSSetShader(m_pPBRPixelShader.Get(), nullptr, 0);
 	m_pDeviceContext->VSSetConstantBuffers(0, 1, m_pCBTransformW.GetAddressOf());  //debugdraw에서 변경시켜서 설정한다.
 	m_pDeviceContext->RSSetState(m_pRasterizerStateCW.Get());
+	m_pDeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);	// 설정해제 , 다른옵션은 기본값
 
 	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
 	m_SkeletalMeshInstanceOpaque.sort([](const SkeletalMeshInstance* lhs, const SkeletalMeshInstance* rhs)
@@ -492,6 +493,7 @@ void D3DRenderManager::RenderStaticMeshInstanceOpaque()
 	m_pDeviceContext->PSSetShader(m_pPBRPixelShader.Get(), nullptr, 0);
 	m_pDeviceContext->VSSetConstantBuffers(0, 1, m_pCBTransformW.GetAddressOf()); //debugdraw에서 변경시켜서 설정한다.
 	m_pDeviceContext->RSSetState(m_pRasterizerStateCW.Get());
+	m_pDeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);	// 설정해제 , 다른옵션은 기본값
 
 	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
 	m_StaticMeshInstanceOpaque.sort([](const StaticMeshInstance* lhs, const StaticMeshInstance* rhs)
@@ -525,6 +527,8 @@ void D3DRenderManager::RenderSkeletalMeshInstanceTranslucent()
 	m_pDeviceContext->PSSetShader(m_pPBRPixelShader.Get(), nullptr, 0);
 	m_pDeviceContext->VSSetConstantBuffers(0, 1, m_pCBTransformW.GetAddressOf());  //debugdraw에서 변경시켜서 설정한다.
 	m_pDeviceContext->RSSetState(m_pRasterizerStateCW.Get());
+	m_pDeviceContext->OMSetBlendState(m_pAlphaBlendState.Get(), nullptr, 0xffffffff); // 알파블렌드 상태설정 , 다른옵션은 기본값 
+
 
 	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
 	m_SkeletalMeshInstanceTranslucent.sort([](const SkeletalMeshInstance* lhs, const SkeletalMeshInstance* rhs)
@@ -558,6 +562,8 @@ void D3DRenderManager::RenderStaticMeshInstanceTranslucent()
 	m_pDeviceContext->PSSetShader(m_pPBRPixelShader.Get(), nullptr, 0);
 	m_pDeviceContext->VSSetConstantBuffers(0, 1, m_pCBTransformW.GetAddressOf()); //debugdraw에서 변경시켜서 설정한다.
 	m_pDeviceContext->RSSetState(m_pRasterizerStateCW.Get());
+	m_pDeviceContext->OMSetBlendState(m_pAlphaBlendState.Get(), nullptr, 0xffffffff); // 알파블렌드 상태설정 , 다른옵션은 기본값 
+
 
 	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
 	m_StaticMeshInstanceTranslucent.sort([](const StaticMeshInstance* lhs, const StaticMeshInstance* rhs)
@@ -591,6 +597,7 @@ void D3DRenderManager::RenderEnvironment()
 	m_pDeviceContext->PSSetShader(m_pEnvironmentPixelShader.Get(), nullptr, 0);
 	m_pDeviceContext->VSSetConstantBuffers(0, 1, m_pCBTransformW.GetAddressOf()); //debugdraw에서 변경시켜서 설정한다.
 	m_pDeviceContext->RSSetState(m_pRasterizerStateCCW.Get());
+	m_pDeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);	// 설정해제 , 다른옵션은 기본값
 
 	auto component = m_pEnvironmentMeshComponent.lock();	
 	m_TransformW.mWorld = component->m_World.Transpose();
@@ -768,12 +775,7 @@ void D3DRenderManager::ApplyMaterial(Material* pMaterial)
 	m_CpuCbMaterial.UseEmissiveMap = pMaterial->m_pEmissive != nullptr ? true : false;
 	m_CpuCbMaterial.UseOpacityMap = pMaterial->m_pOpacity != nullptr ? true : false;
 	m_CpuCbMaterial.UseMetalnessMap = pMaterial->m_pMetalness != nullptr ? true : false;
-	m_CpuCbMaterial.UseRoughnessMap = pMaterial->m_pRoughness != nullptr ? true : false;
-
-	if (m_CpuCbMaterial.UseOpacityMap && m_pAlphaBlendState != nullptr)
-		m_pDeviceContext->OMSetBlendState(m_pAlphaBlendState.Get(), nullptr, 0xffffffff); // 알파블렌드 상태설정 , 다른옵션은 기본값 
-	else
-		m_pDeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);	// 설정해제 , 다른옵션은 기본값
+	m_CpuCbMaterial.UseRoughnessMap = pMaterial->m_pRoughness != nullptr ? true : false;	
 
 	m_pDeviceContext->UpdateSubresource(m_pCBMaterial.Get(), 0, nullptr, &m_CpuCbMaterial, 0, 0);
 }
