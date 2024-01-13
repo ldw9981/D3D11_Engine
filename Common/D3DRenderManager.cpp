@@ -1016,7 +1016,7 @@ void D3DRenderManager::CreateBlendState()
 {
 	//7. 알파블렌딩을 위한 블렌드 상태 생성
 	D3D11_BLEND_DESC blendDesc = {};
-	blendDesc.AlphaToCoverageEnable = false;
+	blendDesc.AlphaToCoverageEnable = true;
 	blendDesc.IndependentBlendEnable = false;
 	D3D11_RENDER_TARGET_BLEND_DESC rtBlendDesc = {};
 	rtBlendDesc.BlendEnable = true; // 블렌드 사용 여부
