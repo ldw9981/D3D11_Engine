@@ -24,11 +24,13 @@ PS_INPUT main(VS_INPUT input)
     pos = mul(pos, Projection);  
     output.PositionProj = pos;    
     output.TexCoord = input.TexCoord;    
+#ifndef NORMAL_OTHER   
     output.NormalWorld = normalize(mul(input.NormalModel, (float3x3) matWorld)); // scale 있을수 있으므로 normalize필요
     output.TangentWorld = normalize(mul(input.TangentModel, (float3x3) matWorld)); // scale 있을수 있으므로 normalize필요
     output.BiTangentWorld = normalize(mul(input.BiTangent, (float3x3) matWorld)); // scale 있을수 있으므로 normalize필요
-    
+ #else     
     float3x3 TBN = float3x3(input.TangentModel, input.BiTangent, input.NormalModel);
     output.TangentBasis = mul((float3x3) matWorld, transpose(TBN));
+#endif
     return output;
 }
