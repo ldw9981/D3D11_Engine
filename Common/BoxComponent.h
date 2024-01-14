@@ -8,6 +8,7 @@ public:
 	~BoxComponent();
 
 	BoundingOrientedBox  m_Geomety;
+	Math::Vector3 m_Extents;
 
 	virtual bool IsCollide(CollisionComponent* pOtherComponent) override;
 	virtual bool IsCollide(const BoundingOrientedBox& OtherGeometry) override;

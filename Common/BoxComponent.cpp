@@ -61,4 +61,5 @@ void BoxComponent::Update(float DeltaTime)
 	m_World.Decompose(Scale,Rotation,Translation);	
 	m_Geomety.Orientation = Rotation;
 	m_Geomety.Center = Translation;	
+	m_Geomety.Extents = m_Extents * Scale;
 }
