@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "MeshResource.h"
-#include "Helper.h"
 #include "D3DRenderManager.h"
 #include "GeometryGenerator.h"
 
@@ -30,9 +29,5 @@ void MeshResource::CreateIndexBuffer(Face* faces, UINT faceCount)
 	HR_T(D3DRenderManager::m_pDevice->CreateBuffer(&bd, &ibData, m_pIndexBuffer.GetAddressOf()));
 }
 
-void MeshResource::Create(GeometryData& in)
-{
-	CreateVertexBuffer<Vertex>(&in.vertices[0], in.vertices.size());
-	CreateIndexBuffer(&in.indices[0],in.indices.size());	
-}
+
 
