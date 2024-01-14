@@ -20,7 +20,7 @@ DefaultPawn::DefaultPawn()
 	m_pSphereComponent = CreateComponent<SphereComponent>("SphereComponent").get();
 	m_pSphereComponent->SetParent(m_pCameraComponent);
 	m_pSphereComponent->SetCollisionType(CollisionType::Block);
-	m_pSphereComponent->m_Geomety.Radius = 1.0f;
+	m_pSphereComponent->m_Geomety.Radius = 0.5f;
 	m_pSphereComponent->SetNotifyListener(this);
 
 	D3DRenderManager::Instance->AddImguiRenderable(m_pMovementComponent);

@@ -27,6 +27,6 @@ void SkeletalMeshActor::OnBeginPlay()
 	MaxExtent = max(MaxExtent,Extents.z);
 
 	m_pBoxComponent->m_Geomety.Center = Center;
-	m_pBoxComponent->m_Geomety.Extents = Vector3(MaxExtent,MaxExtent,MaxExtent);
+	m_pBoxComponent->m_Extents = Vector3(MaxExtent,MaxExtent,MaxExtent);
 }
 
