@@ -25,6 +25,7 @@ public:
 protected:	
 	std::vector<SkeletalMeshInstance> m_MeshInstances;
 	float m_AnimationProressTime = 0.0f;
+	float m_AnimationLastTime = 0.0f;
 	UINT  m_AnimationIndex = 0;
 	Bone m_RootBone;
 	std::string m_SceneFilePath;				// BeginPlay에서 로딩	

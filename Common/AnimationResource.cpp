@@ -35,6 +35,9 @@ void NodeAnimation::Create(aiNodeAnim* nodeAnimation,double tickPerSecond)
 	}
 }
 
+/*
+   항상 인덱스 0 부터 찾는건 비효율적, 마지막 사용한 index 부터 찾아	최적화될 여지가 아주 많다.
+*/
 void NodeAnimation::Evaluate(float time, Vector3& position, Quaternion& rotation, Vector3& scaling)
 {
 	assert(AnimationKeys.size() > 0);

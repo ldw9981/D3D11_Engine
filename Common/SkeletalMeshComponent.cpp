@@ -9,6 +9,8 @@
 #include "SkeletalMeshInstance.h"
 #include "AnimationResource.h"
 #include "D3DRenderManager.h"
+#include "GameApp.h"
+#include "TimeSystem.h"
 
 
 SkeletalMeshComponent::SkeletalMeshComponent()
@@ -88,8 +90,13 @@ void SkeletalMeshComponent::Update(float deltaTime)
 
 	}	
 
-	if(m_bIsCulled)
+	float passedTime = GameApp::m_pInstance->m_Timer.TotalTime() - m_AnimationLastTime;
+	if (m_bIsCulled && passedTime > 0.007f)		// 144프레임기준으로 
+	{
 		m_RootBone.Update(deltaTime);
+		m_AnimationLastTime = GameApp::m_pInstance->m_Timer.TotalTime();
+	}
+		
 }
 
 void SkeletalMeshComponent::UpdateBoneAnimationReference(UINT index)
