@@ -107,7 +107,7 @@ public:
 	ComPtr<ID3D11DeviceContext> m_pDeviceContext;		// ¡ÔΩ√ µπŸ¿ÃΩ∫ ƒ¡≈ÿΩ∫∆Æ
 	ComPtr<IDXGISwapChain> m_pSwapChain;					// Ω∫ø“√º¿Œ
 	ComPtr<ID3D11RenderTargetView> m_pBackBufferRTV;	// ∑ª¥ı∏µ ≈∏∞Ÿ∫‰
-	ComPtr<ID3D11DepthStencilView> m_pDepthStencilView;	// ±Ì¿Ã/Ω∫≈ŸΩ« ∫‰
+	ComPtr<ID3D11DepthStencilView> m_pDefaultDSV;	// ±Ì¿Ã/Ω∫≈ŸΩ« ∫‰
 
 	ComPtr<ID3D11Texture2D>				m_pFloatBuffer;
 	ComPtr<ID3D11RenderTargetView>		m_pFloatBufferRTV;

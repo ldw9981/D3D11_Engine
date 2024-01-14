@@ -135,7 +135,7 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	SetViewPort(Width,Height);
 	CreateBuffers();
 	
-	m_pDeviceContext->OMSetRenderTargets(1, m_pBackBufferRTV.GetAddressOf(), m_pDepthStencilView.Get());
+	m_pDeviceContext->OMSetRenderTargets(1, m_pBackBufferRTV.GetAddressOf(), m_pDefaultDSV.Get());
 	/*
 		ImGui 초기화.
 	*/
@@ -252,7 +252,7 @@ void D3DRenderManager::Render()
 	// Clear the back buffer
 	const float clear_color_with_alpha[4] = { m_ClearColor.x , m_ClearColor.y , m_ClearColor.z, 1.0f };
 	m_pDeviceContext->ClearRenderTargetView(m_pBackBufferRTV.Get(), clear_color_with_alpha);
-	m_pDeviceContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+	m_pDeviceContext->ClearDepthStencilView(m_pDefaultDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 	m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);		
 		
 	// 불투명 먼저
@@ -687,7 +687,7 @@ void D3DRenderManager::CreateBuffers()
 	descDSV.Format = descDepth.Format;
 	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
 	descDSV.Texture2D.MipSlice = 0;
-	HR_T(m_pDevice->CreateDepthStencilView(textureDepthStencil.Get(), &descDSV, m_pDepthStencilView.GetAddressOf()));
+	HR_T(m_pDevice->CreateDepthStencilView(textureDepthStencil.Get(), &descDSV, m_pDefaultDSV.GetAddressOf()));
 
 }
 
