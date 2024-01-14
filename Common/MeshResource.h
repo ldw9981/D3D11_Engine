@@ -47,5 +47,6 @@ public:
 		m_VertexBufferStride = sizeof(T);
 		m_VertexBufferOffset = 0;
 	}
+	void Create(GeometryData& in);
 };
 
