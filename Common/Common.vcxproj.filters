@@ -172,7 +172,7 @@
       <Filter>헤더 파일\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="GeometryGenerator.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>헤더 파일\Rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -303,7 +303,7 @@
       <Filter>소스 파일\Framework</Filter>
     </ClCompile>
     <ClCompile Include="GeometryGenerator.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\Rendering</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
