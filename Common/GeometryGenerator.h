@@ -12,5 +12,7 @@ class GeometryGenerator
 public:
 	static void MakeSquare(GeometryData& out, const float scale = 1.0f,
 		const Vector2 texScale = Vector2(1.0f));
+
+	static void MakeBox(GeometryData& out, const float scale = 1.0f);
 };
 
