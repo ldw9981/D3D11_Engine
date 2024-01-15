@@ -92,6 +92,41 @@ void D3DRenderManager::AddMeshInstance(StaticMeshComponent* pModel)
 	}
 }
 
+void D3DRenderManager::SortMeshInstance()
+{
+
+	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
+	m_SkeletalMeshInstanceOpaque.sort([](const SkeletalMeshInstance* lhs, const SkeletalMeshInstance* rhs)
+		{
+			return lhs->m_pMaterial < rhs->m_pMaterial;
+		});
+	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
+	m_StaticMeshInstanceOpaque.sort([](const StaticMeshInstance* lhs, const StaticMeshInstance* rhs)
+		{
+			return lhs->m_pMaterial < rhs->m_pMaterial;
+		});
+
+	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
+	m_SkeletalMeshInstanceTranslucent.sort([](const SkeletalMeshInstance* lhs, const SkeletalMeshInstance* rhs)
+		{
+			return lhs->m_pMaterial < rhs->m_pMaterial;
+		});
+
+	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
+	m_StaticMeshInstanceTranslucent.sort([](const StaticMeshInstance* lhs, const StaticMeshInstance* rhs)
+		{
+			return lhs->m_pMaterial < rhs->m_pMaterial;
+		});
+}
+
+void D3DRenderManager::ClearMeshInstance()
+{
+	m_StaticMeshInstanceTranslucent.clear();
+	m_SkeletalMeshInstanceTranslucent.clear();
+	m_StaticMeshInstanceOpaque.clear();
+	m_SkeletalMeshInstanceOpaque.clear();
+}
+
 bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 {
 	m_hWnd = Handle;
@@ -244,6 +279,8 @@ void D3DRenderManager::Update(float DeltaTime)
 		}		
 	}
 
+	SortMeshInstance();
+
 	for (std::list<DebugRay>::iterator it = m_DebugDrawLines.begin(); it != m_DebugDrawLines.end() ; )
 	{
 		DebugRay& ray = *it;
@@ -259,8 +296,7 @@ void D3DRenderManager::Update(float DeltaTime)
 void D3DRenderManager::Render()
 {	
 	// Clear the back buffer
-	//RenderShadowDepth();
-
+	RenderShadowDepth();
 
 	// Clear the back buffer
 	const float clear_color_with_alpha[4] = { m_ClearColor.x , m_ClearColor.y , m_ClearColor.z, 1.0f };	
@@ -274,10 +310,11 @@ void D3DRenderManager::Render()
 		RenderEnvironment();// 환경맵
 	
 	RenderSkeletalMeshInstanceTranslucent();// 반투명
-	RenderStaticMeshInstanceTranslucent();
+	RenderStaticMeshInstanceTranslucent();	
 
 	RenderDebugDraw();
-	RenderImGui();
+	RenderImGui();	
+	ClearMeshInstance();
 	m_pSwapChain->Present(0, 0);	// Present our back buffer to our front buffer
 }
 
@@ -424,13 +461,7 @@ void D3DRenderManager::RenderSkeletalMeshInstanceOpaque()
 	m_pDeviceContext->VSSetConstantBuffers(0, 1, m_pCBTransformW.GetAddressOf());  //debugdraw에서 변경시켜서 설정한다.
 	m_pDeviceContext->RSSetState(m_pRasterizerStateCW.Get());
 	m_pDeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);	// 설정해제 , 다른옵션은 기본값
-
-	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
-	m_SkeletalMeshInstanceOpaque.sort([](const SkeletalMeshInstance* lhs, const SkeletalMeshInstance* rhs)
-		{
-			return lhs->m_pMaterial < rhs->m_pMaterial;
-		});
-
+	
 	Material* pPrevMaterial = nullptr;
 	for (const auto& meshInstance : m_SkeletalMeshInstanceOpaque)
 	{
@@ -446,8 +477,7 @@ void D3DRenderManager::RenderSkeletalMeshInstanceOpaque()
 
 		// Draw
 		meshInstance->Render(m_pDeviceContext.Get());
-	}
-	m_SkeletalMeshInstanceOpaque.clear();
+	}	
 }
 
 void D3DRenderManager::RenderStaticMeshInstanceOpaque()
@@ -458,13 +488,7 @@ void D3DRenderManager::RenderStaticMeshInstanceOpaque()
 	m_pDeviceContext->PSSetShader(m_pPBRPixelShader.Get(), nullptr, 0);
 	m_pDeviceContext->VSSetConstantBuffers(0, 1, m_pCBTransformW.GetAddressOf()); //debugdraw에서 변경시켜서 설정한다.
 	m_pDeviceContext->RSSetState(m_pRasterizerStateCW.Get());
-	m_pDeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);	// 설정해제 , 다른옵션은 기본값
-
-	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
-	m_StaticMeshInstanceOpaque.sort([](const StaticMeshInstance* lhs, const StaticMeshInstance* rhs)
-		{
-			return lhs->m_pMaterial < rhs->m_pMaterial;
-		});
+	m_pDeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);	// 설정해제 , 다른옵션은 기본값\
 
 	Material* pPrevMaterial = nullptr;
 	for (const auto& meshInstance : m_StaticMeshInstanceOpaque)
@@ -482,7 +506,6 @@ void D3DRenderManager::RenderStaticMeshInstanceOpaque()
 		// Draw
 		meshInstance->Render(m_pDeviceContext.Get());
 	}
-	m_StaticMeshInstanceOpaque.clear();
 }
 
 void D3DRenderManager::RenderSkeletalMeshInstanceTranslucent()
@@ -495,12 +518,6 @@ void D3DRenderManager::RenderSkeletalMeshInstanceTranslucent()
 	m_pDeviceContext->RSSetState(m_pRasterizerStateCW.Get());
 	m_pDeviceContext->OMSetBlendState(m_pAlphaBlendState.Get(), nullptr, 0xffffffff); // 알파블렌드 상태설정 , 다른옵션은 기본값 
 
-
-	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
-	m_SkeletalMeshInstanceTranslucent.sort([](const SkeletalMeshInstance* lhs, const SkeletalMeshInstance* rhs)
-		{
-			return lhs->m_pMaterial < rhs->m_pMaterial;
-		});
 
 	Material* pPrevMaterial = nullptr;
 	for (const auto& meshInstance : m_SkeletalMeshInstanceTranslucent)
@@ -518,7 +535,7 @@ void D3DRenderManager::RenderSkeletalMeshInstanceTranslucent()
 		// Draw
 		meshInstance->Render(m_pDeviceContext.Get());
 	}
-	m_SkeletalMeshInstanceTranslucent.clear();
+	
 }
 
 void D3DRenderManager::RenderStaticMeshInstanceTranslucent()
@@ -529,14 +546,7 @@ void D3DRenderManager::RenderStaticMeshInstanceTranslucent()
 	m_pDeviceContext->PSSetShader(m_pPBRPixelShader.Get(), nullptr, 0);
 	m_pDeviceContext->VSSetConstantBuffers(0, 1, m_pCBTransformW.GetAddressOf()); //debugdraw에서 변경시켜서 설정한다.
 	m_pDeviceContext->RSSetState(m_pRasterizerStateCW.Get());
-	m_pDeviceContext->OMSetBlendState(m_pAlphaBlendState.Get(), nullptr, 0xffffffff); // 알파블렌드 상태설정 , 다른옵션은 기본값 
-
-
-	//파이프라인에 설정하는 머터리얼의 텍스쳐 변경을 최소화 하기위해 머터리얼 별로 정렬한다.
-	m_StaticMeshInstanceTranslucent.sort([](const StaticMeshInstance* lhs, const StaticMeshInstance* rhs)
-		{
-			return lhs->m_pMaterial < rhs->m_pMaterial;
-		});
+	m_pDeviceContext->OMSetBlendState(m_pAlphaBlendState.Get(), nullptr, 0xffffffff); // 알파블렌드 상태설정 , 다른옵션은 기본값 	
 
 	Material* pPrevMaterial = nullptr;
 	for (const auto& meshInstance : m_StaticMeshInstanceTranslucent)
@@ -554,7 +564,7 @@ void D3DRenderManager::RenderStaticMeshInstanceTranslucent()
 		// Draw
 		meshInstance->Render(m_pDeviceContext.Get());
 	}
-	m_StaticMeshInstanceTranslucent.clear();
+
 }
 
 void D3DRenderManager::RenderEnvironment()

@@ -245,6 +245,8 @@ private:
 
 	void AddMeshInstance(SkeletalMeshComponent* pModel);
 	void AddMeshInstance(StaticMeshComponent* pModel);
+	void SortMeshInstance();
+	void ClearMeshInstance();
 
 	void RenderDebugDraw();
 	void RenderImGui();
