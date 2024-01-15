@@ -158,6 +158,9 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	m_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, m_Viewport.Width / (FLOAT)m_Viewport.Height, 1.0f, 100000.0f);
 	BoundingFrustum::CreateFromMatrix(m_Frustum, m_Projection);
 
+	m_ShadowProjection = XMMatrixOrthographicLH((FLOAT)m_Viewport.Width, (FLOAT)m_Viewport.Height, 1.0f, 100000.0f);
+
+
 	DebugDraw::Initialize(m_pDevice, m_pDeviceContext);
 	return true;
 }
@@ -183,6 +186,9 @@ void D3DRenderManager::Uninitialize()
 
 void D3DRenderManager::Update(float DeltaTime)
 {	
+	// 디렉션라이트방향
+	m_Light.Direction.Normalize();
+	m_pDeviceContext->UpdateSubresource(m_pCBDirectionLight.Get(), 0, nullptr, &m_Light, 0, 0);
 	if (m_pCamera.expired() == false)
 	{
 		auto pCamera = m_pCamera.lock();
@@ -196,19 +202,22 @@ void D3DRenderManager::Update(float DeltaTime)
 			BoundingFrustum::CreateFromMatrix(m_Frustum, m_Projection, false);
 			m_Frustum.Transform(m_Frustum, pCamera->m_World);			
 		}	
-	}
 
-	//라이트 업데이트	
-	m_Light.Direction.Normalize();
-	m_pDeviceContext->UpdateSubresource(m_pCBDirectionLight.Get(), 0, nullptr, &m_Light, 0, 0);
+		float distFromCamera = 10000;
+		float distFromLookAt = 10000;
+		Math::Vector3 ShadowLootAt = pCamera->m_World.Translation() + pCamera->m_World.Forward() * distFromCamera;
+		Math::Vector3 ShadowPos = ShadowLootAt + m_Light.Direction * distFromLookAt;
+		m_TransformVP.mShadowView = XMMatrixLookAtLH(ShadowPos, ShadowLootAt, Vector3(0.0f,1.0f,0.0f));
+	}
 
 	// 뷰프로젝션 업데이트
 	m_TransformVP.mView = m_View.Transpose();
 	m_TransformVP.mProjection = m_Projection.Transpose();
+	m_TransformVP.mShadowView = m_ShadowView.Transpose();
+	m_TransformVP.mShadowProjection = m_ShadowProjection.Transpose();
 	m_pDeviceContext->UpdateSubresource(m_pCBTransformVP.Get(), 0, nullptr, &m_TransformVP, 0, 0);
 
 	m_pDeviceContext->UpdateSubresource(m_pCBGlobal.Get(), 0, nullptr, &m_Global, 0, 0);
-
 	m_cbMaterialOverride.SetData(m_pDeviceContext.Get(), m_MaterialOverride);
 
 	m_nDrawComponentCount = 0;
@@ -253,19 +262,17 @@ void D3DRenderManager::Render()
 	m_pDeviceContext->ClearRenderTargetView(m_pBackBufferRTV.Get(), clear_color_with_alpha);
 	m_pDeviceContext->ClearDepthStencilView(m_pDefaultDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 	m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);		
-		
-	//RenderShadow();
-
-	// 불투명 먼저
-	RenderSkeletalMeshInstanceOpaque();
-	RenderStaticMeshInstanceOpaque();			
 	
-	// 환경맵
+	//RenderShadow();
+	
+	m_pDeviceContext->OMSetRenderTargets(1, m_pBackBufferRTV.GetAddressOf(), m_pDefaultDSV.Get());
+	RenderSkeletalMeshInstanceOpaque();// 불투명 먼저
+	RenderStaticMeshInstanceOpaque();				
+	
 	if (m_pEnvironmentMeshComponent.expired() == false)
-		RenderEnvironment();
-
-	// 반투명
-	RenderSkeletalMeshInstanceTranslucent();
+		RenderEnvironment();// 환경맵
+	
+	RenderSkeletalMeshInstanceTranslucent();// 반투명
 	RenderStaticMeshInstanceTranslucent();
 
 	RenderDebugDraw();
@@ -564,6 +571,7 @@ void D3DRenderManager::RenderShadow()
 {	
 	m_pDeviceContext->ClearDepthStencilView(m_pShadowDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 	m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	m_pDeviceContext->OMSetRenderTargets(1, m_pBackBufferRTV.GetAddressOf(), m_pShadowDSV.Get());
 
 	// 불투명 먼저
 	RenderSkeletalMeshInstanceOpaque();

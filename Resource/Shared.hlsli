@@ -27,6 +27,8 @@ cbuffer TransformVP : register(b1)
 {
     matrix View;
     matrix Projection;
+    matrix ShadowView;         
+    matrix ShadowProjection;   
 }
 
 

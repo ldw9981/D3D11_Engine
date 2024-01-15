@@ -16,6 +16,8 @@ struct CB_TransformVP
 {
 	Matrix mView;
 	Matrix mProjection;
+	Matrix mShadowView;				   // 그림자를 렌더링할 월드의 역행렬
+	Matrix mShadowProjection;		   // 그림자를 렌더링할 투영방식 직교투영 행렬
 };
 
 struct CB_DirectionLight
@@ -146,6 +148,8 @@ public:
 	// 렌더링 파이프라인에 적용하는 정보
 	Matrix  m_View;					// 뷰좌표계 공간으로 변환을 위한 행렬.
 	Matrix  m_Projection;			// 단위장치좌표계( Normalized Device Coordinate) 공간으로 변환을 위한 행렬.
+	Matrix  m_ShadowView;
+	Matrix  m_ShadowProjection;
 
 	Vector3	m_LookAt = { 0.0f, 0.0f, 0.0f };
 	Vector3 m_ClearColor = { 0.0f, 0.0f, 0.0f };
