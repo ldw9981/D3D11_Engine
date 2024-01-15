@@ -45,19 +45,14 @@ struct CB_Marterial
 	int pad = 0;									// 4 16	
 };
 
-struct CB_IBL
+struct CB_Global
 {
-	int UseIBL = true;							// 4  16byte
+	int UseIBL = true;							// 4  
 	float AmbientOcclusion = 1.0f;				// 4
-	Vector2 pad;								// 8	16
+	int UseGammaCorrection = true;				// 4  
+	float Gamma = 2.2f;							// 4
 };
 
-struct CB_Post
-{
-	int UseGammaCorrection = true;				// 4  16byte
-	float Gamma = 2.2f;							// 4
-	Vector2 pad;								// 8	16
-};
 
 struct CB_MarterialOverride
 {
@@ -67,6 +62,8 @@ struct CB_MarterialOverride
 	float RoughnessOverride = 0.0f;					// 4		
 	Vector2 pad2;					// 8   16byte	
 };
+
+
 
 class IImGuiRenderable
 {
@@ -109,6 +106,8 @@ public:
 	ComPtr<ID3D11RenderTargetView> m_pBackBufferRTV;	// 렌더링 타겟뷰
 	ComPtr<ID3D11DepthStencilView> m_pDefaultDSV;	// 깊이/스텐실 뷰
 
+	ComPtr<ID3D11DepthStencilView> m_pShadowDSV;	// 깊이/스텐실 뷰
+
 	ComPtr<ID3D11Texture2D>				m_pFloatBuffer;
 	ComPtr<ID3D11RenderTargetView>		m_pFloatBufferRTV;
 	ComPtr<ID3D11ShaderResourceView>	m_pFloatBufferSRV;
@@ -139,10 +138,9 @@ public:
 	ComPtr<ID3D11Buffer> m_pCBTransformW;				// 상수 버퍼: 변환행렬
 	ComPtr<ID3D11Buffer> m_pCBTransformVP;				// 상수 버퍼: 변환행렬
 	ComPtr<ID3D11Buffer> m_pCBDirectionLight;		// 상수 버퍼: 방향광
-	ComPtr<ID3D11Buffer> m_pCBIBL; // DirectXTK의 상수버퍼 클래스 활용
-	ComPtr<ID3D11Buffer> m_pCBPost; // DirectXTK의 상수버퍼 클래스 활용
+	ComPtr<ID3D11Buffer> m_pCBGlobal;				 // 기타 여러가지
 
-	ConstantBuffer<CB_MatrixPalette> m_cbMatrixPallete; // DirectXTK의 상수버퍼 클래스 활용
+	ConstantBuffer<CB_MatrixPalette> m_cbMatrixPallete;			
 	ConstantBuffer<CB_MarterialOverride> m_cbMaterialOverride;
 
 	// 렌더링 파이프라인에 적용하는 정보
@@ -155,8 +153,7 @@ public:
 	CB_TransformVP m_TransformVP;
 	CB_Marterial m_CpuCbMaterial;
 	CB_DirectionLight m_Light;
-	CB_IBL m_IBL;
-	CB_Post m_Post;
+	CB_Global m_Global;
 
 	CB_MatrixPalette m_MatrixPalette;
 	CB_MarterialOverride m_MaterialOverride;
@@ -249,6 +246,6 @@ private:
 	void RenderStaticMeshInstanceTranslucent();
 
 	void RenderEnvironment();
-
+	void RenderShadow();
 	void MSAACheck(DXGI_FORMAT format, UINT& SampleCount, UINT& Quality);
 };

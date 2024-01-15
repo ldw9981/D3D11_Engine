@@ -207,8 +207,7 @@ void D3DRenderManager::Update(float DeltaTime)
 	m_TransformVP.mProjection = m_Projection.Transpose();
 	m_pDeviceContext->UpdateSubresource(m_pCBTransformVP.Get(), 0, nullptr, &m_TransformVP, 0, 0);
 
-	m_pDeviceContext->UpdateSubresource(m_pCBIBL.Get(), 0, nullptr, &m_IBL, 0, 0);
-	m_pDeviceContext->UpdateSubresource(m_pCBPost.Get(), 0, nullptr, &m_Post, 0, 0);
+	m_pDeviceContext->UpdateSubresource(m_pCBGlobal.Get(), 0, nullptr, &m_Global, 0, 0);
 
 	m_cbMaterialOverride.SetData(m_pDeviceContext.Get(), m_MaterialOverride);
 
@@ -255,6 +254,8 @@ void D3DRenderManager::Render()
 	m_pDeviceContext->ClearDepthStencilView(m_pDefaultDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 	m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);		
 		
+	//RenderShadow();
+
 	// 불투명 먼저
 	RenderSkeletalMeshInstanceOpaque();
 	RenderStaticMeshInstanceOpaque();			
@@ -378,12 +379,12 @@ void D3DRenderManager::RenderImGui()
 		ImGui::Text(" ");
 
 		ImGui::Text("IBL");		
-		ImGui::CheckboxFlags("UseIBL", &m_IBL.UseIBL, 1);	// bit flag 인듯
-		ImGui::SliderFloat("AmbientOcculusion", &m_IBL.AmbientOcclusion, 0.0f, 1.0f);
+		ImGui::CheckboxFlags("UseIBL", &m_Global.UseIBL, 1);	// bit flag 인듯
+		ImGui::SliderFloat("AmbientOcculusion", &m_Global.AmbientOcclusion, 0.0f, 1.0f);
 
 		ImGui::Text("Post");
-		ImGui::CheckboxFlags("UseGammaCorrection", &m_Post.UseGammaCorrection,1);
-		ImGui::SliderFloat("Gamma", &m_Post.Gamma, 1.0f, 2.2f);
+		ImGui::CheckboxFlags("UseGammaCorrection", &m_Global.UseGammaCorrection,1);
+		ImGui::SliderFloat("Gamma", &m_Global.Gamma, 1.0f, 2.2f);
 
 		ImGui::Text("BackBuffer");
 		ImGui::ColorEdit3("clear color", (float*)&m_ClearColor); // Edit 3 floats representing a color	
@@ -559,6 +560,19 @@ void D3DRenderManager::RenderEnvironment()
 	component->m_MeshInstance.Render(m_pDeviceContext.Get());
 }
 
+void D3DRenderManager::RenderShadow()
+{	
+	m_pDeviceContext->ClearDepthStencilView(m_pShadowDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+	m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	// 불투명 먼저
+	RenderSkeletalMeshInstanceOpaque();
+	RenderStaticMeshInstanceOpaque();
+	// 반투명
+	RenderSkeletalMeshInstanceTranslucent();
+	RenderStaticMeshInstanceTranslucent();
+}
+
 Microsoft::WRL::ComPtr<ID3D11SamplerState> D3DRenderManager::CreateSamplerState(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE addressMode) const
 {
 	D3D11_SAMPLER_DESC desc = {};
@@ -685,9 +699,13 @@ void D3DRenderManager::CreateBuffers()
 	// Create the depth stencil view
 	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
 	descDSV.Format = descDepth.Format;
-	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
+	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	descDSV.Texture2D.MipSlice = 0;
 	HR_T(m_pDevice->CreateDepthStencilView(textureDepthStencil.Get(), &descDSV, m_pDefaultDSV.GetAddressOf()));
+
+	textureDepthStencil.Reset();
+	HR_T(m_pDevice->CreateTexture2D(&descDepth, nullptr, textureDepthStencil.GetAddressOf()));	
+	HR_T(m_pDevice->CreateDepthStencilView(textureDepthStencil.Get(), &descDSV, m_pShadowDSV.GetAddressOf()));
 
 }
 
@@ -810,8 +828,8 @@ void D3DRenderManager::SetEnvironment(std::weak_ptr<EnvironmentMeshComponent> va
 	m_pDeviceContext->PSSetShaderResources(8, 1, component->m_IBLDiffuseTextureResource->m_pTextureSRV.GetAddressOf());
 	m_pDeviceContext->PSSetShaderResources(9, 1, component->m_IBLSpecularTextureResource->m_pTextureSRV.GetAddressOf());
 	m_pDeviceContext->PSSetShaderResources(10, 1, component->m_IBLBRDFTextureResource->m_pTextureSRV.GetAddressOf());	
-	m_IBL.UseIBL = true;
-	m_pDeviceContext->UpdateSubresource(m_pCBIBL.Get(), 0, nullptr, &m_IBL, 0, 0);
+	m_Global.UseIBL = true;
+	m_pDeviceContext->UpdateSubresource(m_pCBGlobal.Get(), 0, nullptr, &m_Global, 0, 0);
 }
 
 void D3DRenderManager::AddDebugStringToImGuiWindow(const std::string& header,const std::string& str)
@@ -928,16 +946,10 @@ void D3DRenderManager::CreateConstantBuffer()
 	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, m_pCBMaterial.GetAddressOf()));
 
 	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(CB_IBL);
+	bd.ByteWidth = sizeof(CB_Global);
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bd.CPUAccessFlags = 0;
-	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, m_pCBIBL.GetAddressOf()));
-
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(CB_Post);
-	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	bd.CPUAccessFlags = 0;
-	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, m_pCBPost.GetAddressOf()));
+	HR_T(m_pDevice->CreateBuffer(&bd, nullptr, m_pCBGlobal.GetAddressOf()));
 
 	m_pDeviceContext->VSSetConstantBuffers(0, 1, m_pCBTransformW.GetAddressOf());
 	m_pDeviceContext->VSSetConstantBuffers(1, 1, m_pCBTransformVP.GetAddressOf());
@@ -953,16 +965,13 @@ void D3DRenderManager::CreateConstantBuffer()
 	m_pDeviceContext->PSSetConstantBuffers(2, 1, m_pCBDirectionLight.GetAddressOf());
 	m_pDeviceContext->PSSetConstantBuffers(3, 1, m_pCBMaterial.GetAddressOf());
 
-	m_pDeviceContext->PSSetConstantBuffers(5, 1, m_pCBIBL.GetAddressOf());
-	m_pDeviceContext->UpdateSubresource(m_pCBIBL.Get(), 0, nullptr, &m_IBL, 0, 0);
-
-	m_pDeviceContext->PSSetConstantBuffers(6, 1, m_pCBPost.GetAddressOf());
-	m_pDeviceContext->UpdateSubresource(m_pCBPost.Get(), 0, nullptr, &m_Post, 0, 0);
+	m_pDeviceContext->PSSetConstantBuffers(5, 1, m_pCBGlobal.GetAddressOf());
+	m_pDeviceContext->UpdateSubresource(m_pCBGlobal.Get(), 0, nullptr, &m_Global, 0, 0);
 
 	m_cbMaterialOverride.Create(m_pDevice);
 	{
 		auto buffer = m_cbMaterialOverride.GetBuffer();
-		m_pDeviceContext->PSSetConstantBuffers(7, 1, &buffer);
+		m_pDeviceContext->PSSetConstantBuffers(6, 1, &buffer);
 	}
 
 }
