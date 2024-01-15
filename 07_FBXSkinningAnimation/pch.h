@@ -28,5 +28,9 @@
 #include <iostream>
 #include <utility>
 #include <algorithm>
+
 namespace Math = DirectX::SimpleMath;
+using namespace DirectX;
+using namespace Microsoft::WRL;
+
 #endif //PCH_H

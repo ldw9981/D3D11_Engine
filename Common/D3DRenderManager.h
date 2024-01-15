@@ -2,6 +2,7 @@
 #include <dxgi1_4.h>
 #include <DirectXtk/BufferHelpers.h>
 #include <DirectXCollision.h>
+#include "FrameBuffer.h"
 
 using namespace DirectX::SimpleMath;
 using namespace DirectX;
@@ -144,6 +145,7 @@ public:
 
 	ConstantBuffer<CB_MatrixPalette> m_cbMatrixPallete;			
 	ConstantBuffer<CB_MarterialOverride> m_cbMaterialOverride;
+	FrameBuffer	m_ShadowBuffer;
 
 	// 렌더링 파이프라인에 적용하는 정보
 	Matrix  m_View;					// 뷰좌표계 공간으로 변환을 위한 행렬.
@@ -228,6 +230,7 @@ public:
 
 	HRESULT CreateTextureFromFile(const wchar_t* szFileName, ID3D11ShaderResourceView** textureView, ID3D11Resource** texture = nullptr);
 	HRESULT CreateSamplerStateE(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE addressMode, ID3D11SamplerState** ppSamplerState);
+	FrameBuffer CreateFrameBuffer(UINT width, UINT height, UINT samples, DXGI_FORMAT renderTargetFormat, DXGI_FORMAT depthstencilFormat);
 	void SetViewPort(UINT Width, UINT Height);
 private:
 	void CreateBuffers();
@@ -238,6 +241,7 @@ private:
 	void CreateRasterizerState();
 	void CreateBlendState();
 	void CreateEnvironment();
+	
 
 	void AddMeshInstance(SkeletalMeshComponent* pModel);
 	void AddMeshInstance(StaticMeshComponent* pModel);
@@ -250,6 +254,6 @@ private:
 	void RenderStaticMeshInstanceTranslucent();
 
 	void RenderEnvironment();
-	void RenderShadow();
+	void RenderShadowDepth();
 	void MSAACheck(DXGI_FORMAT format, UINT& SampleCount, UINT& Quality);
 };

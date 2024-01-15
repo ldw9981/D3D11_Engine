@@ -174,6 +174,9 @@
     <ClInclude Include="GeometryGenerator.h">
       <Filter>헤더 파일\Rendering</Filter>
     </ClInclude>
+    <ClInclude Include="FrameBuffer.h">
+      <Filter>헤더 파일\Rendering</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp">
@@ -305,6 +308,9 @@
     <ClCompile Include="GeometryGenerator.cpp">
       <Filter>소스 파일\Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="FrameBuffer.cpp">
+      <Filter>소스 파일\Rendering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd">
@@ -325,6 +331,12 @@
       <Filter>HLSL</Filter>
     </FxCompile>
     <FxCompile Include="..\Resource\PS_PBR.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resource\VS_ShadowDepth.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resource\PS_ShadowDepth.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
   </ItemGroup>

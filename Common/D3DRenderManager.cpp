@@ -135,7 +135,7 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	SetViewPort(Width,Height);
 	CreateBuffers();
 	
-	m_pDeviceContext->OMSetRenderTargets(1, m_pBackBufferRTV.GetAddressOf(), m_pDefaultDSV.Get());
+	
 	/*
 		ImGui 초기화.
 	*/
@@ -187,8 +187,7 @@ void D3DRenderManager::Uninitialize()
 void D3DRenderManager::Update(float DeltaTime)
 {	
 	// 디렉션라이트방향
-	m_Light.Direction.Normalize();
-	m_pDeviceContext->UpdateSubresource(m_pCBDirectionLight.Get(), 0, nullptr, &m_Light, 0, 0);
+	
 	if (m_pCamera.expired() == false)
 	{
 		auto pCamera = m_pCamera.lock();
@@ -209,6 +208,8 @@ void D3DRenderManager::Update(float DeltaTime)
 		Math::Vector3 ShadowPos = ShadowLootAt + m_Light.Direction * distFromLookAt;
 		m_TransformVP.mShadowView = XMMatrixLookAtLH(ShadowPos, ShadowLootAt, Vector3(0.0f,1.0f,0.0f));
 	}
+	m_Light.Direction.Normalize();
+	m_pDeviceContext->UpdateSubresource(m_pCBDirectionLight.Get(), 0, nullptr, &m_Light, 0, 0);
 
 	// 뷰프로젝션 업데이트
 	m_TransformVP.mView = m_View.Transpose();
@@ -258,13 +259,13 @@ void D3DRenderManager::Update(float DeltaTime)
 void D3DRenderManager::Render()
 {	
 	// Clear the back buffer
-	const float clear_color_with_alpha[4] = { m_ClearColor.x , m_ClearColor.y , m_ClearColor.z, 1.0f };
+	//RenderShadowDepth();
+
+
+	// Clear the back buffer
+	const float clear_color_with_alpha[4] = { m_ClearColor.x , m_ClearColor.y , m_ClearColor.z, 1.0f };	
 	m_pDeviceContext->ClearRenderTargetView(m_pBackBufferRTV.Get(), clear_color_with_alpha);
 	m_pDeviceContext->ClearDepthStencilView(m_pDefaultDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-	m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);		
-	
-	//RenderShadow();
-	
 	m_pDeviceContext->OMSetRenderTargets(1, m_pBackBufferRTV.GetAddressOf(), m_pDefaultDSV.Get());
 	RenderSkeletalMeshInstanceOpaque();// 불투명 먼저
 	RenderStaticMeshInstanceOpaque();				
@@ -416,6 +417,7 @@ void D3DRenderManager::RenderImGui()
 
 void D3DRenderManager::RenderSkeletalMeshInstanceOpaque()
 {
+	m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	m_pDeviceContext->IASetInputLayout(m_pSkeletalMeshInputLayout.Get());
 	m_pDeviceContext->VSSetShader(m_pSkeletalMeshVertexShader.Get(), nullptr, 0);
 	m_pDeviceContext->PSSetShader(m_pPBRPixelShader.Get(), nullptr, 0);
@@ -450,6 +452,7 @@ void D3DRenderManager::RenderSkeletalMeshInstanceOpaque()
 
 void D3DRenderManager::RenderStaticMeshInstanceOpaque()
 {
+	m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	m_pDeviceContext->IASetInputLayout(m_pStaticMeshInputLayout.Get());
 	m_pDeviceContext->VSSetShader(m_pStaticMeshVertexShader.Get(), nullptr, 0);
 	m_pDeviceContext->PSSetShader(m_pPBRPixelShader.Get(), nullptr, 0);
@@ -484,6 +487,7 @@ void D3DRenderManager::RenderStaticMeshInstanceOpaque()
 
 void D3DRenderManager::RenderSkeletalMeshInstanceTranslucent()
 {
+	m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	m_pDeviceContext->IASetInputLayout(m_pSkeletalMeshInputLayout.Get());
 	m_pDeviceContext->VSSetShader(m_pSkeletalMeshVertexShader.Get(), nullptr, 0);
 	m_pDeviceContext->PSSetShader(m_pPBRPixelShader.Get(), nullptr, 0);
@@ -519,6 +523,7 @@ void D3DRenderManager::RenderSkeletalMeshInstanceTranslucent()
 
 void D3DRenderManager::RenderStaticMeshInstanceTranslucent()
 {
+	m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	m_pDeviceContext->IASetInputLayout(m_pStaticMeshInputLayout.Get());
 	m_pDeviceContext->VSSetShader(m_pStaticMeshVertexShader.Get(), nullptr, 0);
 	m_pDeviceContext->PSSetShader(m_pPBRPixelShader.Get(), nullptr, 0);
@@ -554,6 +559,7 @@ void D3DRenderManager::RenderStaticMeshInstanceTranslucent()
 
 void D3DRenderManager::RenderEnvironment()
 {
+	m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	m_pDeviceContext->IASetInputLayout(m_pStaticMeshInputLayout.Get());
 	m_pDeviceContext->VSSetShader(m_pEnvironmentVertexShader.Get(), nullptr, 0);
 	m_pDeviceContext->PSSetShader(m_pEnvironmentPixelShader.Get(), nullptr, 0);
@@ -567,17 +573,15 @@ void D3DRenderManager::RenderEnvironment()
 	component->m_MeshInstance.Render(m_pDeviceContext.Get());
 }
 
-void D3DRenderManager::RenderShadow()
+void D3DRenderManager::RenderShadowDepth()
 {	
-	m_pDeviceContext->ClearDepthStencilView(m_pShadowDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-	m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	m_pDeviceContext->OMSetRenderTargets(1, m_pBackBufferRTV.GetAddressOf(), m_pShadowDSV.Get());
-
-	// 불투명 먼저
-	RenderSkeletalMeshInstanceOpaque();
+	const float clear_shadow[4] = { 0.0f ,  0.0f ,  0.0f, 0.0f };
+	m_pDeviceContext->ClearRenderTargetView(m_ShadowBuffer.RTV.Get(), clear_shadow);
+	m_pDeviceContext->ClearDepthStencilView(m_ShadowBuffer.DSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+	m_pDeviceContext->OMSetRenderTargets(1, m_ShadowBuffer.RTV.GetAddressOf(), m_ShadowBuffer.DSV.Get());
+	RenderSkeletalMeshInstanceOpaque();// 불투명 먼저
 	RenderStaticMeshInstanceOpaque();
-	// 반투명
-	RenderSkeletalMeshInstanceTranslucent();
+	RenderSkeletalMeshInstanceTranslucent();// 반투명
 	RenderStaticMeshInstanceTranslucent();
 }
 
@@ -640,6 +644,67 @@ HRESULT D3DRenderManager::CreateSamplerStateE(D3D11_FILTER filter, D3D11_TEXTURE
 	desc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	return m_pDevice->CreateSamplerState(&desc, ppSamplerState);
+}
+
+FrameBuffer D3DRenderManager::CreateFrameBuffer(UINT width, UINT height, UINT samples, DXGI_FORMAT renderTargetFormat, DXGI_FORMAT depthstencilFormat)
+{
+	FrameBuffer fb;
+	fb.Width = width;
+	fb.Height = height;
+	fb.Samples = samples;
+
+	D3D11_TEXTURE2D_DESC desc = {};
+	desc.Width = width;
+	desc.Height = height;
+	desc.MipLevels = 1;
+	desc.ArraySize = 1;
+	desc.SampleDesc.Count = samples;
+
+	if (renderTargetFormat != DXGI_FORMAT_UNKNOWN) {
+		desc.Format = renderTargetFormat;
+		desc.BindFlags = D3D11_BIND_RENDER_TARGET;
+		if (samples <= 1) {
+			desc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
+		}
+		if (FAILED(m_pDevice->CreateTexture2D(&desc, nullptr, &fb.RenderTargetTexture))) {
+			throw std::runtime_error("Failed to create FrameBuffer color texture");
+		}
+
+		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+		rtvDesc.Format = desc.Format;
+		rtvDesc.ViewDimension = (samples > 1) ? D3D11_RTV_DIMENSION_TEXTURE2DMS : D3D11_RTV_DIMENSION_TEXTURE2D;
+		if (FAILED(m_pDevice->CreateRenderTargetView(fb.RenderTargetTexture.Get(), &rtvDesc, &fb.RTV))) {
+			throw std::runtime_error("Failed to create FrameBuffer render target view");
+		}
+
+		if (samples <= 1) {
+			D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+			srvDesc.Format = desc.Format;
+			srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+			srvDesc.Texture2D.MostDetailedMip = 0;
+			srvDesc.Texture2D.MipLevels = 1;
+			if (FAILED(m_pDevice->CreateShaderResourceView(fb.RenderTargetTexture.Get(), &srvDesc, &fb.SRV))) {
+				throw std::runtime_error("Failed to create FrameBuffer shader resource view");
+			}
+		}
+	}
+
+	if (depthstencilFormat != DXGI_FORMAT_UNKNOWN) {
+		desc.Format = depthstencilFormat;
+		desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+		if (FAILED(m_pDevice->CreateTexture2D(&desc, nullptr, &fb.DepthStencilTexture))) {
+			throw std::runtime_error("Failed to create FrameBuffer depth-stencil texture");
+		}
+
+		D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+		dsvDesc.Format = desc.Format;
+		dsvDesc.ViewDimension = (samples > 1) ? D3D11_DSV_DIMENSION_TEXTURE2DMS : D3D11_DSV_DIMENSION_TEXTURE2D;
+		if (FAILED(m_pDevice->CreateDepthStencilView(fb.DepthStencilTexture.Get(), &dsvDesc, &fb.DSV))) {
+			throw std::runtime_error("Failed to create FrameBuffer depth-stencil view");
+		}
+	}
+
+	return fb;
 }
 
 void D3DRenderManager::SetViewPort(UINT Width, UINT Height)
@@ -711,10 +776,7 @@ void D3DRenderManager::CreateBuffers()
 	descDSV.Texture2D.MipSlice = 0;
 	HR_T(m_pDevice->CreateDepthStencilView(textureDepthStencil.Get(), &descDSV, m_pDefaultDSV.GetAddressOf()));
 
-	textureDepthStencil.Reset();
-	HR_T(m_pDevice->CreateTexture2D(&descDepth, nullptr, textureDepthStencil.GetAddressOf()));	
-	HR_T(m_pDevice->CreateDepthStencilView(textureDepthStencil.Get(), &descDSV, m_pShadowDSV.GetAddressOf()));
-
+	m_ShadowBuffer = CreateFrameBuffer(4096, 4096, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_D24_UNORM_S8_UINT);
 }
 
 void D3DRenderManager::CreatePBR()
