@@ -91,7 +91,7 @@ void SkeletalMeshComponent::Update(float deltaTime)
 	}	
 
 	float passedTime = GameApp::m_pInstance->m_Timer.TotalTime() - m_AnimationLastTime;
-	if (m_bIsCulled && passedTime > 0.007f)		// 144프레임기준으로 
+	if (m_bIsCulled)// && passedTime > 0.001f)  		// 144프레임기준으로  ??? 다른컴에서는 왜 오작동
 	{
 		m_RootBone.Update(deltaTime);
 		m_AnimationLastTime = GameApp::m_pInstance->m_Timer.TotalTime();
