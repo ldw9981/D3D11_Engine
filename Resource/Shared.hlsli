@@ -13,7 +13,7 @@ TextureCube txEnvironment : register(t7);
 TextureCube txIBL_Diffuse : register(t8);
 TextureCube txIBL_Specular : register(t9);
 Texture2D txIBL_SpecularBRDF_LUT : register(t10);
-
+Texture2D txShadow : register(t11);
 
 SamplerState samplerLinear : register(s0);
 SamplerState samplerClamp : register(s1);

@@ -36,7 +36,7 @@
 #pragma comment(lib,"dxgi.lib")
 
 
-#define SHADOWMAP_SIZE 4096.0f
+#define SHADOWMAP_SIZE 4096
 
 
 D3DRenderManager* D3DRenderManager::Instance = nullptr;
@@ -298,7 +298,19 @@ void D3DRenderManager::Update(float DeltaTime)
 void D3DRenderManager::Render()
 {	
 	// Clear the back buffer
-	RenderShadowDepth();
+	const float clear_shadow[4] = { 0.0f ,  0.0f ,  0.0f, 0.0f };
+	m_pDeviceContext->ClearRenderTargetView(m_ShadowBuffer.RTV.Get(), clear_shadow);
+	m_pDeviceContext->ClearDepthStencilView(m_ShadowBuffer.DSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+	m_pDeviceContext->OMSetRenderTargets(1, m_ShadowBuffer.RTV.GetAddressOf(), m_ShadowBuffer.DSV.Get());
+
+	m_ShaderShadowSkeletalMesh.SetShader(m_pDeviceContext.Get());
+	RenderSkeletalMeshInstanceOpaque();
+	RenderSkeletalMeshInstanceTranslucent();
+
+	m_ShaderShadowStaticMesh.SetShader(m_pDeviceContext.Get());
+	RenderStaticMeshInstanceOpaque();
+	RenderStaticMeshInstanceTranslucent();
+
 
 	// Clear the back buffer
 	const float clear_color_with_alpha[4] = { m_ClearColor.x , m_ClearColor.y , m_ClearColor.z, 1.0f };	
@@ -582,18 +594,7 @@ void D3DRenderManager::RenderEnvironment()
 
 void D3DRenderManager::RenderShadowDepth()
 {	
-	const float clear_shadow[4] = { 0.0f ,  0.0f ,  0.0f, 0.0f };
-	m_pDeviceContext->ClearRenderTargetView(m_ShadowBuffer.RTV.Get(), clear_shadow);
-	m_pDeviceContext->ClearDepthStencilView(m_ShadowBuffer.DSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-	m_pDeviceContext->OMSetRenderTargets(1, m_ShadowBuffer.RTV.GetAddressOf(), m_ShadowBuffer.DSV.Get());
-	
-	m_ShaderShadowSkeletalMesh.SetShader(m_pDeviceContext.Get());
-	RenderSkeletalMeshInstanceOpaque();
-	RenderSkeletalMeshInstanceTranslucent();
 
-	m_ShaderShadowStaticMesh.SetShader(m_pDeviceContext.Get());	
-	RenderStaticMeshInstanceOpaque();	
-	RenderStaticMeshInstanceTranslucent();
 }
 
 Microsoft::WRL::ComPtr<ID3D11SamplerState> D3DRenderManager::CreateSamplerState(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE addressMode) const
@@ -787,7 +788,8 @@ void D3DRenderManager::CreateBuffers()
 	descDSV.Texture2D.MipSlice = 0;
 	HR_T(m_pDevice->CreateDepthStencilView(textureDepthStencil.Get(), &descDSV, m_pDefaultDSV.GetAddressOf()));
 
-	m_ShadowBuffer = CreateFrameBuffer(4096, 4096, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_D24_UNORM_S8_UINT);
+	m_ShadowBuffer = CreateFrameBuffer(SHADOWMAP_SIZE, SHADOWMAP_SIZE, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_D24_UNORM_S8_UINT);
+	m_pDeviceContext->PSSetShaderResources(11, 1, m_ShadowBuffer.SRV.GetAddressOf()); // 한번에 7개의 텍스처를 설정한다.
 }
 
 void D3DRenderManager::CreateShaders()
