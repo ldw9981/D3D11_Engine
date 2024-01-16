@@ -112,9 +112,10 @@ public:
 
 	ComPtr<ID3D11DepthStencilView> m_pShadowDSV;	// ±Ì¿Ã/Ω∫≈ŸΩ« ∫‰
 
-	ComPtr<ID3D11Texture2D>				m_pFloatBuffer;
-	ComPtr<ID3D11RenderTargetView>		m_pFloatBufferRTV;
-	ComPtr<ID3D11ShaderResourceView>	m_pFloatBufferSRV;
+	ComPtr<ID3D11Texture2D>				m_pShadowMap;
+	ComPtr<ID3D11RenderTargetView>		m_pShadowMapRTV;
+	ComPtr<ID3D11ShaderResourceView>	m_pShadowMapSRV;
+	ComPtr<ID3D11DepthStencilView>		m_pShadowMapDSV;
 
 	ComPtr<ID3D11Texture2D>				m_pResovedBuffer;
 	ComPtr<ID3D11RenderTargetView>		m_pResovedBufferRTV;
@@ -151,6 +152,8 @@ public:
 	Matrix  m_ShadowView;
 	Matrix  m_ShadowProjection;
 
+	Math::Vector3 m_ShadowLootAt;
+	Math::Vector3 m_ShadowPos;
 	Vector3	m_LookAt = { 0.0f, 0.0f, 0.0f };
 	Vector3 m_ClearColor = { 0.0f, 0.0f, 0.0f };
 	CB_TransformW m_TransformW;
@@ -161,7 +164,8 @@ public:
 
 	CB_MatrixPalette m_MatrixPalette;
 	CB_MarterialOverride m_MaterialOverride;
-	D3D11_VIEWPORT m_Viewport;
+	D3D11_VIEWPORT m_BaseViewport;
+	D3D11_VIEWPORT m_ShadowViewport;
 	HWND m_hWnd = nullptr;
 	std::list<StaticMeshInstance*>		m_StaticMeshInstanceOpaque;			// ∫“≈ı∏Ì 
 	std::list<StaticMeshInstance*>		m_StaticMeshInstanceTranslucent;	// π›≈ı∏Ì 
@@ -229,7 +233,8 @@ public:
 	HRESULT CreateTextureFromFile(const wchar_t* szFileName, ID3D11ShaderResourceView** textureView, ID3D11Resource** texture = nullptr);
 	HRESULT CreateSamplerStateE(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE addressMode, ID3D11SamplerState** ppSamplerState);
 	FrameBuffer CreateFrameBuffer(UINT width, UINT height, UINT samples, DXGI_FORMAT renderTargetFormat, DXGI_FORMAT depthstencilFormat);
-	void SetViewPort(UINT Width, UINT Height);
+	void SetBaseViewPort(UINT Width, UINT Height);
+	void SetShadowViewPort(UINT Width, UINT Height);
 private:
 	void CreateBuffers();
 	void CreateShaders();	

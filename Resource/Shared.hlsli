@@ -90,6 +90,7 @@ struct VS_INPUT
     int4 BlendIndices : BLENDINDICES;
     float4 BlendWeights : BLENDWEIGHTS;
 #endif
+    
 };
 
 struct PS_INPUT
@@ -102,6 +103,8 @@ struct PS_INPUT
     float3 NormalWorld : NORMAL;
     float3 TangentWorld : TANGENT;
     float3 BiTangentWorld : BITANGENT;
+        
+    float4 PositionShadow : TEXCOORD1;
 };
 
 struct PS_INPUT_ENVIRONMENT

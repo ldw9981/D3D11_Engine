@@ -194,6 +194,17 @@ float4 main(PS_INPUT input) : SV_Target
 	
     float3 final = directLighting + ambientLighting + emissive ;
 	
+    float currentDepth = input.PositionShadow.z / input.PositionShadow.w;
+    float2 uv = input.PositionShadow.xy / input.PositionShadow.w;
+    uv.y = -uv.y;
+    uv = uv * 0.5 + 0.5;
+   
+    float shadowDepth = txShadow.Sample(samplerLinear, uv).r;
+    if (currentDepth > shadowDepth )
+    {
+        final *= 0.5f;
+    }	
+	
 	if (UseGammaCorrection)
 	    final = pow(final, float(1.0 / Gamma));
 

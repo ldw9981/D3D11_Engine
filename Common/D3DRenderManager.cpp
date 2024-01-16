@@ -36,7 +36,7 @@
 #pragma comment(lib,"dxgi.lib")
 
 
-#define SHADOWMAP_SIZE 4096
+#define SHADOWMAP_SIZE 2048
 
 
 D3DRenderManager* D3DRenderManager::Instance = nullptr;
@@ -46,7 +46,7 @@ D3DRenderManager* D3DRenderManager::Instance = nullptr;
 ID3D11Device* D3DRenderManager::m_pDevice = nullptr;
 
 D3DRenderManager::D3DRenderManager()
- :m_Viewport {}
+ :m_BaseViewport {}
 {
 	assert(Instance == nullptr);
 	Instance = this;
@@ -169,7 +169,8 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	//MSAACheck(DXGI_FORMAT_R8G8B8A8_UNORM, samplecount, quality);
 	//assert(m_SampleQuality > quality && m_SampleCount > samplecount);
 
-	SetViewPort(Width,Height);
+	SetBaseViewPort(Width,Height);
+	SetShadowViewPort(SHADOWMAP_SIZE, SHADOWMAP_SIZE);
 	CreateBuffers();
 	
 	
@@ -192,11 +193,10 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	CreateBlendState();
 	
 	// 화면 크기가 바뀌면 다시계산해야함
-	m_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, m_Viewport.Width / (FLOAT)m_Viewport.Height, 1.0f, 100000.0f);
+	m_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, m_BaseViewport.Width / (FLOAT)m_BaseViewport.Height, 1.0f, 100000.0f);
 	BoundingFrustum::CreateFromMatrix(m_Frustum, m_Projection);
 
-	m_ShadowProjection = XMMatrixOrthographicLH(SHADOWMAP_SIZE, SHADOWMAP_SIZE, 1.0f, 100000.0f);
-
+	m_ShadowProjection = XMMatrixOrthographicLH(m_ShadowViewport.Width, m_ShadowViewport.Height, 1.0f, 1000.0f);
 
 	DebugDraw::Initialize(m_pDevice, m_pDeviceContext);
 	return true;
@@ -239,11 +239,11 @@ void D3DRenderManager::Update(float DeltaTime)
 			m_Frustum.Transform(m_Frustum, pCamera->m_World);			
 		}	
 
-		float distFromCamera = 10000;
-		float distFromLookAt = 10000;
-		Math::Vector3 ShadowLootAt = pCamera->m_World.Translation() + pCamera->m_World.Forward() * distFromCamera;
-		Math::Vector3 ShadowPos = ShadowLootAt + m_Light.Direction * distFromLookAt;
-		m_TransformVP.mShadowView = XMMatrixLookAtLH(ShadowPos, ShadowLootAt, Vector3(0.0f,1.0f,0.0f));
+		float distForward = 100;
+		float distFromLookAt = 1000;
+		m_ShadowLootAt = pCamera->m_World.Translation() + pCamera->m_World.Forward() * distForward;
+		m_ShadowPos = m_ShadowLootAt + -m_Light.Direction * distFromLookAt;
+		m_TransformVP.mShadowView = XMMatrixLookAtLH(m_ShadowPos, m_ShadowLootAt, up);
 	}
 	m_Light.Direction.Normalize();
 	m_pDeviceContext->UpdateSubresource(m_pCBDirectionLight.Get(), 0, nullptr, &m_Light, 0, 0);
@@ -298,10 +298,10 @@ void D3DRenderManager::Update(float DeltaTime)
 void D3DRenderManager::Render()
 {	
 	// Clear the back buffer
-	const float clear_shadow[4] = { 0.0f ,  0.0f ,  0.0f, 0.0f };
-	m_pDeviceContext->ClearRenderTargetView(m_ShadowBuffer.RTV.Get(), clear_shadow);
-	m_pDeviceContext->ClearDepthStencilView(m_ShadowBuffer.DSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-	m_pDeviceContext->OMSetRenderTargets(1, m_ShadowBuffer.RTV.GetAddressOf(), m_ShadowBuffer.DSV.Get());
+	m_pDeviceContext->RSSetViewports(1,&m_ShadowViewport);
+	const float clear_shadow[4] = { 0.0f ,  0.0f ,  0.0f, 1.0f };	
+	m_pDeviceContext->OMSetRenderTargets(0, NULL, m_pShadowMapDSV.Get());
+	m_pDeviceContext->ClearDepthStencilView(m_pShadowMapDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);	
 
 	m_ShaderShadowSkeletalMesh.SetShader(m_pDeviceContext.Get());
 	RenderSkeletalMeshInstanceOpaque();
@@ -311,7 +311,7 @@ void D3DRenderManager::Render()
 	RenderStaticMeshInstanceOpaque();
 	RenderStaticMeshInstanceTranslucent();
 
-
+	m_pDeviceContext->RSSetViewports(1, &m_BaseViewport);
 	// Clear the back buffer
 	const float clear_color_with_alpha[4] = { m_ClearColor.x , m_ClearColor.y , m_ClearColor.z, 1.0f };	
 	m_pDeviceContext->ClearRenderTargetView(m_pBackBufferRTV.Get(), clear_color_with_alpha);
@@ -460,12 +460,16 @@ void D3DRenderManager::RenderImGui()
 
 		AddDebugVector3ToImGuiWindow("EyePosition", m_Light.EyePosition);
 		AddDebugVector3ToImGuiWindow("LookAt", m_LookAt);
+		AddDebugVector3ToImGuiWindow("ShadowPosition", m_ShadowPos);
+		AddDebugVector3ToImGuiWindow("ShadowLootAt", m_ShadowLootAt);
 		if (m_pCamera.expired() == false)
 		{
 			auto pCamera = m_pCamera.lock();
 			AddDebugMatrixToImGuiWindow("CameraWorld", pCamera->m_World);
 		}
 		ImGui::End();	
+		
+		ImGui::Image(m_pShadowMapSRV.Get(), ImVec2(256, 256));
 		for (auto ImguiRenderable : m_ImGuiRenders)
 		{
 			ImguiRenderable->ImGuiRender();
@@ -719,16 +723,26 @@ FrameBuffer D3DRenderManager::CreateFrameBuffer(UINT width, UINT height, UINT sa
 	return fb;
 }
 
-void D3DRenderManager::SetViewPort(UINT Width, UINT Height)
+void D3DRenderManager::SetBaseViewPort(UINT Width, UINT Height)
 {
-	m_Viewport = {};
-	m_Viewport.TopLeftX = 0;
-	m_Viewport.TopLeftY = 0;
-	m_Viewport.Width = (float)Width;
-	m_Viewport.Height = (float)Height;
-	m_Viewport.MinDepth = 0.0f;
-	m_Viewport.MaxDepth = 1.0f;
-	m_pDeviceContext->RSSetViewports(1, &m_Viewport);
+	m_BaseViewport = {};
+	m_BaseViewport.TopLeftX = 0;
+	m_BaseViewport.TopLeftY = 0;
+	m_BaseViewport.Width = (float)Width;
+	m_BaseViewport.Height = (float)Height;
+	m_BaseViewport.MinDepth = 0.0f;
+	m_BaseViewport.MaxDepth = 1.0f;
+}
+
+void D3DRenderManager::SetShadowViewPort(UINT Width, UINT Height)
+{
+	m_ShadowViewport = {};
+	m_ShadowViewport.TopLeftX = 0;
+	m_ShadowViewport.TopLeftY = 0;
+	m_ShadowViewport.Width = float(SHADOWMAP_SIZE);
+	m_ShadowViewport.Height = float(SHADOWMAP_SIZE);
+	m_ShadowViewport.MinDepth = 0.0f;
+	m_ShadowViewport.MaxDepth = 1.0f;
 }
 
 void D3DRenderManager::MSAACheck(DXGI_FORMAT format, UINT& SampleCount, UINT& Quality) {
@@ -766,8 +780,8 @@ void D3DRenderManager::CreateBuffers()
 
 	//6. 뎊스&스텐실 뷰 생성
 	D3D11_TEXTURE2D_DESC descDepth = {};
-	descDepth.Width = (UINT)m_Viewport.Width;
-	descDepth.Height = (UINT)m_Viewport.Height;
+	descDepth.Width = (UINT)m_BaseViewport.Width;
+	descDepth.Height = (UINT)m_BaseViewport.Height;
 	descDepth.MipLevels = 1;
 	descDepth.ArraySize = 1;
 	descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -788,8 +802,41 @@ void D3DRenderManager::CreateBuffers()
 	descDSV.Texture2D.MipSlice = 0;
 	HR_T(m_pDevice->CreateDepthStencilView(textureDepthStencil.Get(), &descDSV, m_pDefaultDSV.GetAddressOf()));
 
-	m_ShadowBuffer = CreateFrameBuffer(SHADOWMAP_SIZE, SHADOWMAP_SIZE, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_D24_UNORM_S8_UINT);
-	m_pDeviceContext->PSSetShaderResources(11, 1, m_ShadowBuffer.SRV.GetAddressOf()); // 한번에 7개의 텍스처를 설정한다.
+	//m_ShadowBuffer = CreateFrameBuffer(m_Viewport.Width, m_Viewport.Height, 1, DXGI_FORMAT_R32_TYPELESS, DXGI_FORMAT_D24_UNORM_S8_UINT);
+	//m_pDeviceContext->PSSetShaderResources(11, 1, m_ShadowBuffer.SRV.GetAddressOf()); // 한번에 7개의 텍스처를 설정한다.
+
+	{
+		
+		//create shadow map texture desc
+		D3D11_TEXTURE2D_DESC texDesc = {};
+		texDesc.Width = m_ShadowViewport.Width;
+		texDesc.Height = m_ShadowViewport.Height;
+		texDesc.MipLevels = 1;
+		texDesc.ArraySize = 1;
+		texDesc.Usage = D3D11_USAGE_DEFAULT;
+		texDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+		texDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+		texDesc.SampleDesc.Count = 1;
+		texDesc.SampleDesc.Quality = 0;
+		HR_T(m_pDevice->CreateTexture2D(&texDesc, NULL, m_pShadowMap.GetAddressOf()));
+
+		// Create the depth stencil view desc
+		D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
+		descDSV.Format = DXGI_FORMAT_D32_FLOAT;
+		descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+		HR_T(m_pDevice->CreateDepthStencilView(m_pShadowMap.Get(), &descDSV, m_pShadowMapDSV.GetAddressOf()));
+
+
+		//create shader resource view desc
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+		srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
+		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		srvDesc.Texture2D.MipLevels = 1;	
+		HR_T(m_pDevice->CreateShaderResourceView(m_pShadowMap.Get(), &srvDesc, m_pShadowMapSRV.GetAddressOf()));
+
+		m_pDeviceContext->PSSetShaderResources(11, 1, m_pShadowMapSRV.GetAddressOf()); // 한번에 7개의 텍스처를 설정한다.
+	}
+
 }
 
 void D3DRenderManager::CreateShaders()
@@ -1022,8 +1069,8 @@ void D3DRenderManager::RemoveImguiRenderable(IImGuiRenderable* pIImGuiRenderable
 void D3DRenderManager::CreateMousePickingRay(float mouseX, float mouseY, Math::Vector3& rayOrigin, Math::Vector3& rayDirection)
 {
 	// Screen공간의 마우스 위치를 NDC 좌표계( -1 ~  +1)로 변경
-	float viewX = (+2.0f * mouseX / m_Viewport.Width - 1.0f) / m_Projection(0, 0);   // 투영행렬에 반영된 뷰포트 종횡비 고려하여 점을 조정
-	float viewY = (-2.0f * mouseY / m_Viewport.Height + 1.0f) / m_Projection(1, 1);  // 투영행렬에 반영된 뷰포트 종횡비 고려하여 점을 조정
+	float viewX = (+2.0f * mouseX / m_BaseViewport.Width - 1.0f) / m_Projection(0, 0);   // 투영행렬에 반영된 뷰포트 종횡비 고려하여 점을 조정
+	float viewY = (-2.0f * mouseY / m_BaseViewport.Height + 1.0f) / m_Projection(1, 1);  // 투영행렬에 반영된 뷰포트 종횡비 고려하여 점을 조정
 
 	// 카메라 공간의 좌표와 벡터
 	Vector3 org = Vector3(0.0f, 0.0f, 0.0f);

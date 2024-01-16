@@ -18,8 +18,6 @@ PS_INPUT main(VS_INPUT input)
     matWorld = World;
 #endif    
     pos = mul(pos, matWorld);
-    output.PositionWorld = pos.xyz;    
-    
     pos = mul(pos, ShadowView);
     pos = mul(pos, ShadowProjection);
     output.PositionProj = pos;    
