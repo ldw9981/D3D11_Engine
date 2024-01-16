@@ -36,6 +36,8 @@
 #pragma comment(lib,"dxgi.lib")
 
 
+#define SHADOWMAP_SIZE 4096.0f
+
 
 D3DRenderManager* D3DRenderManager::Instance = nullptr;
 
@@ -182,7 +184,7 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	ImGui_ImplDX11_Init(m_pDevice, m_pDeviceContext.Get());
 
 	// * Render() 에서 파이프라인에 바인딩할 버텍스 셰이더 생성
-	CreatePBR();
+	CreateShaders();
 	CreateEnvironment();
 	CreateConstantBuffer();
 	CreateSamplerState();
@@ -193,7 +195,7 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	m_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, m_Viewport.Width / (FLOAT)m_Viewport.Height, 1.0f, 100000.0f);
 	BoundingFrustum::CreateFromMatrix(m_Frustum, m_Projection);
 
-	m_ShadowProjection = XMMatrixOrthographicLH((FLOAT)m_Viewport.Width, (FLOAT)m_Viewport.Height, 1.0f, 100000.0f);
+	m_ShadowProjection = XMMatrixOrthographicLH(SHADOWMAP_SIZE, SHADOWMAP_SIZE, 1.0f, 100000.0f);
 
 
 	DebugDraw::Initialize(m_pDevice, m_pDeviceContext);
@@ -303,13 +305,23 @@ void D3DRenderManager::Render()
 	m_pDeviceContext->ClearRenderTargetView(m_pBackBufferRTV.Get(), clear_color_with_alpha);
 	m_pDeviceContext->ClearDepthStencilView(m_pDefaultDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 	m_pDeviceContext->OMSetRenderTargets(1, m_pBackBufferRTV.GetAddressOf(), m_pDefaultDSV.Get());
+
+	m_ShaderBaseSkeletalMesh.SetShader(m_pDeviceContext.Get());
 	RenderSkeletalMeshInstanceOpaque();// 불투명 먼저
+
+	m_ShaderBaseStaticMesh.SetShader(m_pDeviceContext.Get());
 	RenderStaticMeshInstanceOpaque();				
 	
 	if (m_pEnvironmentMeshComponent.expired() == false)
+	{
+		m_ShaderEnvironment.SetShader(m_pDeviceContext.Get());
 		RenderEnvironment();// 환경맵
-	
+	}
+		
+	m_ShaderBaseSkeletalMesh.SetShader(m_pDeviceContext.Get());
 	RenderSkeletalMeshInstanceTranslucent();// 반투명
+
+	m_ShaderBaseStaticMesh.SetShader(m_pDeviceContext.Get());
 	RenderStaticMeshInstanceTranslucent();	
 
 	RenderDebugDraw();
@@ -455,9 +467,6 @@ void D3DRenderManager::RenderImGui()
 void D3DRenderManager::RenderSkeletalMeshInstanceOpaque()
 {
 	m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	m_pDeviceContext->IASetInputLayout(m_pSkeletalMeshInputLayout.Get());
-	m_pDeviceContext->VSSetShader(m_pSkeletalMeshVertexShader.Get(), nullptr, 0);
-	m_pDeviceContext->PSSetShader(m_pPBRPixelShader.Get(), nullptr, 0);
 	m_pDeviceContext->VSSetConstantBuffers(0, 1, m_pCBTransformW.GetAddressOf());  //debugdraw에서 변경시켜서 설정한다.
 	m_pDeviceContext->RSSetState(m_pRasterizerStateCW.Get());
 	m_pDeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);	// 설정해제 , 다른옵션은 기본값
@@ -483,9 +492,6 @@ void D3DRenderManager::RenderSkeletalMeshInstanceOpaque()
 void D3DRenderManager::RenderStaticMeshInstanceOpaque()
 {
 	m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	m_pDeviceContext->IASetInputLayout(m_pStaticMeshInputLayout.Get());
-	m_pDeviceContext->VSSetShader(m_pStaticMeshVertexShader.Get(), nullptr, 0);
-	m_pDeviceContext->PSSetShader(m_pPBRPixelShader.Get(), nullptr, 0);
 	m_pDeviceContext->VSSetConstantBuffers(0, 1, m_pCBTransformW.GetAddressOf()); //debugdraw에서 변경시켜서 설정한다.
 	m_pDeviceContext->RSSetState(m_pRasterizerStateCW.Get());
 	m_pDeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);	// 설정해제 , 다른옵션은 기본값\
@@ -511,9 +517,6 @@ void D3DRenderManager::RenderStaticMeshInstanceOpaque()
 void D3DRenderManager::RenderSkeletalMeshInstanceTranslucent()
 {
 	m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	m_pDeviceContext->IASetInputLayout(m_pSkeletalMeshInputLayout.Get());
-	m_pDeviceContext->VSSetShader(m_pSkeletalMeshVertexShader.Get(), nullptr, 0);
-	m_pDeviceContext->PSSetShader(m_pPBRPixelShader.Get(), nullptr, 0);
 	m_pDeviceContext->VSSetConstantBuffers(0, 1, m_pCBTransformW.GetAddressOf());  //debugdraw에서 변경시켜서 설정한다.
 	m_pDeviceContext->RSSetState(m_pRasterizerStateCW.Get());
 	m_pDeviceContext->OMSetBlendState(m_pAlphaBlendState.Get(), nullptr, 0xffffffff); // 알파블렌드 상태설정 , 다른옵션은 기본값 
@@ -541,9 +544,6 @@ void D3DRenderManager::RenderSkeletalMeshInstanceTranslucent()
 void D3DRenderManager::RenderStaticMeshInstanceTranslucent()
 {
 	m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	m_pDeviceContext->IASetInputLayout(m_pStaticMeshInputLayout.Get());
-	m_pDeviceContext->VSSetShader(m_pStaticMeshVertexShader.Get(), nullptr, 0);
-	m_pDeviceContext->PSSetShader(m_pPBRPixelShader.Get(), nullptr, 0);
 	m_pDeviceContext->VSSetConstantBuffers(0, 1, m_pCBTransformW.GetAddressOf()); //debugdraw에서 변경시켜서 설정한다.
 	m_pDeviceContext->RSSetState(m_pRasterizerStateCW.Get());
 	m_pDeviceContext->OMSetBlendState(m_pAlphaBlendState.Get(), nullptr, 0xffffffff); // 알파블렌드 상태설정 , 다른옵션은 기본값 	
@@ -570,9 +570,6 @@ void D3DRenderManager::RenderStaticMeshInstanceTranslucent()
 void D3DRenderManager::RenderEnvironment()
 {
 	m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	m_pDeviceContext->IASetInputLayout(m_pStaticMeshInputLayout.Get());
-	m_pDeviceContext->VSSetShader(m_pEnvironmentVertexShader.Get(), nullptr, 0);
-	m_pDeviceContext->PSSetShader(m_pEnvironmentPixelShader.Get(), nullptr, 0);
 	m_pDeviceContext->VSSetConstantBuffers(0, 1, m_pCBTransformW.GetAddressOf()); //debugdraw에서 변경시켜서 설정한다.
 	m_pDeviceContext->RSSetState(m_pRasterizerStateCCW.Get());
 	m_pDeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);	// 설정해제 , 다른옵션은 기본값
@@ -589,9 +586,13 @@ void D3DRenderManager::RenderShadowDepth()
 	m_pDeviceContext->ClearRenderTargetView(m_ShadowBuffer.RTV.Get(), clear_shadow);
 	m_pDeviceContext->ClearDepthStencilView(m_ShadowBuffer.DSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 	m_pDeviceContext->OMSetRenderTargets(1, m_ShadowBuffer.RTV.GetAddressOf(), m_ShadowBuffer.DSV.Get());
-	RenderSkeletalMeshInstanceOpaque();// 불투명 먼저
-	RenderStaticMeshInstanceOpaque();
-	RenderSkeletalMeshInstanceTranslucent();// 반투명
+	
+	m_ShaderShadowSkeletalMesh.SetShader(m_pDeviceContext.Get());
+	RenderSkeletalMeshInstanceOpaque();
+	RenderSkeletalMeshInstanceTranslucent();
+
+	m_ShaderShadowStaticMesh.SetShader(m_pDeviceContext.Get());	
+	RenderStaticMeshInstanceOpaque();	
 	RenderStaticMeshInstanceTranslucent();
 }
 
@@ -789,67 +790,115 @@ void D3DRenderManager::CreateBuffers()
 	m_ShadowBuffer = CreateFrameBuffer(4096, 4096, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_D24_UNORM_S8_UINT);
 }
 
-void D3DRenderManager::CreatePBR()
+void D3DRenderManager::CreateShaders()
 {
 	HRESULT hr;
-	D3D_SHADER_MACRO defines[] =
+	D3D_SHADER_MACRO macroVertexSkinning[] =
 	{
 		{"VERTEX_SKINNING",""}, // 매크로 이름과 값을 설정
 		{nullptr, nullptr}    // 배열의 끝을 나타내기 위해 nullptr로 끝낸다.
 	};
-	ComPtr<ID3D10Blob> CompiledBuffer = nullptr;
-
-	// 1. SkeletalMesh  PBR VertexShader
+	D3D11_INPUT_ELEMENT_DESC layoutSkeletalMesh[] =
 	{
-		HR_T(CompileShaderFromFile(L"../Resource/VS_PBR.hlsl", defines, "main", "vs_5_0", CompiledBuffer.GetAddressOf()));
-		D3D11_INPUT_ELEMENT_DESC layout[] =
-		{
-			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "NORMAL" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "TANGENT" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "BITANGENT" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "BLENDINDICES" , 0, DXGI_FORMAT_R32G32B32A32_SINT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "BLENDWEIGHTS" , 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		};
-		hr = m_pDevice->CreateInputLayout(layout, ARRAYSIZE(layout),
-			CompiledBuffer->GetBufferPointer(), CompiledBuffer->GetBufferSize(), m_pSkeletalMeshInputLayout.GetAddressOf());
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TANGENT" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "BITANGENT" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "BLENDINDICES" , 0, DXGI_FORMAT_R32G32B32A32_SINT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "BLENDWEIGHTS" , 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	};
 
-		HR_T(m_pDevice->CreateVertexShader(CompiledBuffer->GetBufferPointer(),
-			CompiledBuffer->GetBufferSize(), NULL, m_pSkeletalMeshVertexShader.GetAddressOf()));
+	D3D11_INPUT_ELEMENT_DESC layoutStaticMesh[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TANGENT" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "BITANGENT" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	};
+
+	ComPtr<ID3D10Blob> buffer = nullptr;
+		
+	//Base 
+	{
+		//1. SkeletalMesh  PBR VertexShader
+		buffer.Reset();
+		HR_T(CompileShaderFromFile(L"../Resource/VS_PBR.hlsl", macroVertexSkinning, "main", "vs_5_0", buffer.GetAddressOf()));
+
+		hr = m_pDevice->CreateInputLayout(layoutSkeletalMesh, ARRAYSIZE(layoutSkeletalMesh),
+			buffer->GetBufferPointer(), buffer->GetBufferSize(),m_ShaderBaseSkeletalMesh.IL.GetAddressOf());
+
+		HR_T(m_pDevice->CreateVertexShader(buffer->GetBufferPointer(),
+			buffer->GetBufferSize(), NULL, m_ShaderBaseSkeletalMesh.VS.GetAddressOf()));
+	   
+		// 2. StaticMesh  PBR VertexShader	
+		buffer.Reset();
+		HR_T(CompileShaderFromFile(L"../Resource/VS_PBR.hlsl", nullptr, "main", "vs_5_0", buffer.GetAddressOf()));
+
+		HR_T(m_pDevice->CreateInputLayout(layoutStaticMesh, ARRAYSIZE(layoutStaticMesh),
+			buffer->GetBufferPointer(), buffer->GetBufferSize(), m_ShaderBaseStaticMesh.IL.GetAddressOf()));
+
+		HR_T(m_pDevice->CreateVertexShader(buffer->GetBufferPointer(),
+			buffer->GetBufferSize(), NULL, m_ShaderBaseStaticMesh.VS.GetAddressOf()));
+
+		// 3. PBR PixelShader
+		buffer.Reset();
+		HR_T(CompileShaderFromFile(L"../Resource/PS_PBR.hlsl", nullptr, "main", "ps_5_0", buffer.GetAddressOf()));
+		ComPtr<ID3D11PixelShader> ps;
+		HR_T(m_pDevice->CreatePixelShader(buffer->GetBufferPointer(),
+			buffer->GetBufferSize(), NULL, ps.GetAddressOf()));
+
+		m_ShaderBaseStaticMesh.PS = ps;
+		m_ShaderBaseSkeletalMesh.PS = ps;
 	}
 
-    // 2. StaticMesh  PBR VertexShader	
+	// 그림자용 셰이더 1.  SkeletalMesh  PBR VertexShader
 	{
-		CompiledBuffer.Reset();
-		HR_T(CompileShaderFromFile(L"../Resource/VS_PBR.hlsl", nullptr, "main", "vs_5_0", CompiledBuffer.GetAddressOf()));
-		D3D11_INPUT_ELEMENT_DESC layout[] =
-		{
-			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "NORMAL" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "TANGENT" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "BITANGENT" , 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		};
-		HR_T(m_pDevice->CreateInputLayout(layout, ARRAYSIZE(layout),
-			CompiledBuffer->GetBufferPointer(), CompiledBuffer->GetBufferSize(), m_pStaticMeshInputLayout.GetAddressOf()));
+		buffer.Reset();
+		HR_T(CompileShaderFromFile(L"../Resource/VS_ShadowDepth.hlsl", macroVertexSkinning, "main", "vs_5_0", buffer.GetAddressOf()));
 
-		HR_T(m_pDevice->CreateVertexShader(CompiledBuffer->GetBufferPointer(),
-			CompiledBuffer->GetBufferSize(), NULL, m_pStaticMeshVertexShader.GetAddressOf()));
+		hr = m_pDevice->CreateInputLayout(layoutSkeletalMesh, ARRAYSIZE(layoutSkeletalMesh),
+			buffer->GetBufferPointer(), buffer->GetBufferSize(), m_ShaderShadowSkeletalMesh.IL.GetAddressOf());
+
+		HR_T(m_pDevice->CreateVertexShader(buffer->GetBufferPointer(),
+			buffer->GetBufferSize(), NULL, m_ShaderShadowSkeletalMesh.VS.GetAddressOf()));
+
+		// 그림자용 셰이더  2. StaticMesh  PBR VertexShader	
+		buffer.Reset();
+		HR_T(CompileShaderFromFile(L"../Resource/VS_ShadowDepth.hlsl", nullptr, "main", "vs_5_0", buffer.GetAddressOf()));
+		
+		HR_T(m_pDevice->CreateInputLayout(layoutStaticMesh, ARRAYSIZE(layoutStaticMesh),
+			buffer->GetBufferPointer(), buffer->GetBufferSize(), m_ShaderShadowStaticMesh.IL.GetAddressOf()));
+
+		HR_T(m_pDevice->CreateVertexShader(buffer->GetBufferPointer(),
+			buffer->GetBufferSize(), NULL, m_ShaderShadowStaticMesh.VS.GetAddressOf()));
+
+		// 그림자용 셰이더  3. PBR PixelShader
+		buffer.Reset();
+		HR_T(CompileShaderFromFile(L"../Resource/PS_ShadowDepth.hlsl", nullptr, "main", "ps_5_0", buffer.GetAddressOf()));
+		ComPtr<ID3D11PixelShader> ps;
+		HR_T(m_pDevice->CreatePixelShader(buffer->GetBufferPointer(),
+			buffer->GetBufferSize(), NULL, ps.GetAddressOf()));
+
+		m_ShaderShadowStaticMesh.PS = ps;
+		m_ShaderShadowSkeletalMesh.PS = ps;
 	}
 
+	// Environment
+	{
+		buffer.Reset();
+		HR_T(CompileShaderFromFile(L"../Resource/VS_Environment.hlsl", nullptr, "main", "vs_5_0", buffer.GetAddressOf()));
+		HR_T(m_pDevice->CreateVertexShader(buffer->GetBufferPointer(), buffer->GetBufferSize(), NULL,m_ShaderEnvironment.VS.GetAddressOf()));
+		
+		HR_T(m_pDevice->CreateInputLayout(layoutStaticMesh, ARRAYSIZE(layoutStaticMesh),
+			buffer->GetBufferPointer(), buffer->GetBufferSize(), m_ShaderEnvironment.IL.GetAddressOf()));
 
-    // 3. PBR PixelShader
-	CompiledBuffer.Reset();
-	HR_T(CompileShaderFromFile(L"../Resource/PS_PBR.hlsl", nullptr, "main", "ps_5_0", CompiledBuffer.GetAddressOf()));
-	HR_T(m_pDevice->CreatePixelShader(CompiledBuffer->GetBufferPointer(),
-		CompiledBuffer->GetBufferSize(), NULL, m_pPBRPixelShader.GetAddressOf()));
-}
+		buffer.Reset();
+		HR_T(CompileShaderFromFile(L"../Resource/PS_Environment.hlsl", nullptr, "main", "ps_5_0", buffer.GetAddressOf()));
+		HR_T(m_pDevice->CreatePixelShader(buffer->GetBufferPointer(), buffer->GetBufferSize(), NULL, m_ShaderEnvironment.PS.GetAddressOf()));
+	}
 
-
-void D3DRenderManager::CreateIBL()
-{
-  
 }
 
 void D3DRenderManager::ApplyMaterial(Material* pMaterial)
@@ -1123,19 +1172,7 @@ void D3DRenderManager::CreateBlendState()
 
 void D3DRenderManager::CreateEnvironment()
 {
-	// 2. Render() 에서 파이프라인에 바인딩할 InputLayout 생성 	
-	D3D_SHADER_MACRO defines[] =
-	{
-		{"",""}, // 매크로 이름과 값을 설정
-		{nullptr, nullptr}    // 배열의 끝을 나타내기 위해 nullptr로 끝낸다.
-	};
-	ComPtr<ID3D10Blob> buffer = nullptr;
-	HR_T(CompileShaderFromFile(L"../Resource/VS_Environment.hlsl", nullptr, "main", "vs_5_0", buffer.GetAddressOf()));
-	HR_T(m_pDevice->CreateVertexShader(buffer->GetBufferPointer(),buffer->GetBufferSize(), NULL, m_pEnvironmentVertexShader.GetAddressOf()));
-	buffer.Reset();
-
-	HR_T(CompileShaderFromFile(L"../Resource/PS_Environment.hlsl", nullptr, "main", "ps_5_0", buffer.GetAddressOf()));
-	HR_T(m_pDevice->CreatePixelShader(buffer->GetBufferPointer(),buffer->GetBufferSize(), NULL, m_pEnvironmentPixelShader.GetAddressOf()));
+	
 }
 
 void D3DRenderManager::AddDebugVector4ToImGuiWindow(const std::string& header, const Vector4& value)

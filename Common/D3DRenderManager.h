@@ -3,6 +3,7 @@
 #include <DirectXtk/BufferHelpers.h>
 #include <DirectXCollision.h>
 #include "FrameBuffer.h"
+#include "ShaderProgram.h"
 
 using namespace DirectX::SimpleMath;
 using namespace DirectX;
@@ -120,14 +121,11 @@ public:
 	ComPtr<ID3D11ShaderResourceView>	m_pResovedBufferSRV;
 
 	// 렌더링 파이프라인에 적용하는 리소스 객체의 인터페이스
-	ComPtr<ID3D11VertexShader> m_pSkeletalMeshVertexShader;	// SkeletalMesh 정점 셰이더.
-	ComPtr<ID3D11InputLayout> m_pSkeletalMeshInputLayout;	// SkeletalMesh 입력 레이아웃.	
-	ComPtr<ID3D11VertexShader> m_pStaticMeshVertexShader;	// StaticMesh 정점 셰이더.
-	ComPtr<ID3D11InputLayout> m_pStaticMeshInputLayout;		// StaticMesh 입력 레이아웃.
-	ComPtr<ID3D11PixelShader> m_pPBRPixelShader;		// 픽셀 셰이더.	
-
-	ComPtr<ID3D11VertexShader> m_pEnvironmentVertexShader;	// Environment 정점 셰이더.
-	ComPtr<ID3D11PixelShader> m_pEnvironmentPixelShader;	// Environment 정점 셰이더.
+	ShaderProgram m_ShaderBaseSkeletalMesh;
+	ShaderProgram m_ShaderBaseStaticMesh;
+	ShaderProgram m_ShaderShadowSkeletalMesh;
+	ShaderProgram m_ShaderShadowStaticMesh;
+	ShaderProgram m_ShaderEnvironment;
 
 	ComPtr<ID3D11SamplerState> m_pSamplerLinear;		// 샘플러 상태.
 	ComPtr<ID3D11SamplerState> m_pSamplerClamp;		// 샘플러 상태.
@@ -234,8 +232,7 @@ public:
 	void SetViewPort(UINT Width, UINT Height);
 private:
 	void CreateBuffers();
-	void CreatePBR();
-	void CreateIBL();
+	void CreateShaders();	
 	void CreateConstantBuffer();
 	void CreateSamplerState();
 	void CreateRasterizerState();

@@ -161,6 +161,7 @@
     <ClInclude Include="PipelineStateObjects.h" />
     <ClInclude Include="PlayerController.h" />
     <ClInclude Include="RenderComponent.h" />
+    <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="SkeletalMeshActor.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="D3DRenderManager.h" />
@@ -207,6 +208,7 @@
     <ClCompile Include="PipelineStateObjects.cpp" />
     <ClCompile Include="PlayerController.cpp" />
     <ClCompile Include="RenderComponent.cpp" />
+    <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="SkeletalMeshActor.cpp" />
     <ClCompile Include="Common.cpp" />
     <ClCompile Include="Component.cpp" />
