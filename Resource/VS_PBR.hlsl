@@ -32,7 +32,7 @@ PS_INPUT main(VS_INPUT input)
     float3x3 TBN = float3x3(input.TangentModel, input.BiTangent, input.NormalModel);
     output.TangentBasis = mul((float3x3) matWorld, transpose(TBN));
 #endif
-    output.PositionShadow = mul(pos, ShadowView);
-    output.PositionShadow = mul(pos, ShadowProjection);
+    output.PositionShadow = mul(float4(output.PositionWorld,1.0f), ShadowView);
+    output.PositionShadow = mul(output.PositionShadow, ShadowProjection);
     return output;
 }
