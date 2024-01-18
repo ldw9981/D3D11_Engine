@@ -170,7 +170,7 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	//assert(m_SampleQuality > quality && m_SampleCount > samplecount);
 
 	SetBaseViewPort(Width,Height);
-	SetShadowViewPort(SHADOWMAP_SIZE, SHADOWMAP_SIZE);
+	SetShadowViewPort(Width, Height);
 	CreateBuffers();
 	
 	
@@ -196,7 +196,7 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	m_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, m_BaseViewport.Width / (FLOAT)m_BaseViewport.Height, 1.0f, 100000.0f);
 	BoundingFrustum::CreateFromMatrix(m_Frustum, m_Projection);
 
-	m_ShadowProjection = XMMatrixOrthographicLH(m_ShadowViewport.Width, m_ShadowViewport.Height, 1.0f, 1000.0f);
+	m_ShadowProjection = XMMatrixPerspectiveFovLH(XM_PIDIV4, m_BaseViewport.Width / (FLOAT)m_BaseViewport.Height, 100.0f, 100000.0f);
 
 	DebugDraw::Initialize(m_pDevice, m_pDeviceContext);
 	return true;
@@ -243,7 +243,7 @@ void D3DRenderManager::Update(float DeltaTime)
 		float distFromLookAt = 1000;
 		m_ShadowLootAt = pCamera->m_World.Translation() + pCamera->m_World.Forward() * distForward;
 		m_ShadowPos = m_ShadowLootAt + -m_Light.Direction * distFromLookAt;
-		m_TransformVP.mShadowView = XMMatrixLookAtLH(m_ShadowPos, m_ShadowLootAt, up);
+		m_TransformVP.mShadowView = XMMatrixLookAtLH(eye, m_LookAt, up);
 	}
 	m_Light.Direction.Normalize();
 	m_pDeviceContext->UpdateSubresource(m_pCBDirectionLight.Get(), 0, nullptr, &m_Light, 0, 0);
@@ -306,7 +306,7 @@ void D3DRenderManager::Render()
 	m_ShaderShadowSkeletalMesh.SetShader(m_pDeviceContext.Get());
 	RenderSkeletalMeshInstanceOpaque();
 	RenderSkeletalMeshInstanceTranslucent();
-
+		
 	m_ShaderShadowStaticMesh.SetShader(m_pDeviceContext.Get());
 	RenderStaticMeshInstanceOpaque();
 	RenderStaticMeshInstanceTranslucent();
@@ -739,8 +739,8 @@ void D3DRenderManager::SetShadowViewPort(UINT Width, UINT Height)
 	m_ShadowViewport = {};
 	m_ShadowViewport.TopLeftX = 0;
 	m_ShadowViewport.TopLeftY = 0;
-	m_ShadowViewport.Width = float(SHADOWMAP_SIZE);
-	m_ShadowViewport.Height = float(SHADOWMAP_SIZE);
+	m_ShadowViewport.Width = float(Width);
+	m_ShadowViewport.Height = float(Height);
 	m_ShadowViewport.MinDepth = 0.0f;
 	m_ShadowViewport.MaxDepth = 1.0f;
 }
