@@ -36,7 +36,7 @@
 #pragma comment(lib,"dxgi.lib")
 
 
-#define SHADOWMAP_SIZE 2048
+#define SHADOWMAP_SIZE 4096
 
 
 D3DRenderManager* D3DRenderManager::Instance = nullptr;
