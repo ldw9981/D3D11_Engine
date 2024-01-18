@@ -192,18 +192,18 @@ float4 main(PS_INPUT input) : SV_Target
         ambientLighting = (diffuseIBL + specularIBL) * AmbientOcclusion;
     }	
 	
-    float3 final = directLighting + ambientLighting + emissive ;
-	
+	// depth가 크면 더 뒤쪽에 있으므로 직접광이 차단된다.
     float currentDepth = input.PositionShadow.z / input.PositionShadow.w;
     float2 uv = input.PositionShadow.xy / input.PositionShadow.w;
     uv.y = -uv.y;
     uv = uv * 0.5 + 0.5;
-   
     float shadowDepth = txShadow.Sample(samplerLinear, uv).r;
-    if (currentDepth > shadowDepth + 0.001 )
+    if (currentDepth > shadowDepth + 0.001)
     {
-        final *= 0.6f;
-    }	
+        directLighting = 0.0f;
+    }
+	
+    float3 final = directLighting + ambientLighting + emissive ;
 	
 	if (UseGammaCorrection)
 	    final = pow(final, float(1.0 / Gamma));
