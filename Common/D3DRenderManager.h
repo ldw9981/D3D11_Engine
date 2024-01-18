@@ -24,7 +24,7 @@ struct CB_TransformVP
 
 struct CB_DirectionLight
 {
-	Vector3 Direction = { 0.0f, -1.0f, 1.0f };
+	Vector3 Direction = { 0.0f, -0.7f, -0.7f };
 	float pad0 = 0.0f;
 	Vector3 Radiance = { 1.0f,1.0f,1.0f };
 	float pad1 = 0.0f;
@@ -110,16 +110,10 @@ public:
 	ComPtr<ID3D11RenderTargetView> m_pBackBufferRTV;	// 렌더링 타겟뷰
 	ComPtr<ID3D11DepthStencilView> m_pDefaultDSV;	// 깊이/스텐실 뷰
 
-	ComPtr<ID3D11DepthStencilView> m_pShadowDSV;	// 깊이/스텐실 뷰
-
 	ComPtr<ID3D11Texture2D>				m_pShadowMap;
 	ComPtr<ID3D11RenderTargetView>		m_pShadowMapRTV;
 	ComPtr<ID3D11ShaderResourceView>	m_pShadowMapSRV;
 	ComPtr<ID3D11DepthStencilView>		m_pShadowMapDSV;
-
-	ComPtr<ID3D11Texture2D>				m_pResovedBuffer;
-	ComPtr<ID3D11RenderTargetView>		m_pResovedBufferRTV;
-	ComPtr<ID3D11ShaderResourceView>	m_pResovedBufferSRV;
 
 	// 렌더링 파이프라인에 적용하는 리소스 객체의 인터페이스
 	ShaderProgram m_ShaderBaseSkeletalMesh;
@@ -151,10 +145,11 @@ public:
 	Matrix  m_Projection;			// 단위장치좌표계( Normalized Device Coordinate) 공간으로 변환을 위한 행렬.
 	Matrix  m_ShadowView;
 	Matrix  m_ShadowProjection;
-
-	Math::Vector3 m_ShadowLootAt;
-	Math::Vector3 m_ShadowPos;
+	Vector2 m_ShadowProjectionNearFar = {1000.0f, 10000.0f};
+	Math::Vector3 m_ShadowLootAt = { 0.0f, 0.0f, 0.0f };
+	Math::Vector3 m_ShadowPos = { 0.0f, 1000.0f, 0.0f };
 	Vector3	m_LookAt = { 0.0f, 0.0f, 0.0f };
+	Vector3 m_ShadowDir = { 0.0f, 0.0f, 0.0f };
 	Vector3 m_ClearColor = { 0.0f, 0.0f, 0.0f };
 	CB_TransformW m_TransformW;
 	CB_TransformVP m_TransformVP;
@@ -185,7 +180,7 @@ public:
 	BoundingFrustum m_Frustum;
 	int m_nDrawComponentCount = 0;
 	bool m_bFreezeCulling = false;
-    bool m_bWorkCulling = true;
+    bool m_bWorkCulling = false;
 	bool m_bDrawDebugCulling = false;
 	bool m_bDrawDebugCollision = false;
 	bool m_bUseMSAA = false;

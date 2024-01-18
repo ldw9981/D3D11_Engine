@@ -202,7 +202,7 @@ float4 main(PS_INPUT input) : SV_Target
     float shadowDepth = txShadow.Sample(samplerLinear, uv).r;
     if (currentDepth > shadowDepth )
     {
-        final *= 0.5f;
+        final *= 0.1f;
     }	
 	
 	if (UseGammaCorrection)

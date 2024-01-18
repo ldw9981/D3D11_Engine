@@ -170,7 +170,7 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	//assert(m_SampleQuality > quality && m_SampleCount > samplecount);
 
 	SetBaseViewPort(Width,Height);
-	SetShadowViewPort(Width, Height);
+	SetShadowViewPort(SHADOWMAP_SIZE, SHADOWMAP_SIZE);
 	CreateBuffers();
 	
 	
@@ -196,8 +196,7 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	m_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, m_BaseViewport.Width / (FLOAT)m_BaseViewport.Height, 1.0f, 100000.0f);
 	BoundingFrustum::CreateFromMatrix(m_Frustum, m_Projection);
 
-	m_ShadowProjection = XMMatrixPerspectiveFovLH(XM_PIDIV4, m_BaseViewport.Width / (FLOAT)m_BaseViewport.Height, 100.0f, 100000.0f);
-
+	
 	DebugDraw::Initialize(m_pDevice, m_pDeviceContext);
 	return true;
 }
@@ -224,7 +223,8 @@ void D3DRenderManager::Uninitialize()
 void D3DRenderManager::Update(float DeltaTime)
 {	
 	// 디렉션라이트방향
-	
+	m_ShadowProjection = XMMatrixPerspectiveFovLH(XM_PIDIV4, m_ShadowViewport.Width / (FLOAT)m_ShadowViewport.Height, m_ShadowProjectionNearFar.x, m_ShadowProjectionNearFar.y);
+
 	if (m_pCamera.expired() == false)
 	{
 		auto pCamera = m_pCamera.lock();
@@ -239,11 +239,13 @@ void D3DRenderManager::Update(float DeltaTime)
 			m_Frustum.Transform(m_Frustum, pCamera->m_World);			
 		}	
 
-		float distForward = 100;
-		float distFromLookAt = 1000;
-		m_ShadowLootAt = pCamera->m_World.Translation() + pCamera->m_World.Forward() * distForward;
-		m_ShadowPos = m_ShadowLootAt + -m_Light.Direction * distFromLookAt;
-		m_ShadowView = XMMatrixLookAtLH(eye, m_LookAt, up);
+		float distForward = 1;
+		float distFromLookAt = 3000;
+		m_ShadowLootAt = pCamera->m_World.Translation();
+		m_ShadowPos = m_ShadowLootAt +  (m_Light.Direction * -distFromLookAt);
+		m_ShadowDir = m_ShadowLootAt - m_ShadowPos;
+		m_ShadowDir.Normalize();
+		m_ShadowView = XMMatrixLookAtLH(m_ShadowPos, m_ShadowLootAt, Vector3(0.0f,1.0f,0.0f));
 	}
 	m_Light.Direction.Normalize();
 	m_pDeviceContext->UpdateSubresource(m_pCBDirectionLight.Get(), 0, nullptr, &m_Light, 0, 0);
@@ -317,6 +319,7 @@ void D3DRenderManager::Render()
 	m_pDeviceContext->ClearRenderTargetView(m_pBackBufferRTV.Get(), clear_color_with_alpha);
 	m_pDeviceContext->ClearDepthStencilView(m_pDefaultDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 	m_pDeviceContext->OMSetRenderTargets(1, m_pBackBufferRTV.GetAddressOf(), m_pDefaultDSV.Get());
+	m_pDeviceContext->PSSetShaderResources(11, 1, m_pShadowMapSRV.GetAddressOf()); // 한번에 7개의 텍스처를 설정한다.
 
 	m_ShaderBaseSkeletalMesh.SetShader(m_pDeviceContext.Get());
 	RenderSkeletalMeshInstanceOpaque();// 불투명 먼저
@@ -460,16 +463,23 @@ void D3DRenderManager::RenderImGui()
 
 		AddDebugVector3ToImGuiWindow("EyePosition", m_Light.EyePosition);
 		AddDebugVector3ToImGuiWindow("LookAt", m_LookAt);
-		AddDebugVector3ToImGuiWindow("ShadowPosition", m_ShadowPos);
-		AddDebugVector3ToImGuiWindow("ShadowLootAt", m_ShadowLootAt);
+	
 		if (m_pCamera.expired() == false)
 		{
 			auto pCamera = m_pCamera.lock();
 			AddDebugMatrixToImGuiWindow("CameraWorld", pCamera->m_World);
 		}
 		ImGui::End();	
-		
+		ImGui::Begin("Shadow");
+		AddDebugVector3ToImGuiWindow("ShadowPosition", m_ShadowPos);
+		AddDebugVector3ToImGuiWindow("ShadowLootAt", m_ShadowLootAt);
+		//ImGui::SliderFloat3("ShadowPosition",&m_ShadowPos.x, 0.0f, 10000.0f);
+		//ImGui::SliderFloat3("ShadowLootAt",&m_ShadowLootAt.x, 0.0f, 10000.0f);
+		AddDebugVector3ToImGuiWindow("ShadowDir", m_ShadowDir);
+		ImGui::SliderFloat("ShadowProjectionNear", (float*)&m_ShadowProjectionNearFar.x, 1.0f, 1000.0f);
+		ImGui::SliderFloat("ShadowProjectionFar", (float*)&m_ShadowProjectionNearFar.y, 1000.0f, 100000.0f);
 		ImGui::Image(m_pShadowMapSRV.Get(), ImVec2(256, 256));
+		ImGui::End();
 		for (auto ImguiRenderable : m_ImGuiRenders)
 		{
 			ImguiRenderable->ImGuiRender();
