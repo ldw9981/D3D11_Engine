@@ -319,7 +319,7 @@ void D3DRenderManager::Render()
 	m_pDeviceContext->ClearRenderTargetView(m_pBackBufferRTV.Get(), clear_color_with_alpha);
 	m_pDeviceContext->ClearDepthStencilView(m_pDefaultDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 	m_pDeviceContext->OMSetRenderTargets(1, m_pBackBufferRTV.GetAddressOf(), m_pDefaultDSV.Get());
-	m_pDeviceContext->PSSetShaderResources(11, 1, m_pShadowMapSRV.GetAddressOf()); // 한번에 7개의 텍스처를 설정한다.
+	m_pDeviceContext->PSSetShaderResources(11, 1, m_pShadowMapSRV.GetAddressOf());  // 쉐도우맵을 샘플링 할수 있도록 바인딩
 
 	m_ShaderBaseSkeletalMesh.SetShader(m_pDeviceContext.Get());
 	RenderSkeletalMeshInstanceOpaque();// 불투명 먼저
