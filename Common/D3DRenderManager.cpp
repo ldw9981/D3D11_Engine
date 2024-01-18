@@ -243,7 +243,7 @@ void D3DRenderManager::Update(float DeltaTime)
 		float distFromLookAt = 1000;
 		m_ShadowLootAt = pCamera->m_World.Translation() + pCamera->m_World.Forward() * distForward;
 		m_ShadowPos = m_ShadowLootAt + -m_Light.Direction * distFromLookAt;
-		m_TransformVP.mShadowView = XMMatrixLookAtLH(eye, m_LookAt, up);
+		m_ShadowView = XMMatrixLookAtLH(eye, m_LookAt, up);
 	}
 	m_Light.Direction.Normalize();
 	m_pDeviceContext->UpdateSubresource(m_pCBDirectionLight.Get(), 0, nullptr, &m_Light, 0, 0);
