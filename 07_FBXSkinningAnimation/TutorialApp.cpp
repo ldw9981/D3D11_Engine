@@ -47,6 +47,18 @@ bool TutorialApp::Initialize(UINT Width, UINT Height)
 		auto wpComponent = m_pEnvironmentActor->GetComponentWeakPtrByName("EnvironmentMeshComponent");
 		D3DRenderManager::Instance->SetEnvironment(std::dynamic_pointer_cast<EnvironmentMeshComponent>(wpComponent.lock()));
 	}
+	{
+		auto StActor = m_World.CreateGameObject<StaticMeshActor>();
+		StaticMeshComponent* pStaticMeshComponent = (StaticMeshComponent*)StActor->GetComponentPtrByName("StaticMeshComponent");
+		pStaticMeshComponent->ReadSceneResourceFromFBX("../Resource/Ground.fbx");
+
+
+		BoxComponent* pCollisionComponent = (BoxComponent*)StActor->GetComponentPtrByName("BoxComponent");
+		
+		
+		StActor->SetWorldPosition(Math::Vector3(0.0f, 0.0f, 0.0f));
+
+	}
 	
 	IncreaseSkeletalMeshModel();
 	IncreaseStaticMeshModel();
@@ -54,7 +66,7 @@ bool TutorialApp::Initialize(UINT Width, UINT Height)
 
 	m_pPlayerController = m_World.CreateGameObject<PlayerController>().get();
 	m_pDefaultPawn = m_World.CreateGameObject<DefaultPawn>().get();
-	m_pDefaultPawn->SetWorldPosition(Math::Vector3(0.0f,0.0f,-500.0f));
+	m_pDefaultPawn->SetWorldPosition(Math::Vector3(0.0f,10.0f,-500.0f));
 	m_pPlayerController->Posess(m_pDefaultPawn);
 	m_World.SetWorldEvent(this);
 	ChangeWorld(&m_World);
