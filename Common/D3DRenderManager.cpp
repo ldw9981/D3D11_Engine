@@ -833,8 +833,8 @@ void D3DRenderManager::CreateBuffers()
 		
 		//create shadow map texture desc
 		D3D11_TEXTURE2D_DESC texDesc = {};
-		texDesc.Width = m_ShadowViewport.Width;
-		texDesc.Height = m_ShadowViewport.Height;
+		texDesc.Width = (UINT)m_ShadowViewport.Width;
+		texDesc.Height = (UINT)m_ShadowViewport.Height;
 		texDesc.MipLevels = 1;
 		texDesc.ArraySize = 1;
 		texDesc.Usage = D3D11_USAGE_DEFAULT;
