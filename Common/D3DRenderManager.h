@@ -179,9 +179,11 @@ public:
 
 	BoundingFrustum m_FrustumCamera;
 	BoundingFrustum m_FrustumShadow;
+	float m_ShadowDistFromCamera = 3000;
 	int m_nDrawComponentCount = 0;
 	bool m_bFreezeCulling = false;
 	bool m_bFreezeShadow = false;
+	bool m_bDrawDebugShadow = false;
 	bool m_bDrawDebugCulling = false;
 	bool m_bDrawDebugCollision = false;
 	bool m_bUseMSAA = false;

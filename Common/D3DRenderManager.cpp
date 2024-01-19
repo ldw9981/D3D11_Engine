@@ -193,7 +193,7 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	CreateBlendState();
 	
 	// 화면 크기가 바뀌면 다시계산해야함
-	m_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, m_BaseViewport.Width / (FLOAT)m_BaseViewport.Height, 1.0f, 100000.0f);
+	m_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, m_BaseViewport.Width / (FLOAT)m_BaseViewport.Height, 1.0f, 1000000.0f);
 	BoundingFrustum::CreateFromMatrix(m_FrustumCamera, m_Projection);
 
 	
@@ -242,9 +242,9 @@ void D3DRenderManager::Update(float DeltaTime)
 		if (!m_bFreezeShadow)
 		{
 			float distForward = 1;
-			float distFromLookAt = 3000;
+			
 			m_ShadowLootAt = pCamera->m_World.Translation();
-			m_ShadowPos = m_ShadowLootAt + (m_Light.Direction * -distFromLookAt);
+			m_ShadowPos = m_ShadowLootAt + (m_Light.Direction * -m_ShadowDistFromCamera);
 			m_ShadowDir = m_ShadowLootAt - m_ShadowPos;
 			m_ShadowDir.Normalize();
 			m_ShadowView = XMMatrixLookAtLH(m_ShadowPos, m_ShadowLootAt, Vector3(0.0f, 1.0f, 0.0f));
@@ -383,10 +383,9 @@ void D3DRenderManager::RenderDebugDraw()
 				StaticMeshComponent->m_bIsCulled ? Colors::Red : Colors::Blue); // BoundingBox
 		}
 	}
-	if (m_bFreezeShadow)
-	{
-		DebugDraw::Draw(DebugDraw::g_Batch.get(), m_FrustumShadow, Colors::Green); 
-	}
+	
+	if(m_bDrawDebugShadow)
+		DebugDraw::Draw(DebugDraw::g_Batch.get(), m_FrustumShadow, Colors::Green);
 
 	if (m_bDrawDebugCollision)
 	{
@@ -483,14 +482,16 @@ void D3DRenderManager::RenderImGui()
 		}
 		ImGui::End();	
 		ImGui::Begin("Shadow");
+		ImGui::Checkbox("DrawDebugShadow", &m_bDrawDebugShadow);
 		ImGui::Checkbox("FreezeShadow", &m_bFreezeShadow);
-		AddDebugVector3ToImGuiWindow("ShadowPosition", m_ShadowPos);
-		AddDebugVector3ToImGuiWindow("ShadowLootAt", m_ShadowLootAt);
+		AddDebugVector3ToImGuiWindow("Position", m_ShadowPos);
+		AddDebugVector3ToImGuiWindow("LootAt", m_ShadowLootAt);
 		//ImGui::SliderFloat3("ShadowPosition",&m_ShadowPos.x, 0.0f, 10000.0f);
 		//ImGui::SliderFloat3("ShadowLootAt",&m_ShadowLootAt.x, 0.0f, 10000.0f);
 		AddDebugVector3ToImGuiWindow("ShadowDir", m_ShadowDir);
-		ImGui::SliderFloat("ShadowProjectionNear", (float*)&m_ShadowProjectionNearFar.x, 1.0f, m_ShadowProjectionNearFar.x);
-		ImGui::SliderFloat("ShadowProjectionFar", (float*)&m_ShadowProjectionNearFar.y, m_ShadowProjectionNearFar.x+1.0f, m_ShadowProjectionNearFar.y);
+		ImGui::SliderFloat("DistanceFromCamera", (float*)&m_ShadowDistFromCamera, 1000.0f,10000);
+		ImGui::SliderFloat("ProjectionNear", (float*)&m_ShadowProjectionNearFar.x, 1.0f, 10000);
+		ImGui::SliderFloat("ProjectionFar", (float*)&m_ShadowProjectionNearFar.y, 10000, 100000);
 		ImGui::Image(m_pShadowMapSRV.Get(), ImVec2(256, 256));
 		ImGui::End();
 		for (auto ImguiRenderable : m_ImGuiRenders)
@@ -1256,10 +1257,8 @@ void D3DRenderManager::AddDebugVector4ToImGuiWindow(const std::string& header, c
 }
 
 void D3DRenderManager::AddDebugVector3ToImGuiWindow(const std::string& header, const Vector3& value)
-{
-	ImGui::Text(" ");
-	ImGui::Text(header.c_str());
-	ImGui::Text("%f, %f, %f", value.x, value.y, value.z);
+{	
+	ImGui::Text("%s: %f, %f, %f", header.c_str(), value.x, value.y, value.z);
 }
 
 void D3DRenderManager::AddDebugVector2ToImGuiWindow(const std::string& header, const Vector2& value)
