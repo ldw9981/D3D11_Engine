@@ -91,7 +91,7 @@ LRESULT CALLBACK TutorialApp::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 	case WM_KEYDOWN:
 		if (wParam == VK_UP) 
 		{
-			IncreaseSkeletalMeshModel();
+			//IncreaseSkeletalMeshModel();
 			IncreaseStaticMeshModel();
 			std::cout << "Test" << endl;
 		}
@@ -115,10 +115,10 @@ void TutorialApp::IncreaseSkeletalMeshModel()
 	BoxComponent* pCollisionComponent = (BoxComponent*)SkActor->GetComponentPtrByName("BoxComponent");
 	pCollisionComponent->SetLocalPosition(Vector3(0.0f, pSkeletalMeshComponent->m_SceneResource->m_AABBmax.y *0.5f, 0.0f));
 
-	int range = 500;
+	int range = 10000;
 	float posx = (float)(rand() % range) - range * 0.5f;	
 	float posz = (float)(rand() % range) - range * 0.5f;
-	SkActor->SetWorldPosition(Math::Vector3(posx, 0.0f, posz));
+	SkActor->SetWorldPosition(Math::Vector3(posx, 30.0f, posz));
 
 	auto pRsc = pSkeletalMeshComponent->GetSceneResource();
 	int playindex = rand() % pRsc-> m_Animations.size();
@@ -144,10 +144,10 @@ void TutorialApp::IncreaseStaticMeshModel()
 		BoxComponent* pCollisionComponent = (BoxComponent*)StActor->GetComponentPtrByName("BoxComponent");
 		pCollisionComponent->SetLocalPosition(Vector3(0.0f, pStaticMeshComponent->m_SceneResource->m_AABBmax.y * 0.5f, 0.0f));
 
-		int range = 800;
+		int range = 10000;
 		float posx = (float)(rand() % range) - range * 0.5f;
 		float posz = (float)(rand() % range) - range * 0.5f;
-		StActor->SetWorldPosition(Math::Vector3(posx, 0.0f, posz));
+		StActor->SetWorldPosition(Math::Vector3(posx, 100.0f, posz));
 		m_SpawnedActors.push_back(StActor.get());
 	}
 }

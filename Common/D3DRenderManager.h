@@ -177,10 +177,11 @@ public:
 	std::weak_ptr<CameraComponent>		m_pCamera;
 	std::weak_ptr<EnvironmentMeshComponent> m_pEnvironmentMeshComponent;
 
-	BoundingFrustum m_Frustum;
+	BoundingFrustum m_FrustumCamera;
+	BoundingFrustum m_FrustumShadow;
 	int m_nDrawComponentCount = 0;
 	bool m_bFreezeCulling = false;
-    bool m_bWorkCulling = false;
+	bool m_bFreezeShadow = false;
 	bool m_bDrawDebugCulling = false;
 	bool m_bDrawDebugCollision = false;
 	bool m_bUseMSAA = false;

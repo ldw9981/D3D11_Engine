@@ -76,6 +76,19 @@ void DefaultPawn::OnInputProcess(const Keyboard::State& KeyState, const Keyboard
 		m_pMovementComponent->AddInputVector(Math::Vector3::Up);
 	}
 
+	if (KeyState.IsKeyDown(DirectX::Keyboard::Keys::F1))
+	{
+		m_pMovementComponent->SetSpeed(200);
+	}
+	else if (KeyState.IsKeyDown(DirectX::Keyboard::Keys::F2))
+	{
+		m_pMovementComponent->SetSpeed(5000);
+	}
+	else if (KeyState.IsKeyDown(DirectX::Keyboard::Keys::F3))
+	{
+		m_pMovementComponent->SetSpeed(10000);
+	}
+
 
 	InputManager::Instance->m_Mouse->SetMode(MouseState.rightButton ? Mouse::MODE_RELATIVE : Mouse::MODE_ABSOLUTE);
 	if (MouseState.positionMode == Mouse::MODE_RELATIVE)

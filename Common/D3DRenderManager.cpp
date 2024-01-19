@@ -194,7 +194,7 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	
 	// 화면 크기가 바뀌면 다시계산해야함
 	m_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, m_BaseViewport.Width / (FLOAT)m_BaseViewport.Height, 1.0f, 100000.0f);
-	BoundingFrustum::CreateFromMatrix(m_Frustum, m_Projection);
+	BoundingFrustum::CreateFromMatrix(m_FrustumCamera, m_Projection);
 
 	
 	DebugDraw::Initialize(m_pDevice, m_pDeviceContext);
@@ -233,19 +233,25 @@ void D3DRenderManager::Update(float DeltaTime)
 		Math::Vector3 up = pCamera->m_World.Up();
 		m_View = XMMatrixLookAtLH(eye, m_LookAt, up);
 		m_Light.EyePosition = eye;	// HLSL 상수버퍼 갱신을 위한 데이터 업데이트
-		if (m_bWorkCulling && !m_bFreezeCulling )  // 디버깅을 위해 culling 위치를  멈출수있음.
+		if (!m_bFreezeCulling )  // 디버깅을 위해 culling 위치를  멈출수있음.
 		{			
-			BoundingFrustum::CreateFromMatrix(m_Frustum, m_Projection, false);
-			m_Frustum.Transform(m_Frustum, pCamera->m_World);			
+			BoundingFrustum::CreateFromMatrix(m_FrustumCamera, m_Projection, false);
+			m_FrustumCamera.Transform(m_FrustumCamera, pCamera->m_World);			
 		}	
 
-		float distForward = 1;
-		float distFromLookAt = 3000;
-		m_ShadowLootAt = pCamera->m_World.Translation();
-		m_ShadowPos = m_ShadowLootAt +  (m_Light.Direction * -distFromLookAt);
-		m_ShadowDir = m_ShadowLootAt - m_ShadowPos;
-		m_ShadowDir.Normalize();
-		m_ShadowView = XMMatrixLookAtLH(m_ShadowPos, m_ShadowLootAt, Vector3(0.0f,1.0f,0.0f));
+		if (!m_bFreezeShadow)
+		{
+			float distForward = 1;
+			float distFromLookAt = 3000;
+			m_ShadowLootAt = pCamera->m_World.Translation();
+			m_ShadowPos = m_ShadowLootAt + (m_Light.Direction * -distFromLookAt);
+			m_ShadowDir = m_ShadowLootAt - m_ShadowPos;
+			m_ShadowDir.Normalize();
+			m_ShadowView = XMMatrixLookAtLH(m_ShadowPos, m_ShadowLootAt, Vector3(0.0f, 1.0f, 0.0f));
+
+			BoundingFrustum::CreateFromMatrix(m_FrustumShadow, m_ShadowProjection, false);
+			m_FrustumShadow.Transform(m_FrustumShadow, m_ShadowView.Invert());
+		}		
 	}
 	m_Light.Direction.Normalize();
 	m_pDeviceContext->UpdateSubresource(m_pCBDirectionLight.Get(), 0, nullptr, &m_Light, 0, 0);
@@ -264,7 +270,7 @@ void D3DRenderManager::Update(float DeltaTime)
 	for (auto& SkeletalMeshComponent : m_SkeletalMeshComponents)
 	{
 		SkeletalMeshComponent->m_bIsCulled = false;
-		if (!m_bWorkCulling || m_Frustum.Intersects(SkeletalMeshComponent->m_BoundingBox))
+		if ( m_FrustumCamera.Intersects(SkeletalMeshComponent->m_BoundingBox))
 		{
 			SkeletalMeshComponent->m_bIsCulled = true;
 			AddMeshInstance(SkeletalMeshComponent);	// 하나의 메시 컴포넌트에 여러개의 메시 Instance 가 있을수있음.
@@ -275,7 +281,7 @@ void D3DRenderManager::Update(float DeltaTime)
 	for (auto& StaticMeshComponent : m_StaticMeshComponents)
 	{
 		StaticMeshComponent->m_bIsCulled = false;
-		if (!m_bWorkCulling || m_Frustum.Intersects(StaticMeshComponent->m_BoundingBox))
+		if ( m_FrustumCamera.Intersects(StaticMeshComponent->m_BoundingBox))
 		{
 			StaticMeshComponent->m_bIsCulled = true;
 			AddMeshInstance(StaticMeshComponent);  // 하나의 메시 컴포넌트에 여러개의 메시 Instance 가 있을수있음.
@@ -360,10 +366,12 @@ void D3DRenderManager::RenderDebugDraw()
 
 	DebugDraw::g_Batch->Begin();
 
+	if (m_bFreezeCulling)
+	{
+		DebugDraw::Draw(DebugDraw::g_Batch.get(), m_FrustumCamera, Colors::Yellow); // BoundingBox
+	}
 	if (m_bDrawDebugCulling)
 	{
-		DebugDraw::Draw(DebugDraw::g_Batch.get(), m_Frustum, Colors::Yellow); // BoundingBox
-
 		for (auto& SkeletalMeshComponent : m_SkeletalMeshComponents)
 		{
 			DebugDraw::Draw(DebugDraw::g_Batch.get(), SkeletalMeshComponent->m_BoundingBox,
@@ -374,6 +382,10 @@ void D3DRenderManager::RenderDebugDraw()
 			DebugDraw::Draw(DebugDraw::g_Batch.get(), StaticMeshComponent->m_BoundingBox,
 				StaticMeshComponent->m_bIsCulled ? Colors::Red : Colors::Blue); // BoundingBox
 		}
+	}
+	if (m_bFreezeShadow)
+	{
+		DebugDraw::Draw(DebugDraw::g_Batch.get(), m_FrustumShadow, Colors::Green); 
 	}
 
 	if (m_bDrawDebugCollision)
@@ -434,7 +446,7 @@ void D3DRenderManager::RenderImGui()
 		ImGui::Text("SystemMemory: %s", str.c_str());
 		ImGui::Checkbox("m_bDrawDebugCulling", &m_bDrawDebugCulling);
 		ImGui::Checkbox("m_bDrawDebugCollision", &m_bDrawDebugCollision);
-		ImGui::Checkbox("Work Culling", &m_bWorkCulling);
+		
 	    ImGui::Checkbox("Freeze Culling", &m_bFreezeCulling);
 		ImGui::Text("Count DrawComponents: %d ", m_nDrawComponentCount);
 
@@ -471,13 +483,14 @@ void D3DRenderManager::RenderImGui()
 		}
 		ImGui::End();	
 		ImGui::Begin("Shadow");
+		ImGui::Checkbox("FreezeShadow", &m_bFreezeShadow);
 		AddDebugVector3ToImGuiWindow("ShadowPosition", m_ShadowPos);
 		AddDebugVector3ToImGuiWindow("ShadowLootAt", m_ShadowLootAt);
 		//ImGui::SliderFloat3("ShadowPosition",&m_ShadowPos.x, 0.0f, 10000.0f);
 		//ImGui::SliderFloat3("ShadowLootAt",&m_ShadowLootAt.x, 0.0f, 10000.0f);
 		AddDebugVector3ToImGuiWindow("ShadowDir", m_ShadowDir);
-		ImGui::SliderFloat("ShadowProjectionNear", (float*)&m_ShadowProjectionNearFar.x, 1.0f, 1000.0f);
-		ImGui::SliderFloat("ShadowProjectionFar", (float*)&m_ShadowProjectionNearFar.y, 1000.0f, 100000.0f);
+		ImGui::SliderFloat("ShadowProjectionNear", (float*)&m_ShadowProjectionNearFar.x, 1.0f, m_ShadowProjectionNearFar.x);
+		ImGui::SliderFloat("ShadowProjectionFar", (float*)&m_ShadowProjectionNearFar.y, m_ShadowProjectionNearFar.x+1.0f, m_ShadowProjectionNearFar.y);
 		ImGui::Image(m_pShadowMapSRV.Get(), ImVec2(256, 256));
 		ImGui::End();
 		for (auto ImguiRenderable : m_ImGuiRenders)

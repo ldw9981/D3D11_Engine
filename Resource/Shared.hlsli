@@ -17,6 +17,13 @@ Texture2D txShadow : register(t11);
 
 SamplerState samplerLinear : register(s0);
 SamplerState samplerClamp : register(s1);
+SamplerState samplerBorder : register(s2)
+{
+    AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+    AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+    AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+    BorderColor = (float4)1; //uvw가 0~1사이가 아닌경우 테두리 색상을 지정한다.
+};
 
 cbuffer TransformW : register(b0)
 {
