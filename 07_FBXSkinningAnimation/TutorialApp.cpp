@@ -61,7 +61,7 @@ bool TutorialApp::Initialize(UINT Width, UINT Height)
 	}
 	
 	IncreaseSkeletalMeshModel();
-	SetupModel(400,500);
+	SetupModel(600,500);
 
 	m_pPlayerController = m_World.CreateGameObject<PlayerController>().get();
 	m_pDefaultPawn = m_World.CreateGameObject<DefaultPawn>().get();
@@ -193,6 +193,9 @@ void TutorialApp::SetupModel(int n, int distance)
 			StaticMeshComponent* pStaticMeshComponent = (StaticMeshComponent*)StActor->GetComponentPtrByName("StaticMeshComponent");
 			pStaticMeshComponent->ReadSceneResourceFromFBX(staticMesh[i % staticMesh.size()]);
 			StActor->SetWorldPosition(Math::Vector3((float)x* distance, 50.0f, (float)y * distance));
+			BoxComponent* pCollisionComponent = (BoxComponent*)StActor->GetComponentPtrByName("BoxComponent");
+			pCollisionComponent->SetCollisionType(CollisionType::NoCollision);
+
 			m_SpawnedActors.push_back(StActor.get());
 		}
 	}

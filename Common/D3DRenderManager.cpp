@@ -384,7 +384,7 @@ void D3DRenderManager::RenderDebugDraw()
 		}
 	}
 	
-	if(m_bDrawDebugShadow)
+	if(m_bDrawShadowFrustum)
 		DebugDraw::Draw(DebugDraw::g_Batch.get(), m_FrustumShadow, Colors::Green);
 
 	if (m_bDrawDebugCollision)
@@ -482,14 +482,12 @@ void D3DRenderManager::RenderImGui()
 		}
 		ImGui::End();	
 		ImGui::Begin("Shadow");
-		ImGui::Checkbox("DrawDebugShadow", &m_bDrawDebugShadow);
+		ImGui::Checkbox("DrawShadowFrustum", &m_bDrawShadowFrustum);
 		ImGui::Checkbox("FreezeShadow", &m_bFreezeShadow);
 		AddDebugVector3ToImGuiWindow("Position", m_ShadowPos);
 		AddDebugVector3ToImGuiWindow("LootAt", m_ShadowLootAt);
-		//ImGui::SliderFloat3("ShadowPosition",&m_ShadowPos.x, 0.0f, 10000.0f);
-		//ImGui::SliderFloat3("ShadowLootAt",&m_ShadowLootAt.x, 0.0f, 10000.0f);
 		AddDebugVector3ToImGuiWindow("ShadowDir", m_ShadowDir);
-		ImGui::SliderFloat("DistanceFromCamera", (float*)&m_ShadowDistFromCamera, 1000.0f,10000);
+		ImGui::SliderFloat("DistanceFromCamera", (float*)&m_ShadowDistFromCamera, 1000.0f,50000);
 		ImGui::SliderFloat("ProjectionNear", (float*)&m_ShadowProjectionNearFar.x, 1.0f, 10000);
 		ImGui::SliderFloat("ProjectionFar", (float*)&m_ShadowProjectionNearFar.y, 10000, 100000);
 		ImGui::Image(m_pShadowMapSRV.Get(), ImVec2(256, 256));

@@ -52,9 +52,9 @@ struct CB_Marterial
 struct CB_Global
 {
 	int UseIBL = true;							// 4  
-	float AmbientOcclusion = 1.0f;				// 4
+	float AmbientOcclusion = 0.35f;				// 4
 	int UseGammaCorrection = true;				// 4  
-	float Gamma = 2.2f;							// 4
+	float Gamma = 1.6f;							// 4
 };
 
 
@@ -184,7 +184,7 @@ public:
 	int m_nDrawComponentCount = 0;
 	bool m_bFreezeCulling = false;
 	bool m_bFreezeShadow = false;
-	bool m_bDrawDebugShadow = false;
+	bool m_bDrawShadowFrustum = false;
 	bool m_bDrawDebugCulling = false;
 	bool m_bDrawDebugCollision = false;
 	bool m_bUseMSAA = false;
