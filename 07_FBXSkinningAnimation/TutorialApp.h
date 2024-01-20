@@ -38,6 +38,7 @@ public:
 	void IncreaseSkeletalMeshModel();
 	void IncreaseStaticMeshModel();
 	void DecreaseModel();
+	void SetupModel(int n, int distance);
 	virtual void ImGuiRender();
 	virtual void OnBeginPlay(World* pWorld);
 	virtual void OnEndPlay(World* pWorld);

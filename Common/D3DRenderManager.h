@@ -145,9 +145,10 @@ public:
 	Matrix  m_Projection;			// 단위장치좌표계( Normalized Device Coordinate) 공간으로 변환을 위한 행렬.
 	Matrix  m_ShadowView;
 	Matrix  m_ShadowProjection;
-	Vector2 m_ShadowProjectionNearFar = {1000.0f, 10000.0f};
-	Math::Vector3 m_ShadowLootAt = { 0.0f, 0.0f, 0.0f };
-	Math::Vector3 m_ShadowPos = { 0.0f, 1000.0f, 0.0f };
+	Vector2 m_ShadowProjectionNearFar = {5000.0f, 20000.0f};
+	float m_ShadowDistFromCamera = 10000;					// 카메라 기준으로 떨어지는 거리
+	Math::Vector3 m_ShadowLootAt = { 0.0f, 0.0f, 0.0f };	// 카메라 위치기준으로 계산됨
+	Math::Vector3 m_ShadowPos = { 0.0f, 0.0f, 0.0f };		// 카메라 위치기준으로 계산됨
 	Vector3	m_LookAt = { 0.0f, 0.0f, 0.0f };
 	Vector3 m_ShadowDir = { 0.0f, 0.0f, 0.0f };
 	Vector3 m_ClearColor = { 0.0f, 0.0f, 0.0f };
@@ -179,7 +180,7 @@ public:
 
 	BoundingFrustum m_FrustumCamera;
 	BoundingFrustum m_FrustumShadow;
-	float m_ShadowDistFromCamera = 3000;
+	
 	int m_nDrawComponentCount = 0;
 	bool m_bFreezeCulling = false;
 	bool m_bFreezeShadow = false;
@@ -188,7 +189,7 @@ public:
 	bool m_bDrawDebugCollision = false;
 	bool m_bUseMSAA = false;
 	UINT m_SampleQuality = 0;
-	UINT m_SampleCount = 4;
+	UINT m_SampleCount = 4;	
 public:
 	bool Initialize(HWND Handle,UINT Width, UINT Height);
 	void Uninitialize();

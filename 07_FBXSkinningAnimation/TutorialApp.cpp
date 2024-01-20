@@ -61,12 +61,11 @@ bool TutorialApp::Initialize(UINT Width, UINT Height)
 	}
 	
 	IncreaseSkeletalMeshModel();
-	IncreaseStaticMeshModel();
-	IncreaseStaticMeshModel();
+	SetupModel(400,500);
 
 	m_pPlayerController = m_World.CreateGameObject<PlayerController>().get();
 	m_pDefaultPawn = m_World.CreateGameObject<DefaultPawn>().get();
-	m_pDefaultPawn->SetWorldPosition(Math::Vector3(0.0f,10.0f,-500.0f));
+	m_pDefaultPawn->SetWorldPosition(Math::Vector3(0.0f,200.0f,0.0f));
 	m_pPlayerController->Posess(m_pDefaultPawn);
 	m_World.SetWorldEvent(this);
 	ChangeWorld(&m_World);
@@ -161,6 +160,42 @@ void TutorialApp::DecreaseModel()
 	//(it)
 	m_World.DestroyGameObject(*it);
 	m_SpawnedActors.erase(it);
+}
+
+void TutorialApp::SetupModel(int n, int distance)
+{
+	std::vector<std::string> staticMesh;
+	staticMesh.push_back("../Resource/Box.FBX");
+	staticMesh.push_back("../Resource/Torus.FBX");
+	staticMesh.push_back("../Resource/sphere.FBX");
+
+	
+	int x = 0, y = 0;
+
+	// Initialize variables for the current direction and step size
+	int dx = 0, dy = -1;
+
+	// Loop to calculate coordinates in the spiral
+	for (int i = 1; i <= n; ++i) {
+		// Check if it's time to change direction
+		if (x == y || (x < 0 && x == -y) || (x > 0 && x == 1 - y)) {
+			// Change direction (rotate counterclockwise)
+			int temp = dx;
+			dx = -dy;
+			dy = temp;
+		}
+		// Move to the next position
+		x +=  dx;
+		y +=  dy;
+
+		{
+			auto StActor = m_World.CreateGameObject<StaticMeshActor>();
+			StaticMeshComponent* pStaticMeshComponent = (StaticMeshComponent*)StActor->GetComponentPtrByName("StaticMeshComponent");
+			pStaticMeshComponent->ReadSceneResourceFromFBX(staticMesh[i % staticMesh.size()]);
+			StActor->SetWorldPosition(Math::Vector3((float)x* distance, 50.0f, (float)y * distance));
+			m_SpawnedActors.push_back(StActor.get());
+		}
+	}
 }
 
 void TutorialApp::ImGuiRender()
