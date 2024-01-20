@@ -10,5 +10,6 @@ public:
 	virtual void Update(float DeltaTime) override;
 
 	void GetViewMatrix(Math::Matrix& ViewMatrix);
+	Vector3 GetForward();
 };
 

@@ -193,7 +193,7 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	CreateBlendState();
 	
 	// 화면 크기가 바뀌면 다시계산해야함
-	m_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, m_BaseViewport.Width / (FLOAT)m_BaseViewport.Height, 1.0f, 1000000.0f);
+	m_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, m_BaseViewport.Width / (FLOAT)m_BaseViewport.Height, 1.0f, 100000.0f);
 	BoundingFrustum::CreateFromMatrix(m_FrustumCamera, m_Projection);
 
 	
@@ -229,7 +229,7 @@ void D3DRenderManager::Update(float DeltaTime)
 	{
 		auto pCamera = m_pCamera.lock();
 		Math::Vector3 eye = pCamera->m_World.Translation();
-		m_LookAt = pCamera->m_World.Translation() + -pCamera->m_World.Forward();
+		m_LookAt = pCamera->m_World.Translation() + pCamera->GetForward();
 		Math::Vector3 up = pCamera->m_World.Up();
 		m_View = XMMatrixLookAtLH(eye, m_LookAt, up);
 		m_Light.EyePosition = eye;	// HLSL 상수버퍼 갱신을 위한 데이터 업데이트
@@ -243,8 +243,8 @@ void D3DRenderManager::Update(float DeltaTime)
 		{
 			float distForward = 1;
 			
-			m_ShadowLootAt = pCamera->m_World.Translation();
-			m_ShadowPos = m_ShadowLootAt + (m_Light.Direction * -m_ShadowDistFromCamera);
+			m_ShadowLootAt = pCamera->m_World.Translation() + pCamera->GetForward() * m_ShadowForwardDistFromCamera;
+			m_ShadowPos = m_ShadowLootAt + (-m_Light.Direction * m_ShadowUpDistFromCamera);
 			m_ShadowDir = m_ShadowLootAt - m_ShadowPos;
 			m_ShadowDir.Normalize();
 			m_ShadowView = XMMatrixLookAtLH(m_ShadowPos, m_ShadowLootAt, Vector3(0.0f, 1.0f, 0.0f));
@@ -384,8 +384,11 @@ void D3DRenderManager::RenderDebugDraw()
 		}
 	}
 	
-	if(m_bDrawShadowFrustum)
-		DebugDraw::Draw(DebugDraw::g_Batch.get(), m_FrustumShadow, Colors::Green);
+	if (m_bDrawShadowFrustum)
+	{
+		DebugDraw::Draw(DebugDraw::g_Batch.get(), m_FrustumShadow, Colors::Green);	
+	}
+		
 
 	if (m_bDrawDebugCollision)
 	{
@@ -487,7 +490,8 @@ void D3DRenderManager::RenderImGui()
 		AddDebugVector3ToImGuiWindow("Position", m_ShadowPos);
 		AddDebugVector3ToImGuiWindow("LootAt", m_ShadowLootAt);
 		AddDebugVector3ToImGuiWindow("ShadowDir", m_ShadowDir);
-		ImGui::SliderFloat("DistanceFromCamera", (float*)&m_ShadowDistFromCamera, 1000.0f,50000);
+		ImGui::SliderFloat("ForwardDistFromCamera", (float*)&m_ShadowForwardDistFromCamera, 1000.0f, 5000.0f);
+		ImGui::SliderFloat("UpDistFromCamera", (float*)&m_ShadowUpDistFromCamera, 1000.0f,50000);
 		ImGui::SliderFloat("ProjectionNear", (float*)&m_ShadowProjectionNearFar.x, 1.0f, 10000);
 		ImGui::SliderFloat("ProjectionFar", (float*)&m_ShadowProjectionNearFar.y, 10000, 100000);
 		ImGui::Image(m_pShadowMapSRV.Get(), ImVec2(256, 256));
