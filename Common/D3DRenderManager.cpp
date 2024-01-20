@@ -228,11 +228,9 @@ void D3DRenderManager::Update(float DeltaTime)
 	if (m_pCamera.expired() == false)
 	{
 		auto pCamera = m_pCamera.lock();
-		Math::Vector3 eye = pCamera->m_World.Translation();
-		m_LookAt = pCamera->m_World.Translation() + pCamera->GetForward();
-		Math::Vector3 up = pCamera->m_World.Up();
-		m_View = XMMatrixLookAtLH(eye, m_LookAt, up);
-		m_Light.EyePosition = eye;	// HLSL 상수버퍼 갱신을 위한 데이터 업데이트
+		
+		pCamera->GetViewMatrix(m_View);
+		m_Light.EyePosition = pCamera->GetWorldPosition();
 		if (!m_bFreezeCulling )  // 디버깅을 위해 culling 위치를  멈출수있음.
 		{			
 			BoundingFrustum::CreateFromMatrix(m_FrustumCamera, m_Projection, false);
@@ -241,9 +239,7 @@ void D3DRenderManager::Update(float DeltaTime)
 
 		if (!m_bFreezeShadow)
 		{
-			float distForward = 1;
-			
-			m_ShadowLootAt = pCamera->m_World.Translation() + pCamera->GetForward() * m_ShadowForwardDistFromCamera;
+			m_ShadowLootAt = pCamera->GetWorldPosition() + pCamera->GetForward() * m_ShadowForwardDistFromCamera;
 			m_ShadowPos = m_ShadowLootAt + (-m_Light.Direction * m_ShadowUpDistFromCamera);
 			m_ShadowDir = m_ShadowLootAt - m_ShadowPos;
 			m_ShadowDir.Normalize();
