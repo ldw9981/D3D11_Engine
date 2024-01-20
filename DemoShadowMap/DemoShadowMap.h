@@ -39,7 +39,7 @@ public:
 	void IncreaseSkeletalMeshModel();
 	void IncreaseStaticMeshModel();
 	void DecreaseModel();
-	void SetupModel(int n, int distance);
+	void SetupModel(int n, int distance); // 원점에서 부터 나선형으로 배치한다.
 	virtual void ImGuiRender();
 	virtual void OnBeginPlay(World* pWorld);
 	virtual void OnEndPlay(World* pWorld);
