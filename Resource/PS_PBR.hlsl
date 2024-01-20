@@ -201,7 +201,7 @@ float4 main(PS_INPUT input) : SV_Target
 	
 	// 광원좌표계에서의 기록된 Depth가져오기
 	// 커버할수 있는 영역이 아니면 처리하지않음
-    if (currentShadowDepth < 1.0f && uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0)
+    if (uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0)
     {
         float sampleShadowDepth = txShadow.Sample(samplerBorder, uv).r;
 	// currentShadowDepth가 크면 더 뒤쪽에 있으므로 직접광이 차단된다.
