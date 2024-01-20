@@ -395,6 +395,9 @@ void D3DRenderManager::RenderDebugDraw()
 		const std::list<CollisionComponent*>& m_CollisionComponents = CollisionManager::Instance->m_CollisionComponents;
 		for (auto& CollisionComponent : m_CollisionComponents)
 		{
+			if( CollisionComponent->m_CollisionType == CollisionType::NoCollision)
+				continue;
+
 			switch (CollisionComponent->m_ColliderType)
 			{
 			case ColliderType::Sphere:
