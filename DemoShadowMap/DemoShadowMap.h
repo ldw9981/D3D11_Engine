@@ -18,7 +18,7 @@ class PlayerController;
 class DefaultPawn;
 class EnvironmentActor;
 class DemoShadowMap :
-	public GameApp, public IImGuiRenderable, public IWorldEvent
+	public GameApp, public IWorldEvent
 {
 public:
 	DemoShadowMap(HINSTANCE hInstance);
@@ -40,7 +40,7 @@ public:
 	void IncreaseStaticMeshModel();
 	void DecreaseModel();
 	void SetupModel(int n, int distance); // 원점에서 부터 나선형으로 배치한다.
-	virtual void ImGuiRender();
+
 	virtual void OnBeginPlay(World* pWorld);
 	virtual void OnEndPlay(World* pWorld);
 };

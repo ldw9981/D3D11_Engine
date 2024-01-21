@@ -30,6 +30,7 @@
 #include "CollisionManager.h"
 #include "DebugDraw.h"
 #include <DirectXTex.h>
+#include "GameApp.h"
 
 #pragma comment(lib,"d3d11.lib")
 #pragma comment(lib,"d3dcompiler.lib")
@@ -437,6 +438,7 @@ void D3DRenderManager::RenderImGui()
 	{
 		std::string Title = __FUNCTION__;
 		ImGui::Begin(Title.c_str());
+		ImGui::SetWindowPos(Title.c_str(),ImVec2(0,0));
 		ImGui::Text("Keyboard: WASD-QE , Mouse: rotation on RightClick");
 
 		ImGui::Text("Frame average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
@@ -483,7 +485,8 @@ void D3DRenderManager::RenderImGui()
 			AddDebugMatrixToImGuiWindow("CameraWorld", pCamera->m_World);
 		}
 		ImGui::End();	
-		ImGui::Begin("Shadow");
+		ImGui::Begin("Shadow");		
+		ImGui::SetWindowPos("Shadow", ImVec2(GameApp::m_pInstance->m_ClientWidth- ImGui::GetWindowSize().x, 0));
 		ImGui::Checkbox("DrawShadowFrustum", &m_bDrawShadowFrustum);
 		ImGui::Checkbox("FreezeShadow", &m_bFreezeShadow);
 		AddDebugVector3ToImGuiWindow("Position", m_ShadowPos);

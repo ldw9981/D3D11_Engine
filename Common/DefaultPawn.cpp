@@ -22,13 +22,11 @@ DefaultPawn::DefaultPawn()
 	m_pSphereComponent->SetCollisionType(CollisionType::Block);
 	m_pSphereComponent->m_Geomety.Radius = 0.5f;
 	m_pSphereComponent->SetNotifyListener(this);
-
-	D3DRenderManager::Instance->AddImguiRenderable(m_pMovementComponent);
 }
 
 DefaultPawn::~DefaultPawn()
 {
-	D3DRenderManager::Instance->RemoveImguiRenderable(m_pMovementComponent);
+
 }
 
 

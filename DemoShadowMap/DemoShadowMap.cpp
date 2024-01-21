@@ -27,8 +27,7 @@ using namespace std;
 DemoShadowMap::DemoShadowMap(HINSTANCE hInstance)
 	:GameApp(hInstance), m_World("MyWorld")
 {
-	m_bUseConsole = true;
-	D3DRenderManager::Instance->AddImguiRenderable(this);
+	m_bUseConsole = true;	
 }
 
 DemoShadowMap::~DemoShadowMap()
@@ -203,14 +202,6 @@ void DemoShadowMap::SetupModel(int n, int distance)
 			m_SpawnedActors.push_back(StActor.get());
 		}
 	}
-}
-
-void DemoShadowMap::ImGuiRender()
-{
-	ImGui::Begin("TutorialApp");
-	ImGui::Text("%s", __FUNCTION__);
-	ImGui::Text("다른곳에서도 ImGUI를 사용하는테스트 English Only");
-	ImGui::End();
 }
 
 void DemoShadowMap::OnBeginPlay(World* pWorld)
