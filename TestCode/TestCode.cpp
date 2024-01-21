@@ -6,8 +6,17 @@
 
 #include "GameObjectMixIn.h"
 
+#include "PropertyContainer.h"
+
 int main()
 {
 	GameObjectMixIn a;
 	a.Update(1.0f);
+
+
+	TestClass b;
+
+	int result;
+	b.GetProperty<int>(std::string("m_TestInt"), result);
+	
 }

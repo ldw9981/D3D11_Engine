@@ -110,6 +110,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -126,6 +127,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -144,6 +146,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="PropertyContainer.cpp" />
     <ClCompile Include="TestCode.cpp" />
     <ClCompile Include="TestConstruct.cpp" />
     <ClCompile Include="Transform.cpp" />
@@ -153,6 +156,7 @@
     <ClInclude Include="GameObjectMixIn.h" />
     <ClInclude Include="Movement.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="PropertyContainer.h" />
     <ClInclude Include="TestConstruct.h" />
     <ClInclude Include="Transform.h" />
   </ItemGroup>
