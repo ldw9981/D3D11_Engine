@@ -9,7 +9,7 @@
 #include "../Common/World.h"
 #include "../Common/StaticMeshComponent.h"
 #include "../Common/SkeletalMeshComponent.h"
-
+#include <functional>
 
 using namespace DirectX::SimpleMath;
 using namespace DirectX;
@@ -27,7 +27,10 @@ public:
 	World m_World;
 	PlayerController* m_pPlayerController = nullptr;
 	DefaultPawn* m_pDefaultPawn = nullptr;
-	EnvironmentActor* m_pEnvironmentActor = nullptr;
+	EnvironmentActor* m_pEnvironmentActor[3] = { nullptr,nullptr,nullptr};
+	UINT m_Index= 0;
+	UINT m_IndexPrev = 0;
+	std::function<void()> m_ImGuiFunction;
 
 	virtual bool Initialize(UINT Width, UINT Height);
 	virtual void Update();

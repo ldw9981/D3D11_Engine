@@ -26,6 +26,7 @@
 #include <iostream>
 #include <utility>
 #include <algorithm>
+#include <functional>
 
 #include <imgui.h>
 #include <imgui_impl_win32.h>

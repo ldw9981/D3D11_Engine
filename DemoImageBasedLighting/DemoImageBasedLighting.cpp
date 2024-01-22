@@ -32,37 +32,55 @@ DemoApp::DemoApp(HINSTANCE hInstance)
 
 DemoApp::~DemoApp()
 {
-
+	D3DRenderManager::Instance->RemoveImGuiRenderFunc(m_ImGuiFunction);
 }
 
 bool DemoApp::Initialize(UINT Width, UINT Height)
 {
 	__super::Initialize(Width, Height);
-	D3DRenderManager::Instance->SetMaterialOverride(true);
+	
 
+	std::string strCubeFBX = "../Resource/EnvironmentCube.FBX";
+	std::wstring wstrEnvHDR[3] = { L"../Resource/RoomEnvHDR.dds", L"../Resource/BakerSampleEnvHDR.dds", L"../Resource/DaySkyEnvHDR.dds" };
+	std::wstring wstrDiffuseHDR[3] = { L"../Resource/RoomDiffuseHDR.dds", L"../Resource/BakerSampleDiffuseHDR.dds", L"../Resource/DaySkyDiffuseHDR.dds" };
+	std::wstring wstrSpecularHDR[3] = { L"../Resource/RoomSpecularHDR.dds", L"../Resource/BakerSampleSpecularHDR.dds", L"../Resource/DaySkySpecularHDR.dds" };
+	std::wstring wstrBRDF[3] = { L"../Resource/RoomBRDF.dds", L"../Resource/BakerSampleBRDF.dds", L"../Resource/DaySkyBRDF.dds" };
+
+	for(int i=0;i<3;++i)
 	{
-		m_pEnvironmentActor = m_World.CreateGameObject<EnvironmentActor>().get();
-		EnvironmentMeshComponent* pComponent = (EnvironmentMeshComponent*)m_pEnvironmentActor->GetComponentPtrByName("EnvironmentMeshComponent");
-		pComponent->ReadEnvironmentMeshFromFBX("../Resource/EnvironmentCube.fbx");
-		pComponent->ReadEnvironmentTextureFromDDS(L"../Resource/RoomEnvHDR.dds");
-		pComponent->ReadIBLDiffuseTextureFromDDS(L"../Resource/RoomDiffuseHDR.dds");
-		pComponent->ReadIBLSpecularTextureFromDDS(L"../Resource/RoomSpecularHDR.dds");
-		pComponent->ReadIBLBRDFTextureFromDDS(L"../Resource/RoomBRDF.dds");
-
+		m_pEnvironmentActor[i] = m_World.CreateGameObject<EnvironmentActor>().get();
+		EnvironmentMeshComponent* pComponent = (EnvironmentMeshComponent*)m_pEnvironmentActor[i]->GetComponentPtrByName("EnvironmentMeshComponent");
+		pComponent->ReadEnvironmentMeshFromFBX(strCubeFBX);
+		pComponent->ReadEnvironmentTextureFromDDS(wstrEnvHDR[i]);
+		pComponent->ReadIBLDiffuseTextureFromDDS(wstrDiffuseHDR[i]);
+		pComponent->ReadIBLSpecularTextureFromDDS(wstrSpecularHDR[i]);
+		pComponent->ReadIBLBRDFTextureFromDDS(wstrBRDF[i]);
 		pComponent->SetLocalScale(Vector3(100.0f, 100.0f, 100.0f));
+	}	
 
-		auto wpComponent = m_pEnvironmentActor->GetComponentWeakPtrByName("EnvironmentMeshComponent");
-		D3DRenderManager::Instance->SetEnvironment(std::dynamic_pointer_cast<EnvironmentMeshComponent>(wpComponent.lock()));
-	}
-
+	D3DRenderManager::Instance->SetEnvironment(m_pEnvironmentActor[0]);
+	D3DRenderManager::Instance->SetDirectionLight(Math::Vector3(0.0f,-0.9f,-0.1f));
 	SetupModel(4, 500);
 
 	m_pPlayerController = m_World.CreateGameObject<PlayerController>().get();
 	m_pDefaultPawn = m_World.CreateGameObject<DefaultPawn>().get();
-	m_pDefaultPawn->SetWorldPosition(Math::Vector3(0.0f, 0.0f, 200.0f));
+	m_pDefaultPawn->SetWorldPosition(Math::Vector3(0.0f, 130.0f, 200.0f));
 	m_pPlayerController->Posess(m_pDefaultPawn);
 	m_World.SetWorldEvent(this);
 	ChangeWorld(&m_World);
+
+
+	m_ImGuiFunction = [&]()
+	{
+		ImGui::Begin("IBL");
+		ImGui::SetWindowPos(ImVec2(900,0));
+		ImGui::Text("Environment");
+		ImGui::RadioButton("Room", (int*)&m_Index, 0);
+		ImGui::RadioButton("BakerSample", (int*)&m_Index, 1);
+		ImGui::RadioButton("DaySky", (int*)&m_Index, 2);
+		ImGui::End();
+	};
+	D3DRenderManager::Instance->AddImGuiRenderFunc(m_ImGuiFunction);
 
 	return true;
 }
@@ -70,6 +88,11 @@ bool DemoApp::Initialize(UINT Width, UINT Height)
 void DemoApp::Update()
 {
 	__super::Update();
+	if (m_IndexPrev != m_Index)
+	{
+		m_IndexPrev = m_Index;
+		D3DRenderManager::Instance->SetEnvironment(m_pEnvironmentActor[m_Index]);
+	}
 }
 
 void DemoApp::Render()
@@ -99,9 +122,10 @@ LRESULT CALLBACK DemoApp::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 void DemoApp::SetupModel(int n, int distance)
 {
 	std::vector<std::string> staticMesh;	
-	staticMesh.push_back("../Resource/Torus.FBX");
-	staticMesh.push_back("../Resource/sphere.FBX");
-
+	//staticMesh.push_back("../Resource/Torus.FBX");
+	//staticMesh.push_back("../Resource/sphere.FBX");
+	staticMesh.push_back("../Resource/ZeldaPosed001.FBX");
+	
 
 	int x = 0, y = 0;
 

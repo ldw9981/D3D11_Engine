@@ -31,6 +31,7 @@
 #include "DebugDraw.h"
 #include <DirectXTex.h>
 #include "GameApp.h"
+#include "EnvironmentActor.h"
 
 #pragma comment(lib,"d3d11.lib")
 #pragma comment(lib,"d3dcompiler.lib")
@@ -330,7 +331,7 @@ void D3DRenderManager::Render()
 	m_ShaderBaseStaticMesh.SetShader(m_pDeviceContext.Get());
 	RenderStaticMeshInstanceOpaque();				
 	
-	if (m_pEnvironmentMeshComponent.expired() == false)
+	if (m_pEnvironmentMeshComponent)
 	{
 		m_ShaderEnvironment.SetShader(m_pDeviceContext.Get());
 		RenderEnvironment();// 환경맵
@@ -507,6 +508,10 @@ void D3DRenderManager::RenderImGui()
 		{
 			ImguiRenderable->ImGuiRender();
 		}
+		for (auto& func : m_ImGuiRenderFuncs)
+		{
+			func();
+		}
 	}
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
@@ -622,11 +627,10 @@ void D3DRenderManager::RenderEnvironment()
 	m_pDeviceContext->VSSetConstantBuffers(0, 1, m_pCBTransformW.GetAddressOf()); //debugdraw에서 변경시켜서 설정한다.
 	m_pDeviceContext->RSSetState(m_pRasterizerStateCCW.Get());
 	m_pDeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);	// 설정해제 , 다른옵션은 기본값
-
-	auto component = m_pEnvironmentMeshComponent.lock();	
-	m_TransformW.mWorld = component->m_World.Transpose();
+		
+	m_TransformW.mWorld = m_pEnvironmentMeshComponent->m_World.Transpose();
 	m_pDeviceContext->UpdateSubresource(m_pCBTransformW.Get(), 0, nullptr, &m_TransformW, 0, 0);
-	component->m_MeshInstance.Render(m_pDeviceContext.Get());
+	m_pEnvironmentMeshComponent->m_MeshInstance.Render(m_pDeviceContext.Get());
 }
 
 void D3DRenderManager::RenderShadowDepth()
@@ -1025,22 +1029,28 @@ void D3DRenderManager::GetSystemMemoryInfo(std::string& out)
 	out = std::to_string( (pmc.PagefileUsage) / 1024 / 1024) + " MB";	
 }
 
-std::weak_ptr<EnvironmentMeshComponent> D3DRenderManager::GetEnvironmentMeshComponent() const
+void D3DRenderManager::SetEnvironment(EnvironmentActor* pActor)
 {
-	return m_pEnvironmentMeshComponent;
-}
+	if (pActor)
+	{
+		auto pComp = (EnvironmentMeshComponent*)pActor->GetComponentPtrByName("EnvironmentMeshComponent");
+		assert(pComp != nullptr);
+		m_pEnvironmentMeshComponent = pComp;
 
-void D3DRenderManager::SetEnvironment(std::weak_ptr<EnvironmentMeshComponent> val)
-{
-	m_pEnvironmentMeshComponent = val;
-	auto component = m_pEnvironmentMeshComponent.lock();
-	// Shared.hlsli 에서 텍스처 slot7 확인
-	m_pDeviceContext->PSSetShaderResources(7, 1, component->m_EnvironmentTextureResource->m_pTextureSRV.GetAddressOf()); 
-	m_pDeviceContext->PSSetShaderResources(8, 1, component->m_IBLDiffuseTextureResource->m_pTextureSRV.GetAddressOf());
-	m_pDeviceContext->PSSetShaderResources(9, 1, component->m_IBLSpecularTextureResource->m_pTextureSRV.GetAddressOf());
-	m_pDeviceContext->PSSetShaderResources(10, 1, component->m_IBLBRDFTextureResource->m_pTextureSRV.GetAddressOf());	
-	m_Global.UseIBL = true;
-	m_pDeviceContext->UpdateSubresource(m_pCBGlobal.Get(), 0, nullptr, &m_Global, 0, 0);
+		// Shared.hlsli 에서 텍스처 slot7 확인
+		m_pDeviceContext->PSSetShaderResources(7, 1, pComp->m_EnvironmentTextureResource->m_pTextureSRV.GetAddressOf());
+		m_pDeviceContext->PSSetShaderResources(8, 1, pComp->m_IBLDiffuseTextureResource->m_pTextureSRV.GetAddressOf());
+		m_pDeviceContext->PSSetShaderResources(9, 1, pComp->m_IBLSpecularTextureResource->m_pTextureSRV.GetAddressOf());
+		m_pDeviceContext->PSSetShaderResources(10, 1, pComp->m_IBLBRDFTextureResource->m_pTextureSRV.GetAddressOf());
+		m_Global.UseIBL = true;
+		m_pDeviceContext->UpdateSubresource(m_pCBGlobal.Get(), 0, nullptr, &m_Global, 0, 0);
+	}
+	else
+	{
+		m_pEnvironmentMeshComponent = nullptr;
+		m_Global.UseIBL = false;
+		m_pDeviceContext->UpdateSubresource(m_pCBGlobal.Get(), 0, nullptr, &m_Global, 0, 0);
+	}	
 }
 
 void D3DRenderManager::SetDirectionLight(Math::Vector3 direction)
@@ -1103,6 +1113,25 @@ void D3DRenderManager::RemoveImguiRenderable(IImGuiRenderable* pIImGuiRenderable
 	m_ImGuiRenders.remove(pIImGuiRenderable);
 }
 
+
+void D3DRenderManager::AddImGuiRenderFunc(std::function<void()> func)
+{
+	m_ImGuiRenderFuncs.push_back(func);
+}
+
+void D3DRenderManager::RemoveImGuiRenderFunc(std::function<void()> func)
+{
+	auto it = std::find_if(m_ImGuiRenderFuncs.begin(), m_ImGuiRenderFuncs.end(),
+		[&func](const std::function<void()>& element) {
+			// Compare based on the target of the std::function
+			return element.target<void()>() == func.target<void()>();
+		});
+
+	if (it != m_ImGuiRenderFuncs.end())
+	{
+		m_ImGuiRenderFuncs.erase(it);
+	}
+}
 
 void D3DRenderManager::CreateMousePickingRay(float mouseX, float mouseY, Math::Vector3& rayOrigin, Math::Vector3& rayDirection)
 {

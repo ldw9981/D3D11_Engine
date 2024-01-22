@@ -92,6 +92,7 @@ class StaticMeshComponent;
 class SkeletalMeshComponent;
 class CameraComponent;
 class CollisionComponent;
+class EnvironmentActor;
 class EnvironmentMeshComponent;
 
 class D3DRenderManager
@@ -175,9 +176,12 @@ public:
 	std::list<StaticMeshComponent*>		m_StaticMeshComponents;
 
 	std::list<IImGuiRenderable*>		m_ImGuiRenders;
+
+	std::list<std::function<void()>>	m_ImGuiRenderFuncs;
+
 	std::list<DebugRay>					m_DebugDrawLines;
 	std::weak_ptr<CameraComponent>		m_pCamera;
-	std::weak_ptr<EnvironmentMeshComponent> m_pEnvironmentMeshComponent;
+	EnvironmentMeshComponent* m_pEnvironmentMeshComponent = nullptr;
 
 	BoundingFrustum m_FrustumCamera;
 	BoundingFrustum m_FrustumShadow;
@@ -203,8 +207,7 @@ public:
 
 	std::weak_ptr<CameraComponent> GetCamera() const { return m_pCamera; }
 	void SetCamera(std::weak_ptr<CameraComponent> val) { m_pCamera = val; }
-	std::weak_ptr<EnvironmentMeshComponent> GetEnvironmentMeshComponent() const;
-	void SetEnvironment(std::weak_ptr<EnvironmentMeshComponent> val);
+	void SetEnvironment(EnvironmentActor* pActor);
 	void SetDirectionLight(Math::Vector3 direction);
 	void SetMaterialOverride(bool bOverride) { m_MaterialOverride.UseMarterialOverride = bOverride; }
 
@@ -221,6 +224,11 @@ public:
 	// ImGui 디버깅 정보 텍스트 그리기
 	void AddImguiRenderable(IImGuiRenderable* pIImGuiRenderable);
 	void RemoveImguiRenderable(IImGuiRenderable* pIImGuiRenderable);
+
+	void AddImGuiRenderFunc(std::function<void()> func);
+	void RemoveImGuiRenderFunc(std::function<void()> func);
+
+
 	void AddDebugStringToImGuiWindow(const std::string& header, const std::string& str);
 	void AddDebugMatrixToImGuiWindow(const std::string& header, const Matrix& mat);
 	void AddDebugVector4ToImGuiWindow(const std::string& header, const Vector4& value);
