@@ -456,7 +456,8 @@ void D3DRenderManager::RenderImGui()
 		ImGui::Text("Light");
 		ImGui::SliderFloat3("LightDirection", (float*)&m_Light.Direction, -1.0f, 1.0f);
 		ImGui::ColorEdit3("LightRadiance", (float*)&m_Light.Radiance);
-		
+		ImGui::Checkbox("DebugShadow", &m_bDebugShadow);
+
 		ImGui::Text(" ");
 		ImGui::Text("Material Override");	
 		ImGui::CheckboxFlags("UseMarterialOverride", &m_MaterialOverride.UseMarterialOverride, 1);
@@ -484,20 +485,24 @@ void D3DRenderManager::RenderImGui()
 			auto pCamera = m_pCamera.lock();
 			AddDebugMatrixToImGuiWindow("CameraWorld", pCamera->m_World);
 		}
-		ImGui::End();	
-		ImGui::Begin("Shadow");		
-		ImGui::SetWindowPos("Shadow", ImVec2(GameApp::m_pInstance->m_ClientWidth- ImGui::GetWindowSize().x, 0));
-		ImGui::Checkbox("DrawShadowFrustum", &m_bDrawShadowFrustum);
-		ImGui::Checkbox("FreezeShadow", &m_bFreezeShadow);
-		AddDebugVector3ToImGuiWindow("Position", m_ShadowPos);
-		AddDebugVector3ToImGuiWindow("LootAt", m_ShadowLootAt);
-		AddDebugVector3ToImGuiWindow("ShadowDir", m_ShadowDir);
-		ImGui::SliderFloat("ForwardDistFromCamera", (float*)&m_ShadowForwardDistFromCamera, 1000.0f, 5000.0f);
-		ImGui::SliderFloat("UpDistFromCamera", (float*)&m_ShadowUpDistFromCamera, 1000.0f,50000);
-		ImGui::SliderFloat("ProjectionNear", (float*)&m_ShadowProjectionNearFar.x, 1.0f, 10000);
-		ImGui::SliderFloat("ProjectionFar", (float*)&m_ShadowProjectionNearFar.y, 10000, 100000);
-		ImGui::Image(m_pShadowMapSRV.Get(), ImVec2(256, 256));
 		ImGui::End();
+		if (m_bDebugShadow)
+		{
+			
+			ImGui::Begin("Shadow");
+			ImGui::SetWindowPos("Shadow", ImVec2(GameApp::m_pInstance->m_ClientWidth - ImGui::GetWindowSize().x, 0));
+			ImGui::Checkbox("DrawShadowFrustum", &m_bDrawShadowFrustum);
+			ImGui::Checkbox("FreezeShadow", &m_bFreezeShadow);
+			AddDebugVector3ToImGuiWindow("Position", m_ShadowPos);
+			AddDebugVector3ToImGuiWindow("LootAt", m_ShadowLootAt);
+			AddDebugVector3ToImGuiWindow("ShadowDir", m_ShadowDir);
+			ImGui::SliderFloat("ForwardDistFromCamera", (float*)&m_ShadowForwardDistFromCamera, 1000.0f, 5000.0f);
+			ImGui::SliderFloat("UpDistFromCamera", (float*)&m_ShadowUpDistFromCamera, 1000.0f, 50000);
+			ImGui::SliderFloat("ProjectionNear", (float*)&m_ShadowProjectionNearFar.x, 1.0f, 10000);
+			ImGui::SliderFloat("ProjectionFar", (float*)&m_ShadowProjectionNearFar.y, 10000, 100000);
+			ImGui::Image(m_pShadowMapSRV.Get(), ImVec2(256, 256));
+			ImGui::End();
+		}		
 		for (auto ImguiRenderable : m_ImGuiRenders)
 		{
 			ImguiRenderable->ImGuiRender();
