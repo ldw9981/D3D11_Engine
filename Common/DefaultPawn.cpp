@@ -101,7 +101,9 @@ void DefaultPawn::OnInputProcess(const Keyboard::State& KeyState, const Keyboard
 	{		
 		Math::Vector3 org,dir;
 		D3DRenderManager::Instance->CreateMousePickingRay((float)MouseState.x, (float)MouseState.y, org, dir);
-		D3DRenderManager::Instance->AddDebugDrawLine(org, dir * 1000000000,false,Math::Vector3(1.0f,1.0f,0.0f),10.0f);
+		
+		if(m_bDebugPickingRay)
+			D3DRenderManager::Instance->AddDebugDrawLine(org, dir * 1000000000,false,Math::Vector3(1.0f,1.0f,0.0f),10.0f);
 		
 		std::list<RayResult> result;
 		if (CollisionManager::Instance->Query(Math::Ray(org, dir), result, true))

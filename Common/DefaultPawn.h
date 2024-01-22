@@ -22,6 +22,7 @@ public:
     SphereComponent* m_pSphereComponent = nullptr;
 
     Actor* m_pSelectedActor = nullptr;
+    bool m_bDebugPickingRay = false;
 
 	virtual void OnInputProcess(const Keyboard::State& KeyState, const Keyboard::KeyboardStateTracker& KeyTracker,
 		const Mouse::State& MouseState, const Mouse::ButtonStateTracker& MouseTracker);
