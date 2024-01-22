@@ -39,6 +39,7 @@ bool DemoShadowMap::Initialize(UINT Width, UINT Height)
 {
 	__super::Initialize(Width, Height);
 	{
+		D3DRenderManager::Instance->m_bDebugShadow = true;
 		m_pEnvironmentActor = m_World.CreateGameObject<EnvironmentActor>().get();
 		EnvironmentMeshComponent* pComponent = (EnvironmentMeshComponent*)m_pEnvironmentActor->GetComponentPtrByName("EnvironmentMeshComponent");
 		pComponent->ReadEnvironmentMeshFromFBX("../Resource/EnvironmentCube.fbx");
