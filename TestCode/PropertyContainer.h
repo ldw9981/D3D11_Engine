@@ -257,7 +257,13 @@ public:
 class TestClass : public PropertyContainer
 {
 public:
-	TestClass();
+	TestClass()
+	{
+		m_TestInt = 666;
+		m_TestMatrix = Math::Matrix::Identity;
+		ADD_PROPERTY(m_TestInt);	// 		AddProperty("m_TestInt", &m_TestInt);
+		ADD_PROPERTY(m_TestMatrix); //		AddProperty("m_TestMatrix", &m_TestMatrix);
+	}
 	~TestClass() {};
 
 public:
