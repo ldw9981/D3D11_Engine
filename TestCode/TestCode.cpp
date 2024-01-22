@@ -16,7 +16,8 @@ int main()
 
 	TestClass b;
 
-	int result;
-	b.GetProperty<int>(std::string("m_TestInt"), result);
-	
+	int resultInt	;
+	Math::Matrix resultMat;
+	b.GetPropertyData<int>(std::string("m_TestInt"), resultInt);
+	b.GetPropertyData<Math::Matrix>(std::string("m_TestMatrix"), resultMat);
 }

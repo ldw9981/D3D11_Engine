@@ -3,6 +3,8 @@
 
 TestClass::TestClass()
 {
+	m_TestInt = 666;
+	m_TestMatrix = Math::Matrix::Identity;
 	ADD_PROPERTY(m_TestInt);
 	ADD_PROPERTY(m_TestMatrix);
 }
