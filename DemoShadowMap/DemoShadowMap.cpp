@@ -50,8 +50,7 @@ bool DemoShadowMap::Initialize(UINT Width, UINT Height)
 
 		pComponent->SetLocalScale(Vector3(100.0f, 100.0f, 100.0f));
 
-		auto wpComponent = m_pEnvironmentActor->GetComponentWeakPtrByName("EnvironmentMeshComponent");
-		D3DRenderManager::Instance->SetEnvironment(std::dynamic_pointer_cast<EnvironmentMeshComponent>(wpComponent.lock()));
+		D3DRenderManager::Instance->SetEnvironment(m_pEnvironmentActor);
 	}
 	{
 		auto StActor = m_World.CreateGameObject<StaticMeshActor>();

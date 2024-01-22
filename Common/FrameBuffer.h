@@ -13,7 +13,8 @@ public:
 
 	ComPtr<ID3D11Texture2D> DepthStencilTexture;	// 깊이/스텐실용 텍스처, 렌더타겟용 텍스처 크기와 동일해야함
 	ComPtr<ID3D11DepthStencilView> DSV;				// 텍스처를 깊이/스텐실로 쓰기위한 클래스
-	UINT Width, Height;								// 크기정보
-	UINT Samples;
+	UINT Width=0;
+	UINT Height=0;								// 크기정보
+	UINT Samples=0;
 };
 
