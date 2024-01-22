@@ -206,6 +206,7 @@ public:
 	std::weak_ptr<EnvironmentMeshComponent> GetEnvironmentMeshComponent() const;
 	void SetEnvironment(std::weak_ptr<EnvironmentMeshComponent> val);
 	void SetDirectionLight(Math::Vector3 direction);
+	void SetMaterialOverride(bool bOverride) { m_MaterialOverride.UseMarterialOverride = bOverride; }
 
 	bool GetFreezeCulling() const { return m_bFreezeCulling; }
 	void SetFreezeCulling(bool val) { m_bFreezeCulling = val; }

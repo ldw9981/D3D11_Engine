@@ -38,6 +38,8 @@ DemoApp::~DemoApp()
 bool DemoApp::Initialize(UINT Width, UINT Height)
 {
 	__super::Initialize(Width, Height);
+	D3DRenderManager::Instance->SetMaterialOverride(true);
+
 	{
 		m_pEnvironmentActor = m_World.CreateGameObject<EnvironmentActor>().get();
 		EnvironmentMeshComponent* pComponent = (EnvironmentMeshComponent*)m_pEnvironmentActor->GetComponentPtrByName("EnvironmentMeshComponent");
