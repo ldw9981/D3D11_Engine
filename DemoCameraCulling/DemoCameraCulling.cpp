@@ -38,9 +38,10 @@ bool DemoCameraCulling::Initialize(UINT Width, UINT Height)
 	__super::Initialize(Width, Height);
 
 	D3DRenderManager::Instance->m_bDrawDebugCulling = true;
-	{
-		m_pEnvironmentActor = m_World.CreateGameObject<EnvironmentActor>().get();		
-	}
+	D3DRenderManager::Instance->SetDirectionLight(Math::Vector3(0.0f,-0.6f,0.7f));
+	
+
+	m_pEnvironmentActor = m_World.CreateGameObject<EnvironmentActor>().get();			
 
 	SetupModel(30, 800);
 	m_pPlayerController = m_World.CreateGameObject<PlayerController>().get();
@@ -80,72 +81,13 @@ LRESULT CALLBACK DemoCameraCulling::WndProc(HWND hWnd, UINT message, WPARAM wPar
 	return GameApp::WndProc(hWnd, message, wParam, lParam);
 }
 
-void DemoCameraCulling::IncreaseSkeletalMeshModel()
-{
-	auto SkActor = m_World.CreateGameObject<SkeletalMeshActor>();
-	SkeletalMeshComponent* pSkeletalMeshComponent = (SkeletalMeshComponent*)SkActor->GetComponentPtrByName("SkeletalMeshComponent");
-	pSkeletalMeshComponent->ReadSceneResourceFromFBX("../Resource/Zombie.fbx");
-	pSkeletalMeshComponent->AddSceneAnimationFromFBX("../Resource/Zombie_Run.fbx");
-	pSkeletalMeshComponent->AddSceneAnimationFromFBX("../Resource/SkinningTest.fbx");
-
-	BoxComponent* pCollisionComponent = (BoxComponent*)SkActor->GetComponentPtrByName("BoxComponent");
-	pCollisionComponent->SetLocalPosition(Vector3(0.0f, pSkeletalMeshComponent->m_SceneResource->m_AABBmax.y * 0.5f, 0.0f));
-
-	int range = 10000;
-	float posx = (float)(rand() % range) - range * 0.5f;
-	float posz = (float)(rand() % range) - range * 0.5f;
-	SkActor->SetWorldPosition(Math::Vector3(posx, 30.0f, posz));
-
-	auto pRsc = pSkeletalMeshComponent->GetSceneResource();
-	int playindex = rand() % pRsc->m_Animations.size();
-	pSkeletalMeshComponent->PlayAnimation(playindex);
-
-	m_SpawnedActors.push_back(SkActor.get());
-}
-
-void DemoCameraCulling::IncreaseStaticMeshModel()
-{
-	std::vector<std::string> staticMesh;
-	staticMesh.push_back("../Resource/char.FBX");
-	staticMesh.push_back("../Resource/cerberus.FBX");
-	staticMesh.push_back("../Resource/sphere.FBX");
-
-	for (int i = 0; i < staticMesh.size(); ++i)
-	{
-		auto StActor = m_World.CreateGameObject<StaticMeshActor>();
-		StaticMeshComponent* pStaticMeshComponent = (StaticMeshComponent*)StActor->GetComponentPtrByName("StaticMeshComponent");
-		pStaticMeshComponent->ReadSceneResourceFromFBX(staticMesh[i]);
-
-
-		BoxComponent* pCollisionComponent = (BoxComponent*)StActor->GetComponentPtrByName("BoxComponent");
-		pCollisionComponent->SetLocalPosition(Vector3(0.0f, pStaticMeshComponent->m_SceneResource->m_AABBmax.y * 0.5f, 0.0f));
-
-		int range = 10000;
-		float posx = (float)(rand() % range) - range * 0.5f;
-		float posz = (float)(rand() % range) - range * 0.5f;
-		StActor->SetWorldPosition(Math::Vector3(posx, 100.0f, posz));
-		m_SpawnedActors.push_back(StActor.get());
-	}
-}
-
-void DemoCameraCulling::DecreaseModel()
-{
-	auto it = m_SpawnedActors.begin();
-	if (it == m_SpawnedActors.end())
-		return;
-
-	//(it)
-	m_World.DestroyGameObject(*it);
-	m_SpawnedActors.erase(it);
-}
-
 void DemoCameraCulling::SetupModel(int n, int distance)
 {
 	std::vector<std::string> staticMesh;
 	staticMesh.push_back("../Resource/Box.FBX");
 	staticMesh.push_back("../Resource/Torus.FBX");
 	staticMesh.push_back("../Resource/sphere.FBX");
-
+	staticMesh.push_back("../Resource/Character.fbx");
 
 	int x = 0, y = 0;
 
@@ -172,8 +114,6 @@ void DemoCameraCulling::SetupModel(int n, int distance)
 			StActor->SetWorldPosition(Math::Vector3((float)x * distance, 50.0f, (float)y * distance));
 			BoxComponent* pCollisionComponent = (BoxComponent*)StActor->GetComponentPtrByName("BoxComponent");
 			pCollisionComponent->SetCollisionType(CollisionType::NoCollision);
-
-			m_SpawnedActors.push_back(StActor.get());
 		}
 	}
 }

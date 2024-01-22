@@ -1043,6 +1043,11 @@ void D3DRenderManager::SetEnvironment(std::weak_ptr<EnvironmentMeshComponent> va
 	m_pDeviceContext->UpdateSubresource(m_pCBGlobal.Get(), 0, nullptr, &m_Global, 0, 0);
 }
 
+void D3DRenderManager::SetDirectionLight(Math::Vector3 direction)
+{
+	m_Light.Direction = direction;
+}
+
 void D3DRenderManager::AddDebugStringToImGuiWindow(const std::string& header,const std::string& str)
 {
 	ImGui::Text(" ");

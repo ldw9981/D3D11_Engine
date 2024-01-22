@@ -205,11 +205,12 @@ public:
 	void SetCamera(std::weak_ptr<CameraComponent> val) { m_pCamera = val; }
 	std::weak_ptr<EnvironmentMeshComponent> GetEnvironmentMeshComponent() const;
 	void SetEnvironment(std::weak_ptr<EnvironmentMeshComponent> val);
+	void SetDirectionLight(Math::Vector3 direction);
 
 	bool GetFreezeCulling() const { return m_bFreezeCulling; }
 	void SetFreezeCulling(bool val) { m_bFreezeCulling = val; }
 	void CreateMousePickingRay(float ScreenX,float ScreenY,Math::Vector3 & Origin, Math::Vector3& Direction);
-
+	
 	//컴포넌트 등록하기
 	void AddSkeletalMeshComponent(SkeletalMeshComponent* pSkeletalMeshComponent);
 	void RemoveSkeletalMeshComponent(SkeletalMeshComponent* pSkeletalMeshComponent);
