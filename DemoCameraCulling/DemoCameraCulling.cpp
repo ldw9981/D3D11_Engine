@@ -38,6 +38,7 @@ bool DemoCameraCulling::Initialize(UINT Width, UINT Height)
 	__super::Initialize(Width, Height);
 
 	D3DRenderManager::Instance->m_bDrawDebugCulling = true;
+	D3DRenderManager::Instance->m_bDrawDebugCollision = true;
 	D3DRenderManager::Instance->SetDirectionLight(Math::Vector3(0.0f,-0.6f,0.7f));
 	
 
@@ -47,6 +48,7 @@ bool DemoCameraCulling::Initialize(UINT Width, UINT Height)
 	m_pPlayerController = m_World.CreateGameObject<PlayerController>().get();
 	m_pDefaultPawn = m_World.CreateGameObject<DefaultPawn>().get();
 	m_pDefaultPawn->SetWorldPosition(Math::Vector3(0.0f, 200.0f, -3000.0f));
+	
 	m_pPlayerController->Posess(m_pDefaultPawn);
 	m_World.SetWorldEvent(this);
 	ChangeWorld(&m_World);
@@ -111,9 +113,7 @@ void DemoCameraCulling::SetupModel(int n, int distance)
 			auto StActor = m_World.CreateGameObject<StaticMeshActor>();
 			StaticMeshComponent* pStaticMeshComponent = (StaticMeshComponent*)StActor->GetComponentPtrByName("StaticMeshComponent");
 			pStaticMeshComponent->ReadSceneResourceFromFBX(staticMesh[i % staticMesh.size()]);
-			StActor->SetWorldPosition(Math::Vector3((float)x * distance, 50.0f, (float)y * distance));
-			BoxComponent* pCollisionComponent = (BoxComponent*)StActor->GetComponentPtrByName("BoxComponent");
-			pCollisionComponent->SetCollisionType(CollisionType::NoCollision);
+			StActor->SetWorldPosition(Math::Vector3((float)x * distance, 50.0f, (float)y * distance));	
 		}
 	}
 }
