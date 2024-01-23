@@ -104,13 +104,10 @@ struct PS_INPUT
 {
     float4 PositionProj : SV_POSITION;   
     float3 PositionWorld : POSITION;
-    float2 TexCoord : TEXCOORD0;
-    float3x3 TangentBasis : TBASIS;
-    
+    float2 TexCoord : TEXCOORD0;     
     float3 NormalWorld : NORMAL;
     float3 TangentWorld : TANGENT;
-    float3 BiTangentWorld : BITANGENT;
-        
+    float3 BiTangentWorld : BITANGENT;        
     float4 PositionShadow : TEXCOORD1;
 };
 
