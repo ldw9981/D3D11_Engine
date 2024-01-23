@@ -147,6 +147,7 @@ public:
 	Matrix  m_ShadowView;
 	Matrix  m_ShadowProjection;
 	Vector2 m_ShadowProjectionNearFar = {7000.0f, 20000.0f};
+	Vector2 m_CameraProjectionNearFar = {1.0f, 100000.0f };
 	float m_ShadowUpDistFromLootAt = 13000;					// 카메라 기준으로 떨어지는 거리
 	float m_ShadowForwardDistFromCamera = 3500;			// 카메라 기준으로 떨어지는 거리
 	Math::Vector3 m_ShadowLootAt = { 0.0f, 0.0f, 0.0f };	// 카메라 위치기준으로 계산됨

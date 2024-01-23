@@ -195,7 +195,7 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	CreateBlendState();
 	
 	// 화면 크기가 바뀌면 다시계산해야함
-	m_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, m_BaseViewport.Width / (FLOAT)m_BaseViewport.Height, 1.0f, 100000.0f);
+	m_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, m_BaseViewport.Width / (FLOAT)m_BaseViewport.Height, m_CameraProjectionNearFar.x, m_CameraProjectionNearFar.y);
 	m_ShadowProjection = XMMatrixPerspectiveFovLH(XM_PIDIV4, m_ShadowViewport.Width / (FLOAT)m_ShadowViewport.Height, m_ShadowProjectionNearFar.x, m_ShadowProjectionNearFar.y);
 
 	BoundingFrustum::CreateFromMatrix(m_FrustumCamera, m_Projection);
