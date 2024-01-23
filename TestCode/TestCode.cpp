@@ -7,17 +7,12 @@
 #include "GameObjectMixIn.h"
 
 #include "PropertyContainer.h"
+#include "Deligate.h"
 
 int main()
 {
-	GameObjectMixIn a;
-	a.Update(1.0f);
-
-
-	TestClass b;
-
-	int resultInt	;
-	Math::Matrix resultMat;
-	b.GetPropertyData<int>(std::string("m_TestInt"), resultInt);
-	b.GetPropertyData<Math::Matrix>(std::string("m_TestMatrix"), resultMat);
+	TestDeligate();
+	//TestPropertyContainer();
+	//main_TestConstruct();
+	//TestGameObjectMixIn();	
 }

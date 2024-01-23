@@ -1,5 +1,7 @@
 #pragma once
 
+void TestPropertyContainer();
+
 enum class EPropertyType
 {
 	None,

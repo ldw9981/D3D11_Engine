@@ -138,6 +138,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DelegateInterface.cpp" />
+    <ClCompile Include="Deligate.cpp" />
     <ClCompile Include="GameObjectMixIn.cpp" />
     <ClCompile Include="Movement.cpp" />
     <ClCompile Include="pch.cpp">
@@ -153,6 +154,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DelegateInterface.h" />
+    <ClInclude Include="Deligate.h" />
     <ClInclude Include="GameObjectMixIn.h" />
     <ClInclude Include="Movement.h" />
     <ClInclude Include="pch.h" />
