@@ -75,7 +75,7 @@ bool DemoShadowMap::Initialize(UINT Width, UINT Height)
 		pSkeletalMeshComponent->PlayAnimation(playindex);
 	}
 	
-	SetupModel(600, 500);
+	SetupModel(1000, 500);
 
 	m_pPlayerController = m_World.CreateGameObject<PlayerController>().get();
 	m_pDefaultPawn = m_World.CreateGameObject<DefaultPawn>().get();

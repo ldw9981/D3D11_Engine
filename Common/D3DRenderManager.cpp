@@ -821,40 +821,39 @@ void D3DRenderManager::MSAACheck(DXGI_FORMAT format, UINT& SampleCount, UINT& Qu
 
 void D3DRenderManager::CreateBuffers()
 {
-	// 4. 렌더타겟뷰 생성.  (백버퍼를 이용하는 렌더타겟뷰)	
-	ComPtr<ID3D11Texture2D> pBackBufferTexture;
-	HR_T(m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)pBackBufferTexture.GetAddressOf()));
-	HR_T(m_pDevice->CreateRenderTargetView(pBackBufferTexture.Get(), NULL, m_pBackBufferRTV.GetAddressOf()));  // 텍스처는 내부 참조 증가
-
-	//6. 뎊스&스텐실 뷰 생성
-	D3D11_TEXTURE2D_DESC descDepth = {};
-	descDepth.Width = (UINT)m_BaseViewport.Width;
-	descDepth.Height = (UINT)m_BaseViewport.Height;
-	descDepth.MipLevels = 1;
-	descDepth.ArraySize = 1;
-	descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	descDepth.SampleDesc.Count = 1;
-	descDepth.SampleDesc.Quality = 0;	
-	descDepth.Usage = D3D11_USAGE_DEFAULT;
-	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	descDepth.CPUAccessFlags = 0;
-	descDepth.MiscFlags = 0;
-
-	ComPtr<ID3D11Texture2D> textureDepthStencil;
-	HR_T(m_pDevice->CreateTexture2D(&descDepth, nullptr, textureDepthStencil.GetAddressOf()));
-
-	// Create the depth stencil view
-	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
-	descDSV.Format = descDepth.Format;
-	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-	descDSV.Texture2D.MipSlice = 0;
-	HR_T(m_pDevice->CreateDepthStencilView(textureDepthStencil.Get(), &descDSV, m_pDefaultDSV.GetAddressOf()));
-
-	//m_ShadowBuffer = CreateFrameBuffer(m_Viewport.Width, m_Viewport.Height, 1, DXGI_FORMAT_R32_TYPELESS, DXGI_FORMAT_D24_UNORM_S8_UINT);
-	//m_pDeviceContext->PSSetShaderResources(11, 1, m_ShadowBuffer.SRV.GetAddressOf()); // 한번에 7개의 텍스처를 설정한다.
-
+	// 기본 백버퍼 RTV생성, 뎁스&스텐실 DSV 생성
 	{
-		
+		ComPtr<ID3D11Texture2D> pBackBufferTexture;
+		HR_T(m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)pBackBufferTexture.GetAddressOf()));
+		HR_T(m_pDevice->CreateRenderTargetView(pBackBufferTexture.Get(), NULL, m_pBackBufferRTV.GetAddressOf()));  // 텍스처는 내부 참조 증가
+
+		//6. 뎊스&스텐실 뷰 생성
+		D3D11_TEXTURE2D_DESC descDepth = {};
+		descDepth.Width = (UINT)m_BaseViewport.Width;
+		descDepth.Height = (UINT)m_BaseViewport.Height;
+		descDepth.MipLevels = 1;
+		descDepth.ArraySize = 1;
+		descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		descDepth.SampleDesc.Count = 1;
+		descDepth.SampleDesc.Quality = 0;
+		descDepth.Usage = D3D11_USAGE_DEFAULT;
+		descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+		descDepth.CPUAccessFlags = 0;
+		descDepth.MiscFlags = 0;
+
+		ComPtr<ID3D11Texture2D> textureDepthStencil;
+		HR_T(m_pDevice->CreateTexture2D(&descDepth, nullptr, textureDepthStencil.GetAddressOf()));
+
+		// Create the depth stencil view
+		D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
+		descDSV.Format = descDepth.Format;
+		descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+		descDSV.Texture2D.MipSlice = 0;
+		HR_T(m_pDevice->CreateDepthStencilView(textureDepthStencil.Get(), &descDSV, m_pDefaultDSV.GetAddressOf()));
+	}
+
+	// 그림자용 ShadowMap Texture와 SRV, DSV 생성
+	{		
 		//create shadow map texture desc
 		D3D11_TEXTURE2D_DESC texDesc = {};
 		texDesc.Width = (UINT)m_ShadowViewport.Width;
@@ -881,10 +880,7 @@ void D3DRenderManager::CreateBuffers()
 		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 		srvDesc.Texture2D.MipLevels = 1;	
 		HR_T(m_pDevice->CreateShaderResourceView(m_pShadowMap.Get(), &srvDesc, m_pShadowMapSRV.GetAddressOf()));
-
-		m_pDeviceContext->PSSetShaderResources(11, 1, m_pShadowMapSRV.GetAddressOf()); // 한번에 7개의 텍스처를 설정한다.
 	}
-
 }
 
 void D3DRenderManager::CreateShaders()
