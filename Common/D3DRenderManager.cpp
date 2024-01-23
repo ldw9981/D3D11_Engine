@@ -274,7 +274,7 @@ void D3DRenderManager::Update(float DeltaTime)
 		if(SkeletalMeshComponent->m_bVisibility == false)
 			continue;
 
-		if ( m_FrustumCamera.Intersects(SkeletalMeshComponent->m_BoundingBox))
+		if (!m_bUseCulling || m_FrustumCamera.Intersects(SkeletalMeshComponent->m_BoundingBox))
 		{
 			SkeletalMeshComponent->m_bIsCulled = true;
 			AddMeshInstance(SkeletalMeshComponent);	// 하나의 메시 컴포넌트에 여러개의 메시 Instance 가 있을수있음.
@@ -289,7 +289,7 @@ void D3DRenderManager::Update(float DeltaTime)
 		if (StaticMeshComponent->m_bVisibility == false)
 			continue;
 
-		if ( m_FrustumCamera.Intersects(StaticMeshComponent->m_BoundingBox))
+		if (!m_bUseCulling || m_FrustumCamera.Intersects(StaticMeshComponent->m_BoundingBox))
 		{
 			StaticMeshComponent->m_bIsCulled = true;
 			AddMeshInstance(StaticMeshComponent);  // 하나의 메시 컴포넌트에 여러개의 메시 Instance 가 있을수있음.
@@ -313,7 +313,6 @@ void D3DRenderManager::Update(float DeltaTime)
 //매 프레임 호출해야하는 것만 여기에 넣는다.  한번만 호출해도 되는것은 Initialize()에 넣는다.
 void D3DRenderManager::Render()
 {	
-	// Clear the back buffer
 	if (!m_bFreezeShadow)
 	{
 		m_pDeviceContext->RSSetViewports(1, &m_ShadowViewport);
@@ -464,6 +463,7 @@ void D3DRenderManager::RenderImGui()
 		ImGui::Checkbox("m_bDrawDebugCulling", &m_bDrawDebugCulling);
 		ImGui::Checkbox("m_bDrawDebugCollision", &m_bDrawDebugCollision);
 		
+		ImGui::Checkbox("UseCulling", &m_bUseCulling);
 	    ImGui::Checkbox("Freeze Culling", &m_bFreezeCulling);
 		ImGui::Text("Count DrawComponents: %d ", m_nDrawComponentCount);
 
@@ -874,7 +874,6 @@ void D3DRenderManager::CreateBuffers()
 		descDSV.Format = DXGI_FORMAT_D32_FLOAT;
 		descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 		HR_T(m_pDevice->CreateDepthStencilView(m_pShadowMap.Get(), &descDSV, m_pShadowMapDSV.GetAddressOf()));
-
 
 		//create shader resource view desc
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};

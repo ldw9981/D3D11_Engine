@@ -194,6 +194,7 @@ public:
 	bool m_bDrawDebugCollision = false;
 	bool m_bUseMSAA = false;
 	bool m_bDebugShadow = false;
+	bool m_bUseCulling = true;
 	UINT m_SampleQuality = 0;
 	UINT m_SampleCount = 4;	
 public:
