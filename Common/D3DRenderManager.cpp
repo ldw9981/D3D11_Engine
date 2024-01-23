@@ -244,11 +244,11 @@ void D3DRenderManager::Update(float DeltaTime)
 				m_ShadowProjection = XMMatrixPerspectiveFovLH(XM_PIDIV4,m_ShadowViewport.Width / (FLOAT)m_ShadowViewport.Height,m_ShadowProjectionNearFar.x, m_ShadowProjectionNearFar.y);
 			}
 			m_ShadowLootAt = pCamera->GetWorldPosition() + pCamera->GetForward() * m_ShadowForwardDistFromCamera;
-			m_ShadowPos = m_ShadowLootAt + (-m_Light.Direction * m_ShadowUpDistFromCamera);
+			m_ShadowPos = m_ShadowLootAt + (-m_Light.Direction * m_ShadowUpDistFromCamera);			
+			m_ShadowView = XMMatrixLookAtLH(m_ShadowPos, m_ShadowLootAt, Vector3(0.0f, 1.0f, 0.0f));
+			
 			m_ShadowDir = m_ShadowLootAt - m_ShadowPos;
 			m_ShadowDir.Normalize();
-			m_ShadowView = XMMatrixLookAtLH(m_ShadowPos, m_ShadowLootAt, Vector3(0.0f, 1.0f, 0.0f));
-
 			BoundingFrustum::CreateFromMatrix(m_FrustumShadow, m_ShadowProjection, false);
 			m_FrustumShadow.Transform(m_FrustumShadow, m_ShadowView.Invert());
 		}		
