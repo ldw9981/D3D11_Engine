@@ -47,33 +47,51 @@ bool DemoShadowMap::Initialize(UINT Width, UINT Height)
 		pComponent->ReadIBLDiffuseTextureFromDDS(L"../Resource/RoomDiffuseHDR.dds");
 		pComponent->ReadIBLSpecularTextureFromDDS(L"../Resource/RoomSpecularHDR.dds");
 		pComponent->ReadIBLBRDFTextureFromDDS(L"../Resource/RoomBRDF.dds");
-
 		pComponent->SetLocalScale(Vector3(100.0f, 100.0f, 100.0f));
-
 		D3DRenderManager::Instance->SetEnvironment(m_pEnvironmentActor);
 	}
 	{
-		auto StActor = m_World.CreateGameObject<StaticMeshActor>();
-		StaticMeshComponent* pStaticMeshComponent = (StaticMeshComponent*)StActor->GetComponentPtrByName("StaticMeshComponent");
+		m_pStaticMeshActor = (StaticMeshActor*)m_World.CreateGameObject<StaticMeshActor>().get();
+		StaticMeshComponent* pStaticMeshComponent = (StaticMeshComponent*)m_pStaticMeshActor->GetComponentPtrByName("StaticMeshComponent");
 		pStaticMeshComponent->ReadSceneResourceFromFBX("../Resource/Ground.fbx");
 
-
-		BoxComponent* pCollisionComponent = (BoxComponent*)StActor->GetComponentPtrByName("BoxComponent");
-
-
-		StActor->SetWorldPosition(Math::Vector3(0.0f, 0.0f, 0.0f));
-
+		BoxComponent* pCollisionComponent = (BoxComponent*)m_pStaticMeshActor->GetComponentPtrByName("BoxComponent");
+		m_pStaticMeshActor->SetWorldPosition(Math::Vector3(0.0f, 0.0f, 0.0f));
 	}
+	{
+		auto SkActor = m_World.CreateGameObject<SkeletalMeshActor>();
+		SkeletalMeshComponent* pSkeletalMeshComponent = (SkeletalMeshComponent*)SkActor->GetComponentPtrByName("SkeletalMeshComponent");
+		pSkeletalMeshComponent->ReadSceneResourceFromFBX("../Resource/Zombie.fbx");
+		pSkeletalMeshComponent->AddSceneAnimationFromFBX("../Resource/Zombie_Run.fbx");
+		pSkeletalMeshComponent->AddSceneAnimationFromFBX("../Resource/SkinningTest.fbx");
 
-	IncreaseSkeletalMeshModel();
+		BoxComponent* pCollisionComponent = (BoxComponent*)SkActor->GetComponentPtrByName("BoxComponent");
+		pCollisionComponent->SetLocalPosition(Vector3(0.0f, pSkeletalMeshComponent->m_SceneResource->m_AABBmax.y * 0.5f, 0.0f));
+				
+		SkActor->SetWorldPosition(Math::Vector3(0.0f, 0.0f, 800.0f));
+
+		auto pRsc = pSkeletalMeshComponent->GetSceneResource();
+		int playindex = rand() % pRsc->m_Animations.size();
+		pSkeletalMeshComponent->PlayAnimation(playindex);
+	}
+	
 	SetupModel(600, 500);
 
 	m_pPlayerController = m_World.CreateGameObject<PlayerController>().get();
 	m_pDefaultPawn = m_World.CreateGameObject<DefaultPawn>().get();
 	m_pDefaultPawn->SetWorldPosition(Math::Vector3(0.0f, 200.0f, 0.0f));
+	
 	m_pPlayerController->Posess(m_pDefaultPawn);
 	m_World.SetWorldEvent(this);
 	ChangeWorld(&m_World);
+
+	m_ImGuiFunction = [&]()
+	{
+			ImGui::Begin("DemoShadowMap");			
+			ImGui::Checkbox("ShowGround",&m_bShowGround);
+			ImGui::End();
+		};
+	D3DRenderManager::Instance->AddImGuiRenderFunc(m_ImGuiFunction);
 
 	return true;
 }
@@ -81,6 +99,16 @@ bool DemoShadowMap::Initialize(UINT Width, UINT Height)
 void DemoShadowMap::Update()
 {
 	__super::Update();
+	StaticMeshComponent* pStaticMeshComponent = (StaticMeshComponent*)m_pStaticMeshActor->GetComponentPtrByName("StaticMeshComponent");
+	if (m_bShowGround)
+	{
+		pStaticMeshComponent->SetVisibility(true);
+	}
+	else
+	{
+		pStaticMeshComponent->SetVisibility(false);
+	}	
+		
 }
 
 void DemoShadowMap::Render()
@@ -106,64 +134,6 @@ LRESULT CALLBACK DemoShadowMap::WndProc(HWND hWnd, UINT message, WPARAM wParam, 
 	return GameApp::WndProc(hWnd, message, wParam, lParam);
 }
 
-void DemoShadowMap::IncreaseSkeletalMeshModel()
-{
-	auto SkActor = m_World.CreateGameObject<SkeletalMeshActor>();
-	SkeletalMeshComponent* pSkeletalMeshComponent = (SkeletalMeshComponent*)SkActor->GetComponentPtrByName("SkeletalMeshComponent");
-	pSkeletalMeshComponent->ReadSceneResourceFromFBX("../Resource/Zombie.fbx");
-	pSkeletalMeshComponent->AddSceneAnimationFromFBX("../Resource/Zombie_Run.fbx");
-	pSkeletalMeshComponent->AddSceneAnimationFromFBX("../Resource/SkinningTest.fbx");
-
-	BoxComponent* pCollisionComponent = (BoxComponent*)SkActor->GetComponentPtrByName("BoxComponent");
-	pCollisionComponent->SetLocalPosition(Vector3(0.0f, pSkeletalMeshComponent->m_SceneResource->m_AABBmax.y * 0.5f, 0.0f));
-
-	int range = 10000;
-	float posx = (float)(rand() % range) - range * 0.5f;
-	float posz = (float)(rand() % range) - range * 0.5f;
-	SkActor->SetWorldPosition(Math::Vector3(posx, 30.0f, posz));
-
-	auto pRsc = pSkeletalMeshComponent->GetSceneResource();
-	int playindex = rand() % pRsc->m_Animations.size();
-	pSkeletalMeshComponent->PlayAnimation(playindex);
-
-	m_SpawnedActors.push_back(SkActor.get());
-}
-
-void DemoShadowMap::IncreaseStaticMeshModel()
-{
-	std::vector<std::string> staticMesh;
-	staticMesh.push_back("../Resource/char.FBX");
-	staticMesh.push_back("../Resource/cerberus.FBX");
-	staticMesh.push_back("../Resource/sphere.FBX");
-
-	for (int i = 0; i < staticMesh.size(); ++i)
-	{
-		auto StActor = m_World.CreateGameObject<StaticMeshActor>();
-		StaticMeshComponent* pStaticMeshComponent = (StaticMeshComponent*)StActor->GetComponentPtrByName("StaticMeshComponent");
-		pStaticMeshComponent->ReadSceneResourceFromFBX(staticMesh[i]);
-
-
-		BoxComponent* pCollisionComponent = (BoxComponent*)StActor->GetComponentPtrByName("BoxComponent");
-		pCollisionComponent->SetLocalPosition(Vector3(0.0f, pStaticMeshComponent->m_SceneResource->m_AABBmax.y * 0.5f, 0.0f));
-
-		int range = 10000;
-		float posx = (float)(rand() % range) - range * 0.5f;
-		float posz = (float)(rand() % range) - range * 0.5f;
-		StActor->SetWorldPosition(Math::Vector3(posx, 100.0f, posz));
-		m_SpawnedActors.push_back(StActor.get());
-	}
-}
-
-void DemoShadowMap::DecreaseModel()
-{
-	auto it = m_SpawnedActors.begin();
-	if (it == m_SpawnedActors.end())
-		return;
-
-	//(it)
-	m_World.DestroyGameObject(*it);
-	m_SpawnedActors.erase(it);
-}
 
 void DemoShadowMap::SetupModel(int n, int distance)
 {
@@ -195,11 +165,9 @@ void DemoShadowMap::SetupModel(int n, int distance)
 			auto StActor = m_World.CreateGameObject<StaticMeshActor>();
 			StaticMeshComponent* pStaticMeshComponent = (StaticMeshComponent*)StActor->GetComponentPtrByName("StaticMeshComponent");
 			pStaticMeshComponent->ReadSceneResourceFromFBX(staticMesh[i % staticMesh.size()]);
-			StActor->SetWorldPosition(Math::Vector3((float)x * distance, 50.0f, (float)y * distance));
+			StActor->SetWorldPosition(Math::Vector3((float)x * distance, 40.0f, (float)y * distance));
 			BoxComponent* pCollisionComponent = (BoxComponent*)StActor->GetComponentPtrByName("BoxComponent");
 			pCollisionComponent->SetCollisionType(CollisionType::NoCollision);
-
-			m_SpawnedActors.push_back(StActor.get());
 		}
 	}
 }

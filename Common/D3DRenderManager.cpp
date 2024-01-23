@@ -268,6 +268,10 @@ void D3DRenderManager::Update(float DeltaTime)
 	for (auto& SkeletalMeshComponent : m_SkeletalMeshComponents)
 	{
 		SkeletalMeshComponent->m_bIsCulled = false;
+
+		if(SkeletalMeshComponent->m_bVisibility == false)
+			continue;
+
 		if ( m_FrustumCamera.Intersects(SkeletalMeshComponent->m_BoundingBox))
 		{
 			SkeletalMeshComponent->m_bIsCulled = true;
@@ -279,6 +283,10 @@ void D3DRenderManager::Update(float DeltaTime)
 	for (auto& StaticMeshComponent : m_StaticMeshComponents)
 	{
 		StaticMeshComponent->m_bIsCulled = false;
+
+		if (StaticMeshComponent->m_bVisibility == false)
+			continue;
+
 		if ( m_FrustumCamera.Intersects(StaticMeshComponent->m_BoundingBox))
 		{
 			StaticMeshComponent->m_bIsCulled = true;
@@ -304,18 +312,21 @@ void D3DRenderManager::Update(float DeltaTime)
 void D3DRenderManager::Render()
 {	
 	// Clear the back buffer
-	m_pDeviceContext->RSSetViewports(1,&m_ShadowViewport);
-	const float clear_shadow[4] = { 0.0f ,  0.0f ,  0.0f, 1.0f };	
-	m_pDeviceContext->OMSetRenderTargets(0, NULL, m_pShadowMapDSV.Get());
-	m_pDeviceContext->ClearDepthStencilView(m_pShadowMapDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);	
+	if (!m_bFreezeShadow)
+	{
+		m_pDeviceContext->RSSetViewports(1, &m_ShadowViewport);
+		const float clear_shadow[4] = { 0.0f ,  0.0f ,  0.0f, 1.0f };
+		m_pDeviceContext->OMSetRenderTargets(0, NULL, m_pShadowMapDSV.Get());
+		m_pDeviceContext->ClearDepthStencilView(m_pShadowMapDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-	m_ShaderShadowSkeletalMesh.SetShader(m_pDeviceContext.Get());
-	RenderSkeletalMeshInstanceOpaque();
-	RenderSkeletalMeshInstanceTranslucent();
-		
-	m_ShaderShadowStaticMesh.SetShader(m_pDeviceContext.Get());
-	RenderStaticMeshInstanceOpaque();
-	RenderStaticMeshInstanceTranslucent();
+		m_ShaderShadowSkeletalMesh.SetShader(m_pDeviceContext.Get());
+		RenderSkeletalMeshInstanceOpaque();
+		RenderSkeletalMeshInstanceTranslucent();
+
+		m_ShaderShadowStaticMesh.SetShader(m_pDeviceContext.Get());
+		RenderStaticMeshInstanceOpaque();
+		RenderStaticMeshInstanceTranslucent();
+	}	
 
 	m_pDeviceContext->RSSetViewports(1, &m_BaseViewport);
 	// Clear the back buffer
@@ -497,7 +508,7 @@ void D3DRenderManager::RenderImGui()
 			AddDebugVector3ToImGuiWindow("Position", m_ShadowPos);
 			AddDebugVector3ToImGuiWindow("LootAt", m_ShadowLootAt);
 			AddDebugVector3ToImGuiWindow("ShadowDir", m_ShadowDir);
-			ImGui::SliderFloat("ForwardDistFromCamera", (float*)&m_ShadowForwardDistFromCamera, 1000.0f, 5000.0f);
+			ImGui::SliderFloat("ForwardDistFromCamera", (float*)&m_ShadowForwardDistFromCamera, 0.0f, 5000.0f);
 			ImGui::SliderFloat("UpDistFromCamera", (float*)&m_ShadowUpDistFromCamera, 1000.0f, 50000);
 			ImGui::SliderFloat("ProjectionNear", (float*)&m_ShadowProjectionNearFar.x, 1.0f, 10000);
 			ImGui::SliderFloat("ProjectionFar", (float*)&m_ShadowProjectionNearFar.y, 10000, 100000);

@@ -146,7 +146,7 @@ public:
 	Matrix  m_Projection;			// 단위장치좌표계( Normalized Device Coordinate) 공간으로 변환을 위한 행렬.
 	Matrix  m_ShadowView;
 	Matrix  m_ShadowProjection;
-	Vector2 m_ShadowProjectionNearFar = {1600.0f, 20000.0f};
+	Vector2 m_ShadowProjectionNearFar = {7000.0f, 20000.0f};
 	float m_ShadowUpDistFromCamera = 10000;					// 카메라 기준으로 떨어지는 거리
 	float m_ShadowForwardDistFromCamera = 3500;			// 카메라 기준으로 떨어지는 거리
 	Math::Vector3 m_ShadowLootAt = { 0.0f, 0.0f, 0.0f };	// 카메라 위치기준으로 계산됨

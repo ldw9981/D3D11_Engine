@@ -97,7 +97,7 @@ void DefaultPawn::OnInputProcess(const Keyboard::State& KeyState, const Keyboard
 
 		m_pCameraComponent->SetLocalRotation(Math::Vector3(XMConvertToDegrees(pController->GetPitch()), XMConvertToDegrees(pController->GetYaw()), 0.0f));
 	}
-	else if (MouseTracker.leftButton == Mouse::ButtonStateTracker::PRESSED)
+	else if (GetUsePicking() && MouseTracker.leftButton == Mouse::ButtonStateTracker::PRESSED)
 	{		
 		Math::Vector3 org,dir;
 		D3DRenderManager::Instance->CreateMousePickingRay((float)MouseState.x, (float)MouseState.y, org, dir);

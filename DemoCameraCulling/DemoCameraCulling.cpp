@@ -48,7 +48,8 @@ bool DemoCameraCulling::Initialize(UINT Width, UINT Height)
 	m_pPlayerController = m_World.CreateGameObject<PlayerController>().get();
 	m_pDefaultPawn = m_World.CreateGameObject<DefaultPawn>().get();
 	m_pDefaultPawn->SetWorldPosition(Math::Vector3(0.0f, 200.0f, -3000.0f));
-	
+	m_pDefaultPawn->SetUsePicking(true);
+
 	m_pPlayerController->Posess(m_pDefaultPawn);
 	m_World.SetWorldEvent(this);
 	ChangeWorld(&m_World);
