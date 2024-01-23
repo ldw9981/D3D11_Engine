@@ -102,12 +102,8 @@ float4 main(PS_INPUT input) : SV_Target
 	float3 Lo = normalize(EyePosition - input.PositionWorld);
 
 	// Get current fragment's normal and transform to world space.
-#ifndef NORMAL_OTHER 
     float3 N = vNormal;
-#else	
-	 float3 N = normalize(2.0 * txNormal.Sample(samplerLinear, input.TexCoord).rgb - 1.0);
-    N = normalize(mul(input.TangentBasis, N));
-#endif
+
 	// Angle between surface normal and outgoing light direction.
 	float cosLo = max(0.0, dot(N, Lo));
 
