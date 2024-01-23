@@ -196,8 +196,9 @@ bool D3DRenderManager::Initialize(HWND Handle,UINT Width, UINT Height)
 	
 	// 화면 크기가 바뀌면 다시계산해야함
 	m_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, m_BaseViewport.Width / (FLOAT)m_BaseViewport.Height, 1.0f, 100000.0f);
-	BoundingFrustum::CreateFromMatrix(m_FrustumCamera, m_Projection);
+	m_ShadowProjection = XMMatrixPerspectiveFovLH(XM_PIDIV4, m_ShadowViewport.Width / (FLOAT)m_ShadowViewport.Height, m_ShadowProjectionNearFar.x, m_ShadowProjectionNearFar.y);
 
+	BoundingFrustum::CreateFromMatrix(m_FrustumCamera, m_Projection);
 	
 	DebugDraw::Initialize(m_pDevice, m_pDeviceContext);
 	return true;
@@ -224,9 +225,6 @@ void D3DRenderManager::Uninitialize()
 
 void D3DRenderManager::Update(float DeltaTime)
 {	
-	// 디렉션라이트방향
-	m_ShadowProjection = XMMatrixPerspectiveFovLH(XM_PIDIV4, m_ShadowViewport.Width / (FLOAT)m_ShadowViewport.Height, m_ShadowProjectionNearFar.x, m_ShadowProjectionNearFar.y);
-
 	if (m_pCamera.expired() == false)
 	{
 		auto pCamera = m_pCamera.lock();
@@ -240,7 +238,11 @@ void D3DRenderManager::Update(float DeltaTime)
 		}	
 
 		if (!m_bFreezeShadow)
-		{
+		{	
+			if (m_bDebugShadow)	// 투영 행렬은 UI창을 열때만 다시설정
+			{	
+				m_ShadowProjection = XMMatrixPerspectiveFovLH(XM_PIDIV4,m_ShadowViewport.Width / (FLOAT)m_ShadowViewport.Height,m_ShadowProjectionNearFar.x, m_ShadowProjectionNearFar.y);
+			}
 			m_ShadowLootAt = pCamera->GetWorldPosition() + pCamera->GetForward() * m_ShadowForwardDistFromCamera;
 			m_ShadowPos = m_ShadowLootAt + (-m_Light.Direction * m_ShadowUpDistFromCamera);
 			m_ShadowDir = m_ShadowLootAt - m_ShadowPos;
