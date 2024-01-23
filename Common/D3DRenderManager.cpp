@@ -511,7 +511,7 @@ void D3DRenderManager::RenderImGui()
 			AddDebugVector3ToImGuiWindow("LootAt", m_ShadowLootAt);
 			AddDebugVector3ToImGuiWindow("ShadowDir", m_ShadowDir);
 			ImGui::SliderFloat("ForwardDistFromCamera", (float*)&m_ShadowForwardDistFromCamera, 0.0f, 5000.0f);
-			ImGui::SliderFloat("UpDistFromCamera", (float*)&m_ShadowUpDistFromLootAt, 1000.0f, 50000);
+			ImGui::SliderFloat("UpDistFromLookAt", (float*)&m_ShadowUpDistFromLootAt, 1000.0f, 50000);
 			ImGui::SliderFloat("ProjectionNear", (float*)&m_ShadowProjectionNearFar.x, 1.0f, 10000);
 			ImGui::SliderFloat("ProjectionFar", (float*)&m_ShadowProjectionNearFar.y, 10000, 100000);
 			ImGui::Image(m_pShadowMapSRV.Get(), ImVec2(256, 256));

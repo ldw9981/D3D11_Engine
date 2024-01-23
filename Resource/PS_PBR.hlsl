@@ -193,7 +193,7 @@ float4 main(PS_INPUT input) : SV_Target
     float currentShadowDepth = input.PositionShadow.z / input.PositionShadow.w;
 	// 광원NDC 좌표계에서의 x(-1 ~ +1) , y(-1 ~ +1)  
     float2 uv = input.PositionShadow.xy / input.PositionShadow.w;
-	// NDC좌표계 에서 Texture 좌표계로 변환
+	// NDC좌표계 좌표로 샘플링하기위해 Texture 좌표계로 변환한다.
     uv.y = -uv.y; // y는 반대
     uv = uv * 0.5 + 0.5; // -1 에서 1을 0~1로 변환
 	
