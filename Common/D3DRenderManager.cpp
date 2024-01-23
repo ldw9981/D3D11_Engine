@@ -244,7 +244,7 @@ void D3DRenderManager::Update(float DeltaTime)
 				m_ShadowProjection = XMMatrixPerspectiveFovLH(XM_PIDIV4,m_ShadowViewport.Width / (FLOAT)m_ShadowViewport.Height,m_ShadowProjectionNearFar.x, m_ShadowProjectionNearFar.y);
 			}
 			m_ShadowLootAt = pCamera->GetWorldPosition() + pCamera->GetForward() * m_ShadowForwardDistFromCamera;
-			m_ShadowPos = m_ShadowLootAt + (-m_Light.Direction * m_ShadowUpDistFromCamera);			
+			m_ShadowPos = m_ShadowLootAt + (-m_Light.Direction * m_ShadowUpDistFromLootAt);			
 			m_ShadowView = XMMatrixLookAtLH(m_ShadowPos, m_ShadowLootAt, Vector3(0.0f, 1.0f, 0.0f));
 			
 			m_ShadowDir = m_ShadowLootAt - m_ShadowPos;
@@ -511,7 +511,7 @@ void D3DRenderManager::RenderImGui()
 			AddDebugVector3ToImGuiWindow("LootAt", m_ShadowLootAt);
 			AddDebugVector3ToImGuiWindow("ShadowDir", m_ShadowDir);
 			ImGui::SliderFloat("ForwardDistFromCamera", (float*)&m_ShadowForwardDistFromCamera, 0.0f, 5000.0f);
-			ImGui::SliderFloat("UpDistFromCamera", (float*)&m_ShadowUpDistFromCamera, 1000.0f, 50000);
+			ImGui::SliderFloat("UpDistFromCamera", (float*)&m_ShadowUpDistFromLootAt, 1000.0f, 50000);
 			ImGui::SliderFloat("ProjectionNear", (float*)&m_ShadowProjectionNearFar.x, 1.0f, 10000);
 			ImGui::SliderFloat("ProjectionFar", (float*)&m_ShadowProjectionNearFar.y, 10000, 100000);
 			ImGui::Image(m_pShadowMapSRV.Get(), ImVec2(256, 256));
