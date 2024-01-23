@@ -189,30 +189,29 @@ float4 main(PS_INPUT input) : SV_Target
     }	
 	
 	//// 그림자처리 부분
-	// 광원좌표계 기준에서의 Depth는 계산해주지 않으므로 계산한다.
+	// 광원NDC 좌표계에서의 좌표는 계산해주지 않으므로 계산한다.
     float currentShadowDepth = input.PositionShadow.z / input.PositionShadow.w;
+	// 광원NDC 좌표계에서의 x(-1 ~ +1) , y(-1 ~ +1)  
     float2 uv = input.PositionShadow.xy / input.PositionShadow.w;
-    uv.y = -uv.y;
-    uv = uv * 0.5 + 0.5;
+	// NDC좌표계 에서 Texture 좌표계로 변환
+    uv.y = -uv.y; // y는 반대
+    uv = uv * 0.5 + 0.5; // -1 에서 1을 0~1로 변환
 	
-	// 광원좌표계에서의 기록된 Depth가져오기
+	// ShadowMap에 기록된 Depth가져오기
 	// 커버할수 있는 영역이 아니면 처리하지않음
     if (uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0)
     {
-        float sampleShadowDepth = txShadow.Sample(samplerBorder, uv).r;
-	// currentShadowDepth가 크면 더 뒤쪽에 있으므로 직접광이 차단된다.
+        float sampleShadowDepth = txShadow.Sample(samplerLinear, uv).r;
+		// currentShadowDepth가 크면 더 뒤쪽에 있으므로 직접광이 차단된다.
         if (currentShadowDepth > sampleShadowDepth + 0.001)
         {
             directLighting = 0.0f;
         }
     }
-
 	
-	
-    float3 final = directLighting + ambientLighting + emissive ;
-	
+    float3 final = directLighting + ambientLighting + emissive ;	
 	if (UseGammaCorrection)
 	    final = pow(final, float(1.0 / Gamma));
-
+	
     return float4(final, Opacity);
 }
