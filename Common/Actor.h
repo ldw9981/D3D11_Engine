@@ -18,7 +18,7 @@ enum class ActorStatus
 	PLAY,
 	DESTROY
 };
-class Actor: public InputProcesser,public IImGuiRenderable
+class Actor: public InputProcesser
 {
 	friend class World;
 public:
@@ -26,14 +26,16 @@ public:
 	~Actor();
 public:
 	std::list<std::shared_ptr<Component>> m_OwnedComponents;	// 소유한 컴포넌트들
+	SceneComponent* m_pRootComponent = nullptr;		// 컴포넌트 중에 어느게 루트인지 설정
+	std::function<void()> m_OnRenderImGUI = std::bind(&Actor::OnRenderImGUI, this);
+
 protected:
 	World* m_pOwner = nullptr;					// 이 게임 오브젝트가 속한 월드
 	bool b_UseInputProcesser = false;
 	std::list<std::shared_ptr<Actor>>::iterator m_iteratorInWorld;
 	ActorStatus m_ActorStatus = ActorStatus::CREATE;
+
 public:
-	
-	SceneComponent*		m_pRootComponent = nullptr;		// 컴포넌트 중에 어느게 루트인지 설정
 	World* GetOwner() const { return m_pOwner; }
 	void SetOwner(World* val) { m_pOwner = val; }
 	virtual void Update(float DeltaTime);
@@ -67,6 +69,6 @@ public:
 	ActorStatus GetActorStatus() const { return m_ActorStatus; }
 	void SetActorStatus(ActorStatus val) { m_ActorStatus = val; }
 
-	virtual void ImGuiRender();
+	void OnRenderImGUI();
 };
 

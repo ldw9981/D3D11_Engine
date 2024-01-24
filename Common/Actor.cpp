@@ -107,13 +107,13 @@ Component* Actor::GetComponentPtrByName(const std::string& Name)
 	return nullptr;
 }
 
-void Actor::ImGuiRender()
+void Actor::OnRenderImGUI()
 {
 	std::string Title = __FUNCTION__;
 	ImGui::Begin(Title.c_str());
 	for (auto& pComponent : m_OwnedComponents)
 	{
-		pComponent->ImGuiRender();
+		pComponent->OnRenderImGUI();
 	}
 	ImGui::End();
 }

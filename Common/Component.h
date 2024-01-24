@@ -2,7 +2,7 @@
 #include "D3DRenderManager.h"
 
 class Actor;
-class Component : public IImGuiRenderable
+class Component
 {
 public:
 	friend class Actor;
@@ -24,6 +24,6 @@ public:
 	virtual void Update(float DeltaTime) = 0;
 	virtual void OnBeginPlay() = 0;
 	virtual void OnEndPlay() = 0;
-	virtual void ImGuiRender() {};
+	virtual void OnRenderImGUI() = 0;
 };
 

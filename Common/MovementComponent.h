@@ -24,7 +24,7 @@ public:
 	virtual void OnBeginPlay();
 	virtual void OnEndPlay();
 
-	virtual void ImGuiRender() override;
+	virtual void OnRenderImGUI() override;
 	
 };
 

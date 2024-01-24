@@ -55,7 +55,7 @@ void SceneComponent::OnEndPlay()
 
 }
 
-void SceneComponent::ImGuiRender()
+void SceneComponent::OnRenderImGUI()
 {
 	if (ImGui::TreeNode(m_Name.c_str()))
 	{

@@ -41,7 +41,7 @@ void MovementComponent::OnEndPlay()
 	
 }
 
-void MovementComponent::ImGuiRender()
+void MovementComponent::OnRenderImGUI()
 {
 	std::string Name = __FUNCTION__;
 	ImGui::Begin(Name.c_str());
