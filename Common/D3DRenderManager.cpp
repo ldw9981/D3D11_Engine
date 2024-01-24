@@ -517,14 +517,8 @@ void D3DRenderManager::RenderImGui()
 			ImGui::Image(m_pShadowMapSRV.Get(), ImVec2(256, 256));
 			ImGui::End();
 		}		
-		for (auto ImguiRenderable : m_ImGuiRenders)
-		{
-			ImguiRenderable->ImGuiRender();
-		}
-		for (auto& func : m_ImGuiRenderFuncs)
-		{
-			func();
-		}
+		
+		m_OnRenderImGUI.Invoke();
 	}
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
@@ -1111,35 +1105,6 @@ void D3DRenderManager::RemoveStaticMeshComponent(StaticMeshComponent* pStaticMes
 	m_StaticMeshComponents.erase(pStaticMeshComponent->m_ItRenderManager);
 }
 
-void D3DRenderManager::AddImguiRenderable(IImGuiRenderable* pIImGuiRenderable)
-{
-	m_ImGuiRenders.push_back(pIImGuiRenderable);
-}
-
-void D3DRenderManager::RemoveImguiRenderable(IImGuiRenderable* pIImGuiRenderable)
-{
-	m_ImGuiRenders.remove(pIImGuiRenderable);
-}
-
-
-void D3DRenderManager::AddImGuiRenderFunc(std::function<void()> func)
-{
-	m_ImGuiRenderFuncs.push_back(func);
-}
-
-void D3DRenderManager::RemoveImGuiRenderFunc(std::function<void()> func)
-{
-	auto it = std::find_if(m_ImGuiRenderFuncs.begin(), m_ImGuiRenderFuncs.end(),
-		[&func](const std::function<void()>& element) {
-			// Compare based on the target of the std::function
-			return element.target<void()>() == func.target<void()>();
-		});
-
-	if (it != m_ImGuiRenderFuncs.end())
-	{
-		m_ImGuiRenderFuncs.erase(it);
-	}
-}
 
 void D3DRenderManager::CreateMousePickingRay(float mouseX, float mouseY, Math::Vector3& rayOrigin, Math::Vector3& rayDirection)
 {

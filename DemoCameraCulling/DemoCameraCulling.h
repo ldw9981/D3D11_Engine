@@ -18,7 +18,7 @@ class PlayerController;
 class DefaultPawn;
 class EnvironmentActor;
 class DemoCameraCulling :
-	public GameApp, public IWorldEvent
+	public GameApp
 {
 public:
 	DemoCameraCulling(HINSTANCE hInstance);

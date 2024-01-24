@@ -14,6 +14,7 @@
 #include "../Common/EnvironmentActor.h"
 #include "../Common/EnvironmentMeshComponent.h"
 
+
 const Math::Vector3 START_POSITION = { 0.f, 0.f, -1000.f};
 
 using namespace std;
@@ -22,12 +23,23 @@ TutorialApp::TutorialApp(HINSTANCE hInstance)
 	:GameApp(hInstance),m_World("MyWorld")
 {
 	m_bUseConsole = true;
-	D3DRenderManager::Instance->AddImguiRenderable(this);
+	
+	m_funcOnRenderImGUI = std::bind(&TutorialApp::OnRenderImGUI,this);
+	D3DRenderManager::Instance->m_OnRenderImGUI += m_funcOnRenderImGUI;
+
+	m_funcOnBeginPlayWorld = std::bind(&TutorialApp::OnBeginPlayWorld, this, std::placeholders::_1);
+	m_World.m_OnBeginPlay += m_funcOnBeginPlayWorld;
+
+	m_funcOnEndPlayWorld = std::bind(&TutorialApp::OnEndPlayWorld, this, std::placeholders::_1);
+	m_World.m_OnEndPlay += m_funcOnEndPlayWorld;
+
 }
 
 TutorialApp::~TutorialApp()
 {
-
+	m_World.m_OnEndPlay -= m_funcOnEndPlayWorld;
+	m_World.m_OnBeginPlay -= m_funcOnBeginPlayWorld;
+	D3DRenderManager::Instance->m_OnRenderImGUI -= m_funcOnRenderImGUI;
 }
 
 bool TutorialApp::Initialize(UINT Width, UINT Height)
@@ -67,9 +79,7 @@ bool TutorialApp::Initialize(UINT Width, UINT Height)
 	m_pDefaultPawn = m_World.CreateGameObject<DefaultPawn>().get();
 	m_pDefaultPawn->SetWorldPosition(Math::Vector3(0.0f,200.0f,0.0f));
 	m_pPlayerController->Posess(m_pDefaultPawn);
-	m_World.SetWorldEvent(this);
 	ChangeWorld(&m_World);
-
 	return true;
 }
 
@@ -201,7 +211,7 @@ void TutorialApp::SetupModel(int n, int distance)
 	}
 }
 
-void TutorialApp::ImGuiRender()
+void TutorialApp::OnRenderImGUI()
 {	
 	ImGui::Begin("TutorialApp");
 	ImGui::Text("%s",__FUNCTION__);
@@ -209,12 +219,12 @@ void TutorialApp::ImGuiRender()
 	ImGui::End();
 }
 
-void TutorialApp::OnBeginPlay(World* pWorld)
+void TutorialApp::OnBeginPlayWorld(World* pWorld)
 {
 	LOG_MESSAGEA("%s World OnBeginPlay",pWorld->m_Name.c_str());
 }
 
-void TutorialApp::OnEndPlay(World* pWorld)
+void TutorialApp::OnEndPlayWorld(World* pWorld)
 {
 	LOG_MESSAGEA("%s World OnEndPlay", pWorld->m_Name.c_str());
 }

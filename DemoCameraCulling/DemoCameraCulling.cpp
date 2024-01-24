@@ -51,7 +51,7 @@ bool DemoCameraCulling::Initialize(UINT Width, UINT Height)
 	m_pDefaultPawn->SetUsePicking(true);
 
 	m_pPlayerController->Posess(m_pDefaultPawn);
-	m_World.SetWorldEvent(this);
+	
 	ChangeWorld(&m_World);
 	return true;
 }

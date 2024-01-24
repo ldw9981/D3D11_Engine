@@ -28,6 +28,7 @@
 #include <iostream>
 #include <utility>
 #include <algorithm>
+#include <functional>
 
 namespace Math = DirectX::SimpleMath;
 using namespace DirectX;

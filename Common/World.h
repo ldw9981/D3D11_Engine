@@ -1,13 +1,7 @@
 #pragma once
+#include "Deligate.h"
 
 class World;
-class IWorldEvent
-{
-public:
-	virtual void OnBeginPlay(World* pWorld)=0;
-	virtual void OnEndPlay(World* pWorld)=0;
-};
-
 class Actor;
 class World
 {
@@ -19,7 +13,9 @@ public:
 	std::string m_Name="NoName";
 	std::list<std::shared_ptr<Actor>> m_Actors;	// 생성된 게임 오브젝트들	
 	bool m_bIsPlaying = false;
-	IWorldEvent* m_pWorldEvent = nullptr;
+	
+	Deligate1<World*> m_OnBeginPlay;
+	Deligate1<World*> m_OnEndPlay;
 
 
 	// 템플릿 함수로 GameObject를 생성한다.
@@ -34,7 +30,6 @@ public:
 		return newObject;
 	}
 
-	void SetWorldEvent(IWorldEvent* pWorldEvent);
 	void DestroyGameObject(Actor* pObject);
 
 	void Update(float DeltaTime);

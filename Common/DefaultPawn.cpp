@@ -115,10 +115,10 @@ void DefaultPawn::OnInputProcess(const Keyboard::State& KeyState, const Keyboard
 
 				if (m_pSelectedActor != nullptr)
 				{
-					D3DRenderManager::Instance->RemoveImguiRenderable(m_pSelectedActor);
+					//D3DRenderManager::Instance->RemoveImguiRenderable(m_pSelectedActor);
 				}
 				m_pSelectedActor = it.pComponent->GetOwner();
-				D3DRenderManager::Instance->AddImguiRenderable(it.pComponent->GetOwner());				
+				//D3DRenderManager::Instance->AddImguiRenderable(it.pComponent->GetOwner());				
 				break;
 			}
 		}		

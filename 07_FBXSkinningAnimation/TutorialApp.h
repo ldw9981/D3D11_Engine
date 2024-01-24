@@ -1,14 +1,6 @@
 #pragma once
 #include "../Common/GameApp.h"
-
-#include "../Common/Material.h"
-#include "../Common/AnimationResource.h"
-#include "../Common/Bone.h"
-
 #include "../Common/World.h"
-#include "../Common/StaticMeshComponent.h"
-#include "../Common/SkeletalMeshComponent.h"
-
 
 using namespace DirectX::SimpleMath;
 using namespace DirectX;
@@ -16,8 +8,9 @@ using namespace DirectX;
 class PlayerController;
 class DefaultPawn;
 class EnvironmentActor;
+
 class TutorialApp :
-    public GameApp,public IImGuiRenderable,public IWorldEvent
+    public GameApp
 {
 public:
 	TutorialApp(HINSTANCE hInstance);
@@ -29,6 +22,10 @@ public:
 	DefaultPawn* m_pDefaultPawn = nullptr;
 	EnvironmentActor* m_pEnvironmentActor = nullptr;
 
+	std::function<void()> m_funcOnRenderImGUI;
+	std::function<void(World*)> m_funcOnBeginPlayWorld;
+	std::function<void(World*)> m_funcOnEndPlayWorld;
+
 	virtual bool Initialize(UINT Width, UINT Height);
 	virtual void Update();
 	virtual void Render();
@@ -39,8 +36,9 @@ public:
 	void IncreaseStaticMeshModel();
 	void DecreaseModel();
 	void SetupModel(int n, int distance);
-	virtual void ImGuiRender();
-	virtual void OnBeginPlay(World* pWorld);
-	virtual void OnEndPlay(World* pWorld);
+	
+	void OnRenderImGUI();
+	void OnBeginPlayWorld(World* pWorld);
+	void OnEndPlayWorld(World* pWorld);
 };
 

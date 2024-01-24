@@ -28,11 +28,23 @@ DemoApp::DemoApp(HINSTANCE hInstance)
 	:GameApp(hInstance), m_World("MyWorld")
 {
 	m_bUseConsole = true;
+
+	m_ImGuiFunction = [&]()
+		{
+			ImGui::Begin("IBL");
+			ImGui::SetWindowPos(ImVec2(900, 0));
+			ImGui::Text("Environment");
+			ImGui::RadioButton("Room", (int*)&m_Index, 0);
+			ImGui::RadioButton("BakerSample", (int*)&m_Index, 1);
+			ImGui::RadioButton("DaySky", (int*)&m_Index, 2);
+			ImGui::End();
+		};
+	D3DRenderManager::Instance->m_OnRenderImGUI += m_ImGuiFunction;
 }
 
 DemoApp::~DemoApp()
 {
-	D3DRenderManager::Instance->RemoveImGuiRenderFunc(m_ImGuiFunction);
+	D3DRenderManager::Instance->m_OnRenderImGUI -= m_ImGuiFunction;
 }
 
 bool DemoApp::Initialize(UINT Width, UINT Height)
@@ -66,21 +78,11 @@ bool DemoApp::Initialize(UINT Width, UINT Height)
 	m_pDefaultPawn = m_World.CreateGameObject<DefaultPawn>().get();
 	m_pDefaultPawn->SetWorldPosition(Math::Vector3(0.0f, 130.0f, 200.0f));
 	m_pPlayerController->Posess(m_pDefaultPawn);
-	m_World.SetWorldEvent(this);
+	
 	ChangeWorld(&m_World);
 
 
-	m_ImGuiFunction = [&]()
-	{
-		ImGui::Begin("IBL");
-		ImGui::SetWindowPos(ImVec2(900,0));
-		ImGui::Text("Environment");
-		ImGui::RadioButton("Room", (int*)&m_Index, 0);
-		ImGui::RadioButton("BakerSample", (int*)&m_Index, 1);
-		ImGui::RadioButton("DaySky", (int*)&m_Index, 2);
-		ImGui::End();
-	};
-	D3DRenderManager::Instance->AddImGuiRenderFunc(m_ImGuiFunction);
+	
 
 	return true;
 }

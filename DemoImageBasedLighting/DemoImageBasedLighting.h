@@ -18,7 +18,7 @@ class PlayerController;
 class DefaultPawn;
 class EnvironmentActor;
 class DemoApp :
-	public GameApp, public IWorldEvent
+	public GameApp
 {
 public:
 	DemoApp(HINSTANCE hInstance);

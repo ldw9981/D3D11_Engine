@@ -6,13 +6,13 @@
 
 void TestDeligate()
 {
-	Deligate deligate;
+	Deligate1<int> deligate;
 
-	std::function<void()> func[4];
-	func[0] = []() {std::cout << "Hello1" << std::endl; };
-	func[1] = []() {std::cout << "Hello2" << std::endl; };
-	func[2] = []() {std::cout << "Hello3" << std::endl; };
-	func[3] = []() {std::cout << "Hello4" << std::endl; };
+	std::function<void(int)> func[4];
+	func[0] = [](int a) {std::cout << "Hello1" << std::endl; };
+	func[1] = [](int a) {std::cout << "Hello2" << std::endl; };
+	func[2] = [](int a) {std::cout << "Hello3" << std::endl; };
+	func[3] = [](int a) {std::cout << "Hello4" << std::endl; };
 
 	size_t hash[4];
 	hash[0] = func[0].target_type().hash_code();
@@ -26,10 +26,10 @@ void TestDeligate()
 	deligate += func[3];
 	deligate += std::bind([]() {std::cout << "bind" << std::endl; });
 	std::cout << "Invoke" << std::endl;
-	deligate.Invoke();
+	deligate.Invoke(30);
 	
 	deligate -= func[3];
 	deligate -= std::bind([]() {std::cout << "bind" << std::endl; });
 	std::cout << "Invoke" << std::endl;
-	deligate.Invoke();
+	deligate.Invoke(332);
 }

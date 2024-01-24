@@ -4,6 +4,7 @@
 #include <DirectXCollision.h>
 #include "FrameBuffer.h"
 #include "ShaderProgram.h"
+#include "Deligate.h"
 
 using namespace DirectX::SimpleMath;
 using namespace DirectX;
@@ -176,10 +177,8 @@ public:
 	std::list<SkeletalMeshComponent*>	m_SkeletalMeshComponents;
 	std::list<StaticMeshComponent*>		m_StaticMeshComponents;
 
-	std::list<IImGuiRenderable*>		m_ImGuiRenders;
-
-	std::list<std::function<void()>>	m_ImGuiRenderFuncs;
-
+	Deligate							m_OnRenderImGUI;
+		 
 	std::list<DebugRay>					m_DebugDrawLines;
 	std::weak_ptr<CameraComponent>		m_pCamera;
 	EnvironmentMeshComponent* m_pEnvironmentMeshComponent = nullptr;
@@ -222,15 +221,7 @@ public:
 	void RemoveSkeletalMeshComponent(SkeletalMeshComponent* pSkeletalMeshComponent);
 	void AddStaticMeshComponent(StaticMeshComponent* pStaticMeshComponent);
 	void RemoveStaticMeshComponent(StaticMeshComponent* pStaticMeshComponent);
-
-	// ImGui 디버깅 정보 텍스트 그리기
-	void AddImguiRenderable(IImGuiRenderable* pIImGuiRenderable);
-	void RemoveImguiRenderable(IImGuiRenderable* pIImGuiRenderable);
-
-	void AddImGuiRenderFunc(std::function<void()> func);
-	void RemoveImGuiRenderFunc(std::function<void()> func);
-
-
+	
 	void AddDebugStringToImGuiWindow(const std::string& header, const std::string& str);
 	void AddDebugMatrixToImGuiWindow(const std::string& header, const Matrix& mat);
 	void AddDebugVector4ToImGuiWindow(const std::string& header, const Vector4& value);

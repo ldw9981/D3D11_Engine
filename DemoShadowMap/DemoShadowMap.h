@@ -19,7 +19,7 @@ class DefaultPawn;
 class EnvironmentActor;
 class StaticMeshActor;
 class DemoShadowMap :
-	public GameApp, public IWorldEvent
+	public GameApp
 {
 public:
 	DemoShadowMap(HINSTANCE hInstance);

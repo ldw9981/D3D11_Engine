@@ -8,26 +8,26 @@ public:
 	Deligate() {};
 	~Deligate() {};
 
-	std::unordered_map<size_t,std::function<void()>> m_Listeners;
+	std::unordered_map<size_t,std::function<void()>> m_Container;
 
 	void operator+=(std::function<void()> func)
 	{
-		m_Listeners.insert(std::make_pair(func.target_type().hash_code(),func));
+		m_Container.insert(std::make_pair(func.target_type().hash_code(),func));
 	}
 
 	void Invoke()
 	{
-		for (auto& Listener : m_Listeners)
+		for (auto& Listener : m_Container)
 		{
 			Listener.second();
 		}
 	}	
 	void operator-=(std::function<void()> func)
 	{
-		auto it = m_Listeners.find(func.target_type().hash_code());
-		if (it != m_Listeners.end())
+		auto it = m_Container.find(func.target_type().hash_code());
+		if (it != m_Container.end())
 		{
-			m_Listeners.erase(it);
+			m_Container.erase(it);
 		}
 	}
 };
@@ -40,27 +40,27 @@ public:
 	Deligate1() {};
 	~Deligate1() {};
 
-	std::unordered_map<size_t, std::function<void()>> m_Listeners;
+	std::unordered_map<size_t, std::function<void(T)>> m_Container;
 
 	void operator+=(std::function<void(T)> func)
 	{
-		m_Listeners.insert(std::make_pair(func.target_type().hash_code(), func));
+		m_Container.insert(std::make_pair(func.target_type().hash_code(), func));
 	}
 
 	void Invoke(T t)
 	{
-		for (auto& func : m_Listeners)
+		for (auto& Listener : m_Container)
 		{
-			func(t);
+			Listener.second(t);
 		}
 	}
 
-	void operator-=(std::function<void()> func)
+	void operator-=(std::function<void(T)> func)
 	{
-		auto it = m_Listeners.find(func.target_type().hash_code());
-		if (it != m_Listeners.end())
+		auto it = m_Container.find(func.target_type().hash_code());
+		if (it != m_Container.end())
 		{
-			m_Listeners.erase(it);
+			m_Container.erase(it);
 		}
 	}
 };

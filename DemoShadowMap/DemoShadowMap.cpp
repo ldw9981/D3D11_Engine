@@ -32,7 +32,7 @@ DemoShadowMap::DemoShadowMap(HINSTANCE hInstance)
 
 DemoShadowMap::~DemoShadowMap()
 {
-
+	D3DRenderManager::Instance->m_OnRenderImGUI -= m_ImGuiFunction;
 }
 
 bool DemoShadowMap::Initialize(UINT Width, UINT Height)
@@ -82,7 +82,7 @@ bool DemoShadowMap::Initialize(UINT Width, UINT Height)
 	m_pDefaultPawn->SetWorldPosition(Math::Vector3(0.0f, 200.0f, 0.0f));
 	
 	m_pPlayerController->Posess(m_pDefaultPawn);
-	m_World.SetWorldEvent(this);
+	
 	ChangeWorld(&m_World);
 
 	m_ImGuiFunction = [&]()
@@ -91,7 +91,7 @@ bool DemoShadowMap::Initialize(UINT Width, UINT Height)
 			ImGui::Checkbox("ShowGround",&m_bShowGround);
 			ImGui::End();
 		};
-	D3DRenderManager::Instance->AddImGuiRenderFunc(m_ImGuiFunction);
+	D3DRenderManager::Instance->m_OnRenderImGUI += m_ImGuiFunction;
 
 	return true;
 }
