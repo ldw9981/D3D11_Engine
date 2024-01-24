@@ -25,15 +25,12 @@ public:
 	~DemoCameraCulling();
 
 	World m_World;
-
 	PlayerController* m_pPlayerController = nullptr;
 	DefaultPawn* m_pDefaultPawn = nullptr;
 	EnvironmentActor* m_pEnvironmentActor = nullptr;
-
-
-	std::function<void(World*)> m_funcOnBeginPlayWorld;
-	std::function<void(World*)> m_funcOnEndPlayWorld;
-
+	std::function<void(World*)> m_OnBeginPlayWorld = std::bind(&DemoCameraCulling::OnBeginPlayWorld, this, std::placeholders::_1);
+	std::function<void(World*)> m_OnEndPlayWorld = std::bind(&DemoCameraCulling::OnEndPlayWorld, this, std::placeholders::_1);
+public:
 	virtual bool Initialize(UINT Width, UINT Height);
 	virtual void Update();
 	virtual void Render();

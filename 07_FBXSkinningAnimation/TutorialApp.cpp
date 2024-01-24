@@ -22,24 +22,18 @@ using namespace std;
 TutorialApp::TutorialApp(HINSTANCE hInstance)
 	:GameApp(hInstance),m_World("MyWorld")
 {
-	m_bUseConsole = true;
-	
-	m_funcOnRenderImGUI = std::bind(&TutorialApp::OnRenderImGUI,this);
-	D3DRenderManager::Instance->m_OnRenderImGUI += m_funcOnRenderImGUI;
+	m_bUseConsole = true;	
 
-	m_funcOnBeginPlayWorld = std::bind(&TutorialApp::OnBeginPlayWorld, this, std::placeholders::_1);
-	m_World.m_OnBeginPlay += m_funcOnBeginPlayWorld;
-
-	m_funcOnEndPlayWorld = std::bind(&TutorialApp::OnEndPlayWorld, this, std::placeholders::_1);
-	m_World.m_OnEndPlay += m_funcOnEndPlayWorld;
-
+	D3DRenderManager::Instance->m_OnRenderImGUI += m_OnRenderImGUI;		
+	m_World.m_OnBeginPlay += m_OnBeginPlayWorld;
+	m_World.m_OnEndPlay += m_OnEndPlayWorld;
 }
 
 TutorialApp::~TutorialApp()
 {
-	m_World.m_OnEndPlay -= m_funcOnEndPlayWorld;
-	m_World.m_OnBeginPlay -= m_funcOnBeginPlayWorld;
-	D3DRenderManager::Instance->m_OnRenderImGUI -= m_funcOnRenderImGUI;
+	m_World.m_OnEndPlay -= m_OnEndPlayWorld;
+	m_World.m_OnBeginPlay -= m_OnBeginPlayWorld;
+	D3DRenderManager::Instance->m_OnRenderImGUI -= m_OnRenderImGUI;
 }
 
 bool TutorialApp::Initialize(UINT Width, UINT Height)
@@ -83,15 +77,6 @@ bool TutorialApp::Initialize(UINT Width, UINT Height)
 	return true;
 }
 
-void TutorialApp::Update()
-{
-	__super::Update();
-}
-
-void TutorialApp::Render()
-{
-	__super::Render();
-}
 
 LRESULT CALLBACK TutorialApp::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {

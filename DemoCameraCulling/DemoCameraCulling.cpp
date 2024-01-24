@@ -27,17 +27,14 @@ DemoCameraCulling::DemoCameraCulling(HINSTANCE hInstance)
 {
 	m_bUseConsole = true;
 		
-	m_funcOnBeginPlayWorld = std::bind(&DemoCameraCulling::OnBeginPlayWorld, this, std::placeholders::_1);
-	m_World.m_OnBeginPlay += m_funcOnBeginPlayWorld;
-
-	m_funcOnEndPlayWorld = std::bind(&DemoCameraCulling::OnEndPlayWorld, this, std::placeholders::_1);
-	m_World.m_OnEndPlay += m_funcOnEndPlayWorld;
+	m_World.m_OnBeginPlay += m_OnBeginPlayWorld;
+	m_World.m_OnEndPlay += m_OnEndPlayWorld;
 }
 
 DemoCameraCulling::~DemoCameraCulling()
 {
-	m_World.m_OnEndPlay -= m_funcOnEndPlayWorld;
-	m_World.m_OnBeginPlay -= m_funcOnBeginPlayWorld;
+	m_World.m_OnEndPlay -= m_OnEndPlayWorld;
+	m_World.m_OnBeginPlay -= m_OnBeginPlayWorld;
 }
 
 bool DemoCameraCulling::Initialize(UINT Width, UINT Height)

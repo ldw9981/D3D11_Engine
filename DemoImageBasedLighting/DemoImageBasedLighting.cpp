@@ -24,34 +24,26 @@ const Math::Vector3 START_POSITION = { 0.f, 0.f, -1000.f };
 
 using namespace std;
 
-DemoApp::DemoApp(HINSTANCE hInstance)
+DemoImageBasedLighting::DemoImageBasedLighting(HINSTANCE hInstance)
 	:GameApp(hInstance), m_World("MyWorld")
 {
 	m_bUseConsole = true;
-
-	m_ImGuiFunction = [&]()
-		{
-			ImGui::Begin("IBL");
-			ImGui::SetWindowPos(ImVec2(900, 0));
-			ImGui::Text("Environment");
-			ImGui::RadioButton("Room", (int*)&m_Index, 0);
-			ImGui::RadioButton("BakerSample", (int*)&m_Index, 1);
-			ImGui::RadioButton("DaySky", (int*)&m_Index, 2);
-			ImGui::End();
-		};
-	D3DRenderManager::Instance->m_OnRenderImGUI += m_ImGuiFunction;
+	D3DRenderManager::Instance->m_OnRenderImGUI += m_OnRenderImGUI;
+	m_World.m_OnBeginPlay += m_OnBeginPlayWorld;
+	m_World.m_OnEndPlay += m_OnEndPlayWorld;
 }
 
-DemoApp::~DemoApp()
+DemoImageBasedLighting::~DemoImageBasedLighting()
 {
-	D3DRenderManager::Instance->m_OnRenderImGUI -= m_ImGuiFunction;
+	m_World.m_OnEndPlay -= m_OnEndPlayWorld;
+	m_World.m_OnBeginPlay -= m_OnBeginPlayWorld;
+	D3DRenderManager::Instance->m_OnRenderImGUI -= m_OnRenderImGUI;
 }
 
-bool DemoApp::Initialize(UINT Width, UINT Height)
+bool DemoImageBasedLighting::Initialize(UINT Width, UINT Height)
 {
 	__super::Initialize(Width, Height);
 	
-
 	std::string strCubeFBX = "../Resource/EnvironmentCube.FBX";
 	std::wstring wstrEnvHDR[3] = { L"../Resource/RoomEnvHDR.dds", L"../Resource/BakerSampleEnvHDR.dds", L"../Resource/DaySkyEnvHDR.dds" };
 	std::wstring wstrDiffuseHDR[3] = { L"../Resource/RoomDiffuseHDR.dds", L"../Resource/BakerSampleDiffuseHDR.dds", L"../Resource/DaySkyDiffuseHDR.dds" };
@@ -80,14 +72,10 @@ bool DemoApp::Initialize(UINT Width, UINT Height)
 	m_pPlayerController->Posess(m_pDefaultPawn);
 	
 	ChangeWorld(&m_World);
-
-
-	
-
 	return true;
 }
 
-void DemoApp::Update()
+void DemoImageBasedLighting::Update()
 {
 	__super::Update();
 	if (m_IndexPrev != m_Index)
@@ -97,12 +85,12 @@ void DemoApp::Update()
 	}
 }
 
-void DemoApp::Render()
+void DemoImageBasedLighting::Render()
 {
 	__super::Render();
 }
 
-LRESULT CALLBACK DemoApp::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK DemoImageBasedLighting::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{
@@ -121,7 +109,7 @@ LRESULT CALLBACK DemoApp::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 }
 
 
-void DemoApp::SetupModel(int n, int distance)
+void DemoImageBasedLighting::SetupModel(int n, int distance)
 {
 	std::vector<std::string> staticMesh;	
 	//staticMesh.push_back("../Resource/Torus.FBX");
@@ -158,12 +146,23 @@ void DemoApp::SetupModel(int n, int distance)
 	}
 }
 
-void DemoApp::OnBeginPlay(World* pWorld)
+void DemoImageBasedLighting::OnRenderImGUI()
+{
+	ImGui::Begin("IBL");
+	ImGui::SetWindowPos(ImVec2(900, 0));
+	ImGui::Text("Environment");
+	ImGui::RadioButton("Room", (int*)&m_Index, 0);
+	ImGui::RadioButton("BakerSample", (int*)&m_Index, 1);
+	ImGui::RadioButton("DaySky", (int*)&m_Index, 2);
+	ImGui::End();
+}
+
+void DemoImageBasedLighting::OnBeginPlayWorld(World* pWorld)
 {
 	LOG_MESSAGEA("%s World OnBeginPlay", pWorld->m_Name.c_str());
 }
 
-void DemoApp::OnEndPlay(World* pWorld)
+void DemoImageBasedLighting::OnEndPlayWorld(World* pWorld)
 {
 	LOG_MESSAGEA("%s World OnEndPlay", pWorld->m_Name.c_str());
 }
@@ -178,7 +177,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
 
-	DemoApp App(hInstance);  // 생성자에서 아이콘,윈도우 이름만 바꾼다
+	DemoImageBasedLighting App(hInstance);  // 생성자에서 아이콘,윈도우 이름만 바꾼다
 	if (!App.Initialize(1280, 960))
 		return -1;
 

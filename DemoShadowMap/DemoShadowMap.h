@@ -32,7 +32,10 @@ public:
 	EnvironmentActor* m_pEnvironmentActor = nullptr;
 	StaticMeshActor* m_pStaticMeshActor = nullptr;
 
-	std::function<void()> m_ImGuiFunction;
+	std::function<void()> m_OnRenderImGUI = std::bind(&DemoShadowMap::OnRenderImGUI, this);
+	std::function<void(World*)> m_OnBeginPlayWorld = std::bind(&DemoShadowMap::OnBeginPlayWorld, this, std::placeholders::_1);
+	std::function<void(World*)> m_OnEndPlayWorld = std::bind(&DemoShadowMap::OnEndPlayWorld, this, std::placeholders::_1);
+
 	bool m_bShowGround = true;
 
 	virtual bool Initialize(UINT Width, UINT Height);
@@ -43,6 +46,7 @@ public:
 
 	void SetupModel(int n, int distance); // 원점에서 부터 나선형으로 배치한다.
 
-	virtual void OnBeginPlay(World* pWorld);
-	virtual void OnEndPlay(World* pWorld);
+	void OnBeginPlayWorld(World* pWorld);
+	void OnEndPlayWorld(World* pWorld);
+	void OnRenderImGUI();
 };

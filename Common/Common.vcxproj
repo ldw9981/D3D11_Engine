@@ -247,7 +247,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Resource\Shared.hlsli" />
-    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Resource\PS_Environment.hlsl">

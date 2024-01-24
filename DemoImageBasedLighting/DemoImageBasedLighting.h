@@ -17,12 +17,12 @@ using namespace DirectX;
 class PlayerController;
 class DefaultPawn;
 class EnvironmentActor;
-class DemoApp :
+class DemoImageBasedLighting :
 	public GameApp
 {
 public:
-	DemoApp(HINSTANCE hInstance);
-	~DemoApp();
+	DemoImageBasedLighting(HINSTANCE hInstance);
+	~DemoImageBasedLighting();
 
 	World m_World;
 	PlayerController* m_pPlayerController = nullptr;
@@ -30,7 +30,11 @@ public:
 	EnvironmentActor* m_pEnvironmentActor[3] = { nullptr,nullptr,nullptr};
 	UINT m_Index= 0;
 	UINT m_IndexPrev = 0;
-	std::function<void()> m_ImGuiFunction;
+
+	std::function<void()> m_OnRenderImGUI = std::bind(&DemoImageBasedLighting::OnRenderImGUI, this);
+	std::function<void(World*)> m_OnBeginPlayWorld = std::bind(&DemoImageBasedLighting::OnBeginPlayWorld, this, std::placeholders::_1);
+	std::function<void(World*)> m_OnEndPlayWorld = std::bind(&DemoImageBasedLighting::OnEndPlayWorld, this, std::placeholders::_1);
+
 
 	virtual bool Initialize(UINT Width, UINT Height);
 	virtual void Update();
@@ -40,6 +44,7 @@ public:
 
 	void SetupModel(int n, int distance); // 원점에서 부터 나선형으로 배치한다.
 
-	virtual void OnBeginPlay(World* pWorld);
-	virtual void OnEndPlay(World* pWorld);
+	void OnRenderImGUI();
+	void OnBeginPlayWorld(World* pWorld);
+	void OnEndPlayWorld(World* pWorld);
 };

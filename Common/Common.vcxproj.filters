@@ -325,9 +325,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram.cd">
-      <Filter>헤더 파일\Utility</Filter>
-    </None>
     <None Include="..\Resource\Shared.hlsli">
       <Filter>HLSL</Filter>
     </None>

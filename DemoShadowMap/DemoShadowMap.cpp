@@ -28,11 +28,13 @@ DemoShadowMap::DemoShadowMap(HINSTANCE hInstance)
 	:GameApp(hInstance), m_World("MyWorld")
 {
 	m_bUseConsole = true;	
+
+	D3DRenderManager::Instance->m_OnRenderImGUI += m_OnRenderImGUI;
 }
 
 DemoShadowMap::~DemoShadowMap()
 {
-	D3DRenderManager::Instance->m_OnRenderImGUI -= m_ImGuiFunction;
+	D3DRenderManager::Instance->m_OnRenderImGUI -= m_OnRenderImGUI;
 }
 
 bool DemoShadowMap::Initialize(UINT Width, UINT Height)
@@ -79,20 +81,10 @@ bool DemoShadowMap::Initialize(UINT Width, UINT Height)
 
 	m_pPlayerController = m_World.CreateGameObject<PlayerController>().get();
 	m_pDefaultPawn = m_World.CreateGameObject<DefaultPawn>().get();
-	m_pDefaultPawn->SetWorldPosition(Math::Vector3(0.0f, 200.0f, 0.0f));
-	
+	m_pDefaultPawn->SetWorldPosition(Math::Vector3(0.0f, 200.0f, 0.0f));	
 	m_pPlayerController->Posess(m_pDefaultPawn);
 	
 	ChangeWorld(&m_World);
-
-	m_ImGuiFunction = [&]()
-	{
-			ImGui::Begin("DemoShadowMap");			
-			ImGui::Checkbox("ShowGround",&m_bShowGround);
-			ImGui::End();
-		};
-	D3DRenderManager::Instance->m_OnRenderImGUI += m_ImGuiFunction;
-
 	return true;
 }
 
@@ -172,16 +164,23 @@ void DemoShadowMap::SetupModel(int n, int distance)
 	}
 }
 
-void DemoShadowMap::OnBeginPlay(World* pWorld)
+void DemoShadowMap::OnBeginPlayWorld(World* pWorld)
 {
-	LOG_MESSAGEA("%s World OnBeginPlay", pWorld->m_Name.c_str());
+	LOG_MESSAGEA("%s World OnBeginPlayWorld", pWorld->m_Name.c_str());
 }
 
-void DemoShadowMap::OnEndPlay(World* pWorld)
+void DemoShadowMap::OnEndPlayWorld(World* pWorld)
 {
-	LOG_MESSAGEA("%s World OnEndPlay", pWorld->m_Name.c_str());
+	LOG_MESSAGEA("%s World OnEndPlayWorld", pWorld->m_Name.c_str());
 }
 
+
+void DemoShadowMap::OnRenderImGUI()
+{
+	ImGui::Begin("DemoShadowMap");
+	ImGui::Checkbox("ShowGround", &m_bShowGround);
+	ImGui::End();
+}
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,

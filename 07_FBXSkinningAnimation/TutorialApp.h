@@ -22,14 +22,13 @@ public:
 	DefaultPawn* m_pDefaultPawn = nullptr;
 	EnvironmentActor* m_pEnvironmentActor = nullptr;
 
-	std::function<void()> m_funcOnRenderImGUI;
-	std::function<void(World*)> m_funcOnBeginPlayWorld;
-	std::function<void(World*)> m_funcOnEndPlayWorld;
+	std::function<void()> m_OnRenderImGUI = std::bind(&TutorialApp::OnRenderImGUI, this);
+	std::function<void(World*)> m_OnBeginPlayWorld = std::bind(&TutorialApp::OnBeginPlayWorld, this, std::placeholders::_1);
+	std::function<void(World*)> m_OnEndPlayWorld = std::bind(&TutorialApp::OnEndPlayWorld, this, std::placeholders::_1);
 
+public:
 	virtual bool Initialize(UINT Width, UINT Height);
-	virtual void Update();
-	virtual void Render();
-
+	
 	virtual LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 	void IncreaseSkeletalMeshModel();
@@ -38,7 +37,7 @@ public:
 	void SetupModel(int n, int distance);
 	
 	void OnRenderImGUI();
-	void OnBeginPlayWorld(World* pWorld);
+	void OnBeginPlayWorld(World* pWorld);	
 	void OnEndPlayWorld(World* pWorld);
 };
 
