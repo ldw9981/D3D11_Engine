@@ -26,11 +26,18 @@ DemoCameraCulling::DemoCameraCulling(HINSTANCE hInstance)
 	:GameApp(hInstance), m_World("MyWorld")
 {
 	m_bUseConsole = true;
+		
+	m_funcOnBeginPlayWorld = std::bind(&DemoCameraCulling::OnBeginPlayWorld, this, std::placeholders::_1);
+	m_World.m_OnBeginPlay += m_funcOnBeginPlayWorld;
+
+	m_funcOnEndPlayWorld = std::bind(&DemoCameraCulling::OnEndPlayWorld, this, std::placeholders::_1);
+	m_World.m_OnEndPlay += m_funcOnEndPlayWorld;
 }
 
 DemoCameraCulling::~DemoCameraCulling()
 {
-
+	m_World.m_OnEndPlay -= m_funcOnEndPlayWorld;
+	m_World.m_OnBeginPlay -= m_funcOnBeginPlayWorld;
 }
 
 bool DemoCameraCulling::Initialize(UINT Width, UINT Height)
@@ -119,14 +126,14 @@ void DemoCameraCulling::SetupModel(int n, int distance)
 	}
 }
 
-void DemoCameraCulling::OnBeginPlay(World* pWorld)
+void DemoCameraCulling::OnBeginPlayWorld(World* pWorld)
 {
-	LOG_MESSAGEA("%s World OnBeginPlay", pWorld->m_Name.c_str());
+	LOG_MESSAGEA("%s World OnBeginPlayWorld", pWorld->m_Name.c_str());
 }
 
-void DemoCameraCulling::OnEndPlay(World* pWorld)
+void DemoCameraCulling::OnEndPlayWorld(World* pWorld)
 {
-	LOG_MESSAGEA("%s World OnEndPlay", pWorld->m_Name.c_str());
+	LOG_MESSAGEA("%s World OnEndPlayWorld", pWorld->m_Name.c_str());
 }
 
 

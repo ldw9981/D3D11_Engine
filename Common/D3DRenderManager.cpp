@@ -319,6 +319,7 @@ void D3DRenderManager::Render()
 		const float clear_shadow[4] = { 0.0f ,  0.0f ,  0.0f, 1.0f };
 		m_pDeviceContext->OMSetRenderTargets(0, NULL, m_pShadowMapDSV.Get());
 		m_pDeviceContext->ClearDepthStencilView(m_pShadowMapDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+		m_pDeviceContext->PSSetShader(NULL, NULL, 0); // PS 없어도 깊이값 출력 잘되네
 
 		m_ShaderShadowSkeletalMesh.SetShader(m_pDeviceContext.Get());
 		RenderSkeletalMeshInstanceOpaque();

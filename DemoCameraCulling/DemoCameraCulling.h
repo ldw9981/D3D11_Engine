@@ -30,6 +30,10 @@ public:
 	DefaultPawn* m_pDefaultPawn = nullptr;
 	EnvironmentActor* m_pEnvironmentActor = nullptr;
 
+
+	std::function<void(World*)> m_funcOnBeginPlayWorld;
+	std::function<void(World*)> m_funcOnEndPlayWorld;
+
 	virtual bool Initialize(UINT Width, UINT Height);
 	virtual void Update();
 	virtual void Render();
@@ -38,6 +42,6 @@ public:
 
 	void SetupModel(int n, int distance); // 원점에서 부터 나선형으로 배치한다.
 
-	virtual void OnBeginPlay(World* pWorld);
-	virtual void OnEndPlay(World* pWorld);
+	void OnBeginPlayWorld(World* pWorld);
+	void OnEndPlayWorld(World* pWorld);
 };
