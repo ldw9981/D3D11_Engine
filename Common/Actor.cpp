@@ -38,11 +38,12 @@ SceneComponent* Actor::GetRootComponent() const
 
 void Actor::OnBeginPlay()
 {
-	m_ActorStatus = ActorStatus::PLAY;
+	m_ActorStatus = ActorStatus::PLAY;	
 	for (auto& pComponent : m_OwnedComponents)
 	{
 		pComponent->OnBeginPlay();
 	}
+	m_OnBeginPlay.Invoke();
 	if (b_UseInputProcesser)
 	{
 		InputManager::Instance->AddInputProcesser(this);
@@ -55,11 +56,11 @@ void Actor::OnEndPlay()
 	{
 		InputManager::Instance->RemoveInputProcesser(this);
 	}
-
 	for (auto& pComponent : m_OwnedComponents)
 	{
 		pComponent->OnEndPlay();
 	}
+	m_OnEndPlay.Invoke();
 }
 
 void Actor::OnInputProcess(const Keyboard::State& KeyState, const Keyboard::KeyboardStateTracker& KeyTracker, const Mouse::State& MouseState, const Mouse::ButtonStateTracker& MouseTracker)

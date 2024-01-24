@@ -28,7 +28,8 @@ public:
 	std::list<std::shared_ptr<Component>> m_OwnedComponents;	// 소유한 컴포넌트들
 	SceneComponent* m_pRootComponent = nullptr;		// 컴포넌트 중에 어느게 루트인지 설정
 	std::function<void()> m_OnRenderImGUI = std::bind(&Actor::OnRenderImGUI, this);
-
+	Deligate	m_OnBeginPlay;
+	Deligate	m_OnEndPlay;
 protected:
 	World* m_pOwner = nullptr;					// 이 게임 오브젝트가 속한 월드
 	bool b_UseInputProcesser = false;
