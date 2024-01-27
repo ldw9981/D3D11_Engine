@@ -5,20 +5,9 @@ void TestPropertyContainer();
 enum class EPropertyType
 {
 	None,
-	Bool,
-	Char,
-	UnsignedChar,
-	Short,
-	UnsignedShort,
-	Int,
-	UnsignedInt,
-	Long,
-	UnsignedLong,
-	LongLong,
-	UnsignedLongLong,
-	Float,
-	Double,
-	LongDouble,
+	Bool,	
+	Int,	
+	Float,	
 	Vector2,
 	Vector3,
 	Vector4,
@@ -50,58 +39,14 @@ public:
 		if (typeid(T) == typeid(bool))
 		{
 			return EPropertyType::Bool;
-		}
-		else if (typeid(T) == typeid(char))
-		{
-			return EPropertyType::Char;
-		}
-		else if (typeid(T) == typeid(unsigned char))
-		{
-			return EPropertyType::UnsignedChar;
-		}
-		else if (typeid(T) == typeid(short))
-		{
-			return EPropertyType::Short;
-		}
-		else if (typeid(T) == typeid(unsigned short))
-		{
-			return EPropertyType::UnsignedShort;
-		}
+		}	
 		else if (typeid(T) == typeid(int))
 		{
 			return EPropertyType::Int;
 		}
-		else if (typeid(T) == typeid(unsigned int))
-		{
-			return EPropertyType::UnsignedInt;
-		}
-		else if (typeid(T) == typeid(long))
-		{
-			return EPropertyType::Long;
-		}
-		else if (typeid(T) == typeid(unsigned long))
-		{
-			return EPropertyType::UnsignedLong;
-		}
-		else if (typeid(T) == typeid(long long))
-		{
-			return EPropertyType::LongLong;
-		}
-		else if (typeid(T) == typeid(unsigned long long))
-		{
-			return EPropertyType::UnsignedLongLong;
-		}
 		else if (typeid(T) == typeid(float))
 		{
 			return EPropertyType::Float;
-		}
-		else if (typeid(T) == typeid(double))
-		{
-			return EPropertyType::Double;
-		}
-		else if (typeid(T) == typeid(long double))
-		{
-			return EPropertyType::LongDouble;
 		}
 		else if (typeid(T) == typeid(Math::Vector2))
 		{
@@ -141,99 +86,21 @@ public:
 	}	
 
 	template<typename T>
-	void SetPropertyData(const std::string& Name, T& input)
+	bool SetPropertyData(const std::string& Name, T& input)
 	{
 		auto it = m_Properties.find(Name);
 		T test = {};
 		EPropertyType inputType = GetPropertyType<T>(test);
 
 		if (it == m_Properties.end())
-			return;		
+			return false;		
 		
 		Property& prop = it->second;
 		if (prop.Type != inputType)
-			return;
+			return false;
 		
-		if (prop.Type == EPropertyType::Bool)
-		{
-			*(bool*)prop.Ptr = input;
-		}
-		else if (prop.Type == EPropertyType::Char)
-		{
-			*(char*)prop.Ptr = input;
-		}
-		else if (prop.Type == EPropertyType::UnsignedChar)
-		{
-			*(unsigned char*)prop.Ptr = input;
-		}
-		else if (prop.Type == EPropertyType::Short)
-		{
-			*(short*)prop.Ptr = input;
-		}
-		else if (prop.Type == EPropertyType::UnsignedShort)
-		{
-			*(unsigned short*)prop.Ptr = input;
-		}
-		else if (prop.Type == EPropertyType::Int)
-		{
-			*(int*)prop.Ptr = input;
-		}
-		else if (prop.Type == EPropertyType::UnsignedInt)
-		{
-			*(unsigned int*)prop.Ptr = input;
-		}
-		else if (prop.Type == EPropertyType::Long)
-		{
-			*(long*)prop.Ptr = input;
-		}
-		else if (prop.Type == EPropertyType::UnsignedLong)
-		{
-			*(unsigned long*)prop.Ptr = input;
-		}
-		else if (prop.Type == EPropertyType::LongLong)
-		{
-			*(long long*)prop.Ptr = input;
-		}
-		else if (prop.Type == EPropertyType::UnsignedLongLong)
-		{
-			*(unsigned long long*)prop.Ptr = input;
-		}
-		else if (prop.Type == EPropertyType::Float)
-		{
-			*(float*)prop.Ptr = input;
-		}
-		else if (prop.Type == EPropertyType::Double)
-		{
-			*(double*)prop.Ptr = input;
-		}
-		else if (prop.Type == EPropertyType::LongDouble)
-		{
-			*(long double*)prop.Ptr = input;
-		}
-		else if (prop.Type == EPropertyType::Vector2)
-		{
-			*(Math::Vector2*)prop.Ptr = input;
-		}
-		else if (prop.Type == EPropertyType::Vector3)
-		{
-			*(Math::Vector3*)prop.Ptr = input;
-		}
-		else if (prop.Type == EPropertyType::Vector4)
-		{
-			*(Math::Vector4*)prop.Ptr = input;
-		}
-		else if (prop.Type == EPropertyType::Matrix)
-		{
-			*(Math::Matrix*)prop.Ptr = input;
-		}
-		else if (prop.Type == EPropertyType::String)
-		{
-			*(std::string*)prop.Ptr = input;
-		}
-		else if (prop.Type == EPropertyType::WString)
-		{
-			*(std::wstring*)prop.Ptr = input;
-		}	
+		*(T*)prop.Ptr = input;		
+		return true;
 	}
 	template<typename T>
 	bool GetPropertyData(const std::string& Name, T& output)
@@ -252,8 +119,10 @@ public:
 		output = *static_cast<T*>(prop.Ptr);
 		return true;
 	}	
-};
 
+	void SerializeOut(nlohmann::ordered_json& object);
+	void SerializeIn(nlohmann::ordered_json& object);
+};
 
 
 class TestClass : public PropertyContainer

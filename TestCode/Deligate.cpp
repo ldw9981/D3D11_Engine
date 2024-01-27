@@ -8,6 +8,8 @@ void TestDeligate()
 {
 	Deligate1<int> deligate;
 
+	
+
 	std::function<void(int)> func[4];
 	func[0] = [](int a) {std::cout << "Hello1" << std::endl; };
 	func[1] = [](int a) {std::cout << "Hello2" << std::endl; };
