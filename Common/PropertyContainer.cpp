@@ -135,45 +135,46 @@ void PropertyContainer::OnRenderImGUI()
 		else if (property.second.Type == EPropertyType::Int)
 		{
 			int* pPtr = (int*)property.second.Ptr;
-			ImGui::InputInt(property.first.c_str(), pPtr);
+			ImGui::DragInt(property.first.c_str(), pPtr);
 		}
 		else if (property.second.Type == EPropertyType::Float)
 		{
 			float* pPtr = (float*)property.second.Ptr;
-			ImGui::InputFloat(property.first.c_str(), pPtr);
+			ImGui::DragFloat(property.first.c_str(), pPtr);
 		}
 		else if (property.second.Type == EPropertyType::Vector2)
 		{
 			Math::Vector2* pPtr = (Math::Vector2*)property.second.Ptr;
-			ImGui::InputFloat2(property.first.c_str(), (float*)pPtr);
+			ImGui::DragFloat2(property.first.c_str(), (float*)pPtr);
 		}
 		else if (property.second.Type == EPropertyType::Vector3)
 		{
 			Math::Vector3* pPtr = (Math::Vector3*)property.second.Ptr;
-			ImGui::InputFloat3(property.first.c_str(), (float*)pPtr);
+			ImGui::DragFloat3(property.first.c_str(), (float*)pPtr);
 		}
 		else if (property.second.Type == EPropertyType::Vector4)
 		{
 			Math::Vector4* pPtr = (Math::Vector4*)property.second.Ptr;
-			ImGui::InputFloat4(property.first.c_str(), (float*)pPtr);
+			ImGui::DragFloat4(property.first.c_str(), (float*)pPtr);
 		}
 		else if (property.second.Type == EPropertyType::Matrix)
 		{
 			Math::Matrix* pPtr = (Math::Matrix*)property.second.Ptr;
-			ImGui::InputFloat4(property.first.c_str(), (float*)pPtr);
-			ImGui::InputFloat4(property.first.c_str(), (float*)pPtr + 4);
-			ImGui::InputFloat4(property.first.c_str(), (float*)pPtr + 8);
-			ImGui::InputFloat4(property.first.c_str(), (float*)pPtr + 12);
+			ImGui::DragFloat4(property.first.c_str(), (float*)pPtr);
+			ImGui::DragFloat4(property.first.c_str(), (float*)pPtr + 4);
+			ImGui::DragFloat4(property.first.c_str(), (float*)pPtr + 8);
+			ImGui::DragFloat4(property.first.c_str(), (float*)pPtr + 12);
 		}
 		else if (property.second.Type == EPropertyType::String)
 		{
-			//std::string* pPtr = (std::string*)property.second.Ptr;
-			//ImGui::InputText(property.first.c_str(), pPtr);
+			std::string* pPtr = (std::string*)property.second.Ptr;		
+			ImGui::InputText(property.first.c_str(), pPtr);
 		}
 		else if (property.second.Type == EPropertyType::WString)
 		{
 			//std::wstring* pPtr = (std::wstring*)property.second.Ptr;
 			//ImGui::InputText(property.first.c_str(), (char*)pPtr, 256);
+			
 		}
 	}
 }

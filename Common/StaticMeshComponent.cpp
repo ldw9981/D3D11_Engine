@@ -8,7 +8,7 @@
 
 StaticMeshComponent::StaticMeshComponent()
 {
-	//ADD_PROPERTY(m_SceneFilePath);
+	ADD_PROPERTY(m_SceneFilePath);
 	D3DRenderManager::Instance->AddStaticMeshComponent(this);
 }
 
@@ -23,13 +23,15 @@ void StaticMeshComponent::Update(float DeltaTime)
 }
 
 bool StaticMeshComponent::ReadSceneResourceFromFBX(std::string filePath)
-{
+{	
 	// FBX 파일 읽기
 	std::shared_ptr<StaticMeshSceneResource> sceneResource = ResourceManager::Instance->CreateStaticMeshSceneResource(filePath);
 	if (sceneResource == nullptr)
 	{
 		return false;
 	}
+
+	m_SceneFilePath = filePath;
 	CreateMeshInstance(sceneResource);
 	return true;
 }

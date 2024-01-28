@@ -65,6 +65,8 @@ void SceneComponent::OnEndPlay()
 void SceneComponent::OnRenderImGUI()
 {
 	__super::OnRenderImGUI();
+		
+
 	m_bDirty =true;
 }
 

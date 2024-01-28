@@ -8,7 +8,7 @@ Component::Component()
 
 void Component::OnRenderImGUI()
 {
-	if (ImGui::TreeNode(m_Name.c_str()))
+	if (ImGui::TreeNodeEx(m_Name.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		PropertyContainer::OnRenderImGUI();
 		ImGui::TreePop();		
