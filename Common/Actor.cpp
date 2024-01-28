@@ -110,7 +110,14 @@ Component* Actor::GetComponentPtrByName(const std::string& Name)
 
 void Actor::OnRenderImGUI()
 {	
-	ImGui::Begin(m_Name.c_str());
+	ImGui::Begin("Properties");
+
+	if (ImGui::TreeNodeEx(m_Name.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		PropertyContainer::OnRenderImGUI();
+		ImGui::TreePop();
+	}
+
 	for (auto& pComponent : m_OwnedComponents)
 	{
 		pComponent->OnRenderImGUI();
