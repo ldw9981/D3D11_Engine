@@ -109,9 +109,8 @@ Component* Actor::GetComponentPtrByName(const std::string& Name)
 }
 
 void Actor::OnRenderImGUI()
-{
-	std::string Title = __FUNCTION__;
-	ImGui::Begin(Title.c_str());
+{	
+	ImGui::Begin(m_Name.c_str());
 	for (auto& pComponent : m_OwnedComponents)
 	{
 		pComponent->OnRenderImGUI();

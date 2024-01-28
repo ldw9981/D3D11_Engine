@@ -8,7 +8,7 @@
 class SceneComponent: public Component, public Transform
 {
 public:
-	SceneComponent() {};
+	SceneComponent();
 	~SceneComponent();
 protected:
 	Math::Vector3 m_LocalPosition = Math::Vector3(0.0f, 0.0f, 0.0f);

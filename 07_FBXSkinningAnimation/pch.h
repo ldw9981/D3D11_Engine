@@ -29,6 +29,7 @@
 #include <utility>
 #include <algorithm>
 #include <functional>
+#include <nlohmann/json.hpp>
 
 namespace Math = DirectX::SimpleMath;
 using namespace DirectX;

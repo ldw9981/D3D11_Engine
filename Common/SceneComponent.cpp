@@ -3,6 +3,13 @@
 
 
 
+SceneComponent::SceneComponent()
+{
+	ADD_PROPERTY(m_LocalPosition);
+	ADD_PROPERTY(m_LocalRotation);
+	ADD_PROPERTY(m_LocalScale);	
+}
+
 SceneComponent::~SceneComponent()
 {
 }
@@ -57,13 +64,7 @@ void SceneComponent::OnEndPlay()
 
 void SceneComponent::OnRenderImGUI()
 {
-	if (ImGui::TreeNode(m_Name.c_str()))
-	{
-		ImGui::DragFloat3("LocalPosition", &m_LocalPosition.x, 0.1f);
-		ImGui::DragFloat3("LocalRotation", &m_LocalRotation.x, 0.1f);
-		ImGui::DragFloat3("LocalScale", &m_LocalScale.x, 0.1f);
-		ImGui::TreePop();
-	}
+	__super::OnRenderImGUI();
 	m_bDirty =true;
 }
 

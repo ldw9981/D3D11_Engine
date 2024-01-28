@@ -8,6 +8,7 @@
 #include "SceneComponent.h"
 #include "CollisionComponent.h"
 #include "D3DRenderManager.h"
+#include "Object.h"
 
 class Component;
 class World;
@@ -18,7 +19,7 @@ enum class ActorStatus
 	PLAY,
 	DESTROY
 };
-class Actor: public InputProcesser
+class Actor: public Object, public InputProcesser
 {
 	friend class World;
 public:

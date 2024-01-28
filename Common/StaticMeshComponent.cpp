@@ -8,6 +8,7 @@
 
 StaticMeshComponent::StaticMeshComponent()
 {
+	//ADD_PROPERTY(m_SceneFilePath);
 	D3DRenderManager::Instance->AddStaticMeshComponent(this);
 }
 

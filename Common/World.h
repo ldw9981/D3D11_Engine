@@ -27,6 +27,7 @@ public:
 		std::shared_ptr<T> newObject = std::make_shared<T>();
 		newObject->SetOwner(this);
 		newObject->m_iteratorInWorld = m_Actors.insert(m_Actors.end(), newObject);
+		newObject->SetName(typeid(T).name() );
 		return newObject;
 	}
 

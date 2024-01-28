@@ -1,19 +1,17 @@
 #pragma once
 
-void TestPropertyContainer();
-
 enum class EPropertyType
 {
 	None,
-	Bool,	
-	Int,	
-	Float,	
+	Bool,
+	Int,
+	Float,
 	Vector2,
 	Vector3,
 	Vector4,
 	Matrix,
 	String,
-	WString,	
+	WString,
 };
 
 struct Property
@@ -35,11 +33,11 @@ public:
 
 	template<typename T>
 	EPropertyType GetPropertyType(T Data)
-	{		
+	{
 		if (typeid(T) == typeid(bool))
 		{
 			return EPropertyType::Bool;
-		}	
+		}
 		else if (typeid(T) == typeid(int))
 		{
 			return EPropertyType::Int;
@@ -76,14 +74,14 @@ public:
 		return EPropertyType::None;
 	}
 	template<typename T>
-	void  AddProperty(std::string Name,T* pData)
+	void  AddProperty(std::string Name, T* pData)
 	{
 		Property prop;
 		T test = {};
-		prop.Type = GetPropertyType<T>(test);		
+		prop.Type = GetPropertyType<T>(test);
 		prop.Ptr = (void*)pData;
 		m_Properties.insert(std::make_pair(Name, prop));
-	}	
+	}
 
 	template<typename T>
 	bool SetPropertyData(const std::string& Name, T& input)
@@ -93,13 +91,13 @@ public:
 		EPropertyType inputType = GetPropertyType<T>(test);
 
 		if (it == m_Properties.end())
-			return false;		
-		
+			return false;
+
 		Property& prop = it->second;
 		if (prop.Type != inputType)
 			return false;
-		
-		*(T*)prop.Ptr = input;		
+
+		*(T*)prop.Ptr = input;
 		return true;
 	}
 	template<typename T>
@@ -118,31 +116,10 @@ public:
 
 		output = *static_cast<T*>(prop.Ptr);
 		return true;
-	}	
+	}
 
 	void SerializeOut(nlohmann::ordered_json& object);
 	void SerializeIn(nlohmann::ordered_json& object);
 	void OnRenderImGUI();
 };
 
-
-class TestClass : public PropertyContainer
-{
-public:
-	TestClass()
-	{
-		m_TestInt = 666;
-		m_TestMatrix = Math::Matrix::Identity;
-		ADD_PROPERTY(m_TestInt);	// 		AddProperty("m_TestInt", &m_TestInt);
-		ADD_PROPERTY(m_TestMatrix); //		AddProperty("m_TestMatrix", &m_TestMatrix);
-	}
-	~TestClass() {};
-
-public:
-	int m_TestInt;
-	Math::Matrix m_TestMatrix;
-
-	void SerializeOut(nlohmann::ordered_json& object);
-
-	void SerializeIn(nlohmann::ordered_json& object);
-};

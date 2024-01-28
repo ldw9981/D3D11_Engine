@@ -31,6 +31,7 @@
 #include <imgui.h>
 #include <imgui_impl_win32.h>
 #include <imgui_impl_dx11.h>
+#include <nlohmann/json.hpp>
 
 namespace Math = DirectX::SimpleMath;
 using namespace DirectX;

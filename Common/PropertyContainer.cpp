@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "PropertyContainer.h"
 
+
 void PropertyContainer::SerializeOut(nlohmann::ordered_json& object)
 {
 	for (auto& property : m_Properties)
@@ -55,7 +56,7 @@ void PropertyContainer::SerializeOut(nlohmann::ordered_json& object)
 			std::string value;
 			GetPropertyData<std::string>(property.first, value);
 			object[property.first] = value;
-		}	
+		}
 		else if (property.second.Type == EPropertyType::WString)
 		{
 			std::wstring value;
@@ -123,30 +124,56 @@ void PropertyContainer::SerializeIn(nlohmann::ordered_json& object)
 
 void PropertyContainer::OnRenderImGUI()
 {
-
+	for (auto& property : m_Properties)
+	{
+		if (property.second.Type == EPropertyType::Bool)
+		{
+			bool* pPtr = (bool*)property.second.Ptr;
+			ImGui::Checkbox(property.first.c_str(), pPtr);
+			
+		}
+		else if (property.second.Type == EPropertyType::Int)
+		{
+			int* pPtr = (int*)property.second.Ptr;
+			ImGui::InputInt(property.first.c_str(), pPtr);
+		}
+		else if (property.second.Type == EPropertyType::Float)
+		{
+			float* pPtr = (float*)property.second.Ptr;
+			ImGui::InputFloat(property.first.c_str(), pPtr);
+		}
+		else if (property.second.Type == EPropertyType::Vector2)
+		{
+			Math::Vector2* pPtr = (Math::Vector2*)property.second.Ptr;
+			ImGui::InputFloat2(property.first.c_str(), (float*)pPtr);
+		}
+		else if (property.second.Type == EPropertyType::Vector3)
+		{
+			Math::Vector3* pPtr = (Math::Vector3*)property.second.Ptr;
+			ImGui::InputFloat3(property.first.c_str(), (float*)pPtr);
+		}
+		else if (property.second.Type == EPropertyType::Vector4)
+		{
+			Math::Vector4* pPtr = (Math::Vector4*)property.second.Ptr;
+			ImGui::InputFloat4(property.first.c_str(), (float*)pPtr);
+		}
+		else if (property.second.Type == EPropertyType::Matrix)
+		{
+			Math::Matrix* pPtr = (Math::Matrix*)property.second.Ptr;
+			ImGui::InputFloat4(property.first.c_str(), (float*)pPtr);
+			ImGui::InputFloat4(property.first.c_str(), (float*)pPtr + 4);
+			ImGui::InputFloat4(property.first.c_str(), (float*)pPtr + 8);
+			ImGui::InputFloat4(property.first.c_str(), (float*)pPtr + 12);
+		}
+		else if (property.second.Type == EPropertyType::String)
+		{
+			//std::string* pPtr = (std::string*)property.second.Ptr;
+			//ImGui::InputText(property.first.c_str(), pPtr);
+		}
+		else if (property.second.Type == EPropertyType::WString)
+		{
+			//std::wstring* pPtr = (std::wstring*)property.second.Ptr;
+			//ImGui::InputText(property.first.c_str(), (char*)pPtr, 256);
+		}
+	}
 }
-
-void TestPropertyContainer()
-{
-	TestClass b;
-
-	std::string a = typeid(Math::Vector2).name();
-
-	int resultInt;
-	Math::Matrix resultMat;
-	b.GetPropertyData<int>(std::string("m_TestInt"), resultInt);
-	b.GetPropertyData<Math::Matrix>(std::string("m_TestMatrix"), resultMat);
-}
-
-void TestClass::SerializeOut(nlohmann::ordered_json& object)
-{	
-	object["ClassName"] = typeid(this).name();
-	PropertyContainer::SerializeOut(object);
-
-}
-
-void TestClass::SerializeIn(nlohmann::ordered_json& object)
-{	
-	PropertyContainer::SerializeIn(object);
-}
-
