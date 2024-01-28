@@ -45,4 +45,5 @@ public:
 	void CreateHierachy(SkeletonResource* skeleton);
 	virtual void OnBeginPlay() override;
 	virtual void OnEndPlay() override;
+	virtual void OnEnterStringImGUI(std::string PropertyName, std::string PropertyData) override;
 };

@@ -15,6 +15,7 @@
 
 SkeletalMeshComponent::SkeletalMeshComponent()
 {
+	ADD_PROPERTY(m_SceneFilePath);
 	D3DRenderManager::Instance->AddSkeletalMeshComponent(this);
 }
 
@@ -157,4 +158,12 @@ void SkeletalMeshComponent::OnBeginPlay()
 void SkeletalMeshComponent::OnEndPlay()
 {
 	__super::OnEndPlay();
+}
+
+void SkeletalMeshComponent::OnEnterStringImGUI(std::string PropertyName, std::string PropertyData)
+{
+	if (PropertyName == "m_SceneFilePath")
+	{
+		ReadSceneResourceFromFBX(PropertyData);
+	}	
 }
