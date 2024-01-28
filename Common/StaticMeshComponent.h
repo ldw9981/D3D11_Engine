@@ -30,6 +30,7 @@ public:
 
 	virtual void OnBeginPlay();
 	virtual void OnEndPlay();
+	virtual void OnEnterStringImGUI(std::string PropertyName,std::string PropertyData) override;
 };
 
 

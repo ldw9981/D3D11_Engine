@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "PropertyContainer.h"
 
-
 void PropertyContainer::SerializeOut(nlohmann::ordered_json& object)
 {
 	for (auto& property : m_Properties)
@@ -57,12 +56,6 @@ void PropertyContainer::SerializeOut(nlohmann::ordered_json& object)
 			GetPropertyData<std::string>(property.first, value);
 			object[property.first] = value;
 		}
-		else if (property.second.Type == EPropertyType::WString)
-		{
-			std::wstring value;
-			GetPropertyData<std::wstring>(property.first, value);
-			object[property.first] = value;
-		}
 	}
 }
 
@@ -113,13 +106,9 @@ void PropertyContainer::SerializeIn(nlohmann::ordered_json& object)
 			std::string value = object[property.first];
 			SetPropertyData<std::string>(property.first, value);
 		}
-		else if (property.second.Type == EPropertyType::WString)
-		{
-			std::wstring value = object[property.first];
-			SetPropertyData<std::wstring>(property.first, value);
-		}
 	}
 }
+
 
 
 void PropertyContainer::OnRenderImGUI()
@@ -167,14 +156,16 @@ void PropertyContainer::OnRenderImGUI()
 		}
 		else if (property.second.Type == EPropertyType::String)
 		{
-			std::string* pPtr = (std::string*)property.second.Ptr;		
-			ImGui::InputText(property.first.c_str(), pPtr);
-		}
-		else if (property.second.Type == EPropertyType::WString)
-		{
-			//std::wstring* pPtr = (std::wstring*)property.second.Ptr;
-			//ImGui::InputText(property.first.c_str(), (char*)pPtr, 256);
-			
+			std::string* pPtr = (std::string*)property.second.Ptr;					
+			if (ImGui::InputText(property.first.c_str(), pPtr, ImGuiInputTextFlags_EnterReturnsTrue))
+			{
+				OnEnterStringImGUI(property.first, *pPtr);
+			}
 		}
 	}
+}
+
+void PropertyContainer::OnEnterStringImGUI(std::string PropertyName,std::string PropertyData)
+{
+	// 자식 클래스에서 재정의 하여 스트링 처리를 구현
 }

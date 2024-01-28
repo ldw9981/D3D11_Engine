@@ -70,3 +70,11 @@ void StaticMeshComponent::OnBeginPlay()
 void StaticMeshComponent::OnEndPlay()
 {
 }
+
+void StaticMeshComponent::OnEnterStringImGUI(std::string PropertyName, std::string PropertyData)
+{
+	if (PropertyName == "m_SceneFilePath")
+	{
+		ReadSceneResourceFromFBX(PropertyData);
+	}
+}

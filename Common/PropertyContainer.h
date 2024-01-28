@@ -11,7 +11,6 @@ enum class EPropertyType
 	Vector4,
 	Matrix,
 	String,
-	WString,
 };
 
 struct Property
@@ -30,6 +29,8 @@ public:
 	~PropertyContainer() {};
 
 	std::map<std::string, Property> m_Properties;
+
+	
 
 	template<typename T>
 	EPropertyType GetPropertyType(T Data)
@@ -65,11 +66,7 @@ public:
 		else if (typeid(T) == typeid(std::string))
 		{
 			return EPropertyType::String;
-		}
-		else if (typeid(T) == typeid(std::wstring))
-		{
-			return EPropertyType::WString;
-		}
+		}	
 		assert(false);
 		return EPropertyType::None;
 	}
@@ -121,5 +118,6 @@ public:
 	void SerializeOut(nlohmann::ordered_json& object);
 	void SerializeIn(nlohmann::ordered_json& object);
 	void OnRenderImGUI();
+	virtual void OnEnterStringImGUI(std::string PropertyName, std::string PropertyData);
 };
 
