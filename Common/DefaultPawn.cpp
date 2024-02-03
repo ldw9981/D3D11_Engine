@@ -112,13 +112,9 @@ void DefaultPawn::OnInputProcess(const Keyboard::State& KeyState, const Keyboard
 			{
 				if(it.pComponent == m_pSphereComponent)
 					continue;
-
-				if (m_pSelectedActor != nullptr)
-				{
-					D3DRenderManager::Instance->m_OnRenderImGUI -= m_pSelectedActor->m_OnRenderImGUI;
-				}
-				m_pSelectedActor = it.pComponent->GetOwner();
-				D3DRenderManager::Instance->m_OnRenderImGUI += m_pSelectedActor->m_OnRenderImGUI;
+								
+				D3DRenderManager::Instance->SetInspectedActor(it.pComponent->GetOwner()->GetWeakPtr());
+				
 				break;
 			}
 		}		

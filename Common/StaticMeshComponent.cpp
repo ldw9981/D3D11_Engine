@@ -74,7 +74,16 @@ void StaticMeshComponent::OnEndPlay()
 void StaticMeshComponent::OnEnterStringImGUI(std::string PropertyName, std::string PropertyData)
 {
 	if (PropertyName == "m_SceneFilePath")
-	{
-		ReadSceneResourceFromFBX(PropertyData);
+	{		
+		D3DRenderManager::Instance->RequestFileOpenDialog(".fbx", m_OnResultOpenFileDialog);
+	}
+}
+
+
+void StaticMeshComponent::OnResultOpenFileDialog(const imgui_addons::ImGuiFileBrowser& dialog)
+{
+	if (dialog.selected_path.empty() == false)
+	{		
+		ReadSceneResourceFromFBX(dialog.selected_path);
 	}
 }

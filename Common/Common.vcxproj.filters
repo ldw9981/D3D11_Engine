@@ -40,6 +40,12 @@
     <Filter Include="HLSL">
       <UniqueIdentifier>{b4fdbb3d-7fa5-4003-b80a-489a180f0059}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\ImGuiAddOn">
+      <UniqueIdentifier>{5b13e7a5-1008-4d6b-9a5d-e7db23a787b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\ImGuiAddOn">
+      <UniqueIdentifier>{7f9f418b-85d0-48e5-a454-ebc0d9845925}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor.h">
@@ -189,6 +195,9 @@
     <ClInclude Include="Object.h">
       <Filter>헤더 파일\Framework</Filter>
     </ClInclude>
+    <ClInclude Include="ImGuiFileBrowser.h">
+      <Filter>헤더 파일\ImGuiAddOn</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp">
@@ -334,6 +343,9 @@
     </ClCompile>
     <ClCompile Include="Object.cpp">
       <Filter>소스 파일\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGuiFileBrowser.cpp">
+      <Filter>소스 파일\ImGuiAddOn</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

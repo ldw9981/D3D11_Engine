@@ -153,6 +153,7 @@
     <ClInclude Include="EnvironmentMeshComponent.h" />
     <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="GeometryGenerator.h" />
+    <ClInclude Include="ImGuiFileBrowser.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="MeshInstance.h" />
     <ClInclude Include="MeshResource.h" />
@@ -204,6 +205,14 @@
     <ClCompile Include="EnvironmentMeshComponent.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="GeometryGenerator.cpp" />
+    <ClCompile Include="ImGuiFileBrowser.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="MeshResource.cpp" />
     <ClCompile Include="MovementComponent.cpp" />

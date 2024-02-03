@@ -520,6 +520,9 @@ void D3DRenderManager::RenderImGui()
 		}		
 		
 		m_OnRenderImGUI.Invoke();
+
+		if(m_OnResultOpenFileDialog.m_Container.empty() == false)
+			ImGUI_ShowOpenDialog();
 	}
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
@@ -790,6 +793,13 @@ void D3DRenderManager::SetShadowViewPort(UINT Width, UINT Height)
 	m_ShadowViewport.MaxDepth = 1.0f;
 }
 
+void D3DRenderManager::RequestFileOpenDialog(const char* ext, std::function<void(const imgui_addons::ImGuiFileBrowser& dialog)> onResult)
+{
+	m_OnResultOpenFileDialog.Clear();
+	m_OnResultOpenFileDialog += onResult;
+	m_OpenFileFilter = std::string(ext);
+}
+
 void D3DRenderManager::MSAACheck(DXGI_FORMAT format, UINT& SampleCount, UINT& Quality) {
 
 	// Check for MSAA Support
@@ -814,6 +824,26 @@ void D3DRenderManager::MSAACheck(DXGI_FORMAT format, UINT& SampleCount, UINT& Qu
 		std::cout << "Failed to find MSAA Quality and Sample Count combination" << std::endl;
 	}
 
+}
+
+void D3DRenderManager::ImGUI_ShowOpenDialog()
+{
+	/* Optional third parameter. Support opening only compressed rar/zip files.
+	 * Opening any other file will show error, return false and won't close the dialog.
+	 */
+	ImGui::OpenPopup("Open File");
+	if (m_FileDialog.showFileDialog("Open File", imgui_addons::ImGuiFileBrowser::DialogMode::OPEN, ImVec2(700, 310), m_OpenFileFilter.c_str()))
+	{
+		m_OnResultOpenFileDialog.Invoke(m_FileDialog);
+		m_OnResultOpenFileDialog.Clear();		
+	}		
+	else
+	{
+		if (!ImGui::IsPopupOpen("Open File"))
+		{	// 실패로 닫혔을때
+			m_OnResultOpenFileDialog.Clear();
+		}
+	}	
 }
 
 void D3DRenderManager::CreateBuffers()
@@ -1059,6 +1089,17 @@ void D3DRenderManager::SetEnvironment(EnvironmentActor* pActor)
 void D3DRenderManager::SetDirectionLight(Math::Vector3 direction)
 {
 	m_Light.Direction = direction;
+}
+
+void D3DRenderManager::SetInspectedActor(std::weak_ptr<Actor> val)
+{
+	if (m_InspectedActor.expired() == false)
+	{
+		auto actor = m_InspectedActor.lock();		
+		m_OnRenderImGUI -= actor->m_OnRenderImGUI; // 이전에 등록한거 제거
+	}
+	m_InspectedActor = val;
+	m_OnRenderImGUI += val.lock()->m_OnRenderImGUI; // 새롭게 등록
 }
 
 void D3DRenderManager::AddDebugStringToImGuiWindow(const std::string& header,const std::string& str)

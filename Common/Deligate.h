@@ -8,11 +8,11 @@ public:
 	Deligate() {};
 	~Deligate() {};
 
-	std::multimap<size_t, std::function<void()>> m_Container;
+	std::multimap<size_t, std::function<void()>> m_Container;	
 
 	void operator+=(std::function<void()> func)
 	{
-		m_Container.insert(std::make_pair(func.target_type().hash_code(), func));
+		m_Container.insert(std::make_pair(func.target_type().hash_code(), func));	// 해시코드 중복허용으로 같은 함수도 여러번 등록가능 
 	}
 
 	void Invoke()
@@ -29,6 +29,11 @@ public:
 		{
 			m_Container.erase(it);
 		}
+	}
+
+	void Clear()
+	{
+		m_Container.clear();
 	}
 };
 
@@ -63,6 +68,11 @@ public:
 			m_Container.erase(it);
 		}
 	}
+
+	void Clear()
+	{
+		m_Container.clear();
+	}
 };
 
 template<typename T1,typename T2>
@@ -94,6 +104,11 @@ public:
 		{
 			m_Container.erase(it);
 		}
+	}
+
+	void Clear()
+	{
+		m_Container.clear();
 	}
 };
 
@@ -127,6 +142,11 @@ public:
 			m_Container.erase(it);
 		}
 	}
+
+	void Clear()
+	{
+		m_Container.clear();
+	}
 };
 
 template<typename T1, typename T2, typename T3,typename T4>
@@ -158,5 +178,10 @@ public:
 		{
 			m_Container.erase(it);
 		}
+	}
+
+	void Clear()
+	{
+		m_Container.clear();
 	}
 };

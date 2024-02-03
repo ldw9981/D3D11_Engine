@@ -5,6 +5,8 @@
 #include "FrameBuffer.h"
 #include "ShaderProgram.h"
 #include "Deligate.h"
+#include "ImGuiFileBrowser.h"
+
 
 using namespace DirectX::SimpleMath;
 using namespace DirectX;
@@ -85,7 +87,7 @@ struct DebugRay
 	float time;
 };
 
-
+class Actor;
 class Material;
 class StaticMeshInstance;
 class SkeletalMeshInstance;
@@ -197,6 +199,12 @@ public:
 	bool m_bUseCulling = true;
 	UINT m_SampleQuality = 0;
 	UINT m_SampleCount = 4;	
+
+	bool m_bRequestOpenFileDialog = false;
+	imgui_addons::ImGuiFileBrowser m_FileDialog; // As a class member or globally
+	std::weak_ptr<Actor> m_InspectedActor;
+	Deligate1<const imgui_addons::ImGuiFileBrowser&> m_OnResultOpenFileDialog;
+	std::string m_OpenFileFilter;
 public:
 	bool Initialize(HWND Handle,UINT Width, UINT Height);
 	void Uninitialize();
@@ -205,17 +213,21 @@ public:
 	void ApplyMaterial(Material* pMaterial);
 	void GetVideoMemoryInfo(std::string& out);
 	void GetSystemMemoryInfo(std::string& out);
+	const imgui_addons::ImGuiFileBrowser& GetFileDialog() { return m_FileDialog; }
 
-	std::weak_ptr<CameraComponent> GetCamera() const { return m_pCamera; }
+	std::weak_ptr<CameraComponent> GetCamera() { return m_pCamera; }
+	
 	void SetCamera(std::weak_ptr<CameraComponent> val) { m_pCamera = val; }
 	void SetEnvironment(EnvironmentActor* pActor);
 	void SetDirectionLight(Math::Vector3 direction);
 	void SetMaterialOverride(bool bOverride) { m_MaterialOverride.UseMarterialOverride = bOverride; }
+	void SetInspectedActor(std::weak_ptr<Actor> val);
 
 	bool GetFreezeCulling() const { return m_bFreezeCulling; }
 	void SetFreezeCulling(bool val) { m_bFreezeCulling = val; }
 	void CreateMousePickingRay(float ScreenX,float ScreenY,Math::Vector3 & Origin, Math::Vector3& Direction);
 	
+
 	//컴포넌트 등록하기
 	void AddSkeletalMeshComponent(SkeletalMeshComponent* pSkeletalMeshComponent);
 	void RemoveSkeletalMeshComponent(SkeletalMeshComponent* pSkeletalMeshComponent);
@@ -239,6 +251,9 @@ public:
 	FrameBuffer CreateFrameBuffer(UINT width, UINT height, UINT samples, DXGI_FORMAT renderTargetFormat, DXGI_FORMAT depthstencilFormat);
 	void SetBaseViewPort(UINT Width, UINT Height);
 	void SetShadowViewPort(UINT Width, UINT Height);
+
+	void RequestFileOpenDialog(const char* ext,std::function<void(const imgui_addons::ImGuiFileBrowser& dialog)> onResult);
+	void ImGUI_ShowOpenDialog();
 private:
 	void CreateBuffers();
 	void CreateShaders();	

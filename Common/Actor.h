@@ -55,7 +55,7 @@ public:
 		std::shared_ptr<T> pComponent = std::make_shared<T>();
 		pComponent->m_pOwner = this;
 		pComponent->SetName( Name);
-		m_OwnedComponents.push_back(pComponent);		
+		pComponent->m_iteratorInActor = m_OwnedComponents.insert(m_OwnedComponents.end(), pComponent);			
 		return pComponent;
 	}
 
@@ -66,6 +66,7 @@ public:
 
 	void SetWorldPosition(const Math::Vector3& val);
 	void SetWorldTransform(Math::Matrix val);
+	std::weak_ptr<Actor> GetWeakPtr() { return *m_iteratorInWorld; }
 	std::weak_ptr<Component> GetComponentWeakPtrByName(const std::string& Name);
 	Component* GetComponentPtrByName(const std::string& Name);
 	ActorStatus GetActorStatus() const { return m_ActorStatus; }

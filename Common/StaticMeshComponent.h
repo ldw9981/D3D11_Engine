@@ -19,7 +19,10 @@ public:
 	std::vector<StaticMeshInstance> m_MeshInstances;
 	
 	std::list< StaticMeshComponent*>::iterator m_ItRenderManager;
+	bool m_OpenFileDialog =false;
 
+	std::function <void(const imgui_addons::ImGuiFileBrowser& dialog)> m_OnResultOpenFileDialog = std::bind(&StaticMeshComponent::OnResultOpenFileDialog, this, std::placeholders::_1);
+public:
 	virtual void Update(float DeltaTime) override;
 	
 	bool ReadSceneResourceFromFBX(std::string filePath);
@@ -31,6 +34,8 @@ public:
 	virtual void OnBeginPlay();
 	virtual void OnEndPlay();
 	virtual void OnEnterStringImGUI(std::string PropertyName,std::string PropertyData) override;
+	
+	void OnResultOpenFileDialog(const imgui_addons::ImGuiFileBrowser& dialog);
 };
 
 
