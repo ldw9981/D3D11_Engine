@@ -793,11 +793,11 @@ void D3DRenderManager::SetShadowViewPort(UINT Width, UINT Height)
 	m_ShadowViewport.MaxDepth = 1.0f;
 }
 
-void D3DRenderManager::RequestFileOpenDialog(const char* ext, std::function<void(const imgui_addons::ImGuiFileBrowser& dialog)> onResult)
+void D3DRenderManager::RequestFileOpenDialog(std::string filters, std::function<void(const imgui_addons::ImGuiFileBrowser& dialog)> onResult)
 {
 	m_OnResultOpenFileDialog.Clear();
 	m_OnResultOpenFileDialog += onResult;
-	m_OpenFileFilter = std::string(ext);
+	m_OpenFileFilter = filters;
 }
 
 void D3DRenderManager::MSAACheck(DXGI_FORMAT format, UINT& SampleCount, UINT& Quality) {

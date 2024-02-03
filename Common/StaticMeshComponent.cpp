@@ -75,6 +75,9 @@ void StaticMeshComponent::OnEnterStringImGUI(std::string PropertyName, std::stri
 {
 	if (PropertyName == "m_SceneFilePath")
 	{		
+		std::filesystem::path path = std::filesystem::current_path();
+		//std::string lastpath = path.parent_path().string() + std::string("\\");
+
 		D3DRenderManager::Instance->RequestFileOpenDialog(".fbx", m_OnResultOpenFileDialog);
 	}
 }
@@ -84,6 +87,7 @@ void StaticMeshComponent::OnResultOpenFileDialog(const imgui_addons::ImGuiFileBr
 {
 	if (dialog.selected_path.empty() == false)
 	{		
-		ReadSceneResourceFromFBX(dialog.selected_path);
+		std::filesystem::path relative = std::filesystem::relative(dialog.selected_path, std::filesystem::current_path());
+		ReadSceneResourceFromFBX(relative.string());
 	}
 }

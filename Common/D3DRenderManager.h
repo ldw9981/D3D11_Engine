@@ -252,7 +252,7 @@ public:
 	void SetBaseViewPort(UINT Width, UINT Height);
 	void SetShadowViewPort(UINT Width, UINT Height);
 
-	void RequestFileOpenDialog(const char* ext,std::function<void(const imgui_addons::ImGuiFileBrowser& dialog)> onResult);
+	void RequestFileOpenDialog(std::string filters,std::function<void(const imgui_addons::ImGuiFileBrowser& dialog)> onResult);
 	void ImGUI_ShowOpenDialog();
 private:
 	void CreateBuffers();
