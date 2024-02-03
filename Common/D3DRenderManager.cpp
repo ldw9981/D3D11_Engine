@@ -828,18 +828,16 @@ void D3DRenderManager::MSAACheck(DXGI_FORMAT format, UINT& SampleCount, UINT& Qu
 
 void D3DRenderManager::ImGUI_ShowOpenDialog()
 {
-	/* Optional third parameter. Support opening only compressed rar/zip files.
-	 * Opening any other file will show error, return false and won't close the dialog.
-	 */
-	ImGui::OpenPopup("Open File");
-	if (m_FileDialog.showFileDialog("Open File", imgui_addons::ImGuiFileBrowser::DialogMode::OPEN, ImVec2(700, 310), m_OpenFileFilter.c_str()))
-	{
+	char label[] ="Open File";
+	ImGui::OpenPopup(label);
+	if (m_FileDialog.showFileDialog(label, imgui_addons::ImGuiFileBrowser::DialogMode::OPEN, ImVec2(700, 310), m_OpenFileFilter.c_str()))
+	{	
 		m_OnResultOpenFileDialog.Invoke(m_FileDialog);
 		m_OnResultOpenFileDialog.Clear();		
 	}		
 	else
 	{
-		if (!ImGui::IsPopupOpen("Open File"))
+		if (!ImGui::IsPopupOpen(label))
 		{	// ½ÇÆÐ·Î ´ÝÇûÀ»¶§
 			m_OnResultOpenFileDialog.Clear();
 		}
