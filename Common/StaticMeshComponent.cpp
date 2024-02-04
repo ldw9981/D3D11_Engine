@@ -8,7 +8,7 @@
 
 StaticMeshComponent::StaticMeshComponent()
 {
-	ADD_PROPERTY(m_SceneFilePath);
+	ADD_PROPERTY(m_SceneFilePath);	
 	D3DRenderManager::Instance->AddStaticMeshComponent(this);
 }
 
@@ -71,7 +71,7 @@ void StaticMeshComponent::OnEndPlay()
 {
 }
 
-void StaticMeshComponent::OnEnterStringImGUI(std::string PropertyName, std::string PropertyData)
+void StaticMeshComponent::OnPropertyChange(std::string PropertyName, std::string PropertyData)
 {
 	if (PropertyName == "m_SceneFilePath")
 	{		

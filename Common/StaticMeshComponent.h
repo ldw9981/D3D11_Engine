@@ -16,11 +16,8 @@ public:
 
 	std::string m_SceneFilePath; // BeginPlay에서 로딩
 	std::shared_ptr<StaticMeshSceneResource>  m_SceneResource;
-	std::vector<StaticMeshInstance> m_MeshInstances;
-	
+	std::vector<StaticMeshInstance> m_MeshInstances;	
 	std::list< StaticMeshComponent*>::iterator m_ItRenderManager;
-	bool m_OpenFileDialog =false;
-
 	std::function <void(const imgui_addons::ImGuiFileBrowser& dialog)> m_OnResultOpenFileDialog = std::bind(&StaticMeshComponent::OnResultOpenFileDialog, this, std::placeholders::_1);
 public:
 	virtual void Update(float DeltaTime) override;
@@ -33,7 +30,7 @@ public:
 
 	virtual void OnBeginPlay();
 	virtual void OnEndPlay();
-	virtual void OnEnterStringImGUI(std::string PropertyName,std::string PropertyData) override;
+	virtual void OnPropertyChange(std::string PropertyName,std::string PropertyData) override;
 	
 	void OnResultOpenFileDialog(const imgui_addons::ImGuiFileBrowser& dialog);
 };

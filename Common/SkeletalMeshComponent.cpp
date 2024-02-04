@@ -160,7 +160,7 @@ void SkeletalMeshComponent::OnEndPlay()
 	__super::OnEndPlay();
 }
 
-void SkeletalMeshComponent::OnEnterStringImGUI(std::string PropertyName, std::string PropertyData)
+void SkeletalMeshComponent::OnPropertyChange(std::string PropertyName, std::string PropertyData)
 {
 	if (PropertyName == "m_SceneFilePath")
 	{

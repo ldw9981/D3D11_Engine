@@ -117,7 +117,16 @@ public:
 
 	void SerializeOut(nlohmann::ordered_json& object);
 	void SerializeIn(nlohmann::ordered_json& object);
-	void OnRenderImGUI();
-	virtual void OnEnterStringImGUI(std::string PropertyName, std::string PropertyData);
+	void OnRenderImGUI();	
+
+	// 프로퍼티로 등록한 멤버변수의 값이 변경되었을때 무엇인가 해야한다면 자식클래스에서 재정의 해서 처리합니다.
+	virtual void OnPropertyChange(std::string PropertyName, bool PropertyData) {};
+	virtual void OnPropertyChange(std::string PropertyName, int PropertyData) {};
+	virtual void OnPropertyChange(std::string PropertyName, float PropertyData) {};
+	virtual void OnPropertyChange(std::string PropertyName, Math::Vector2 PropertyData) {};
+	virtual void OnPropertyChange(std::string PropertyName, Math::Vector3 PropertyData) {};
+	virtual void OnPropertyChange(std::string PropertyName, Math::Vector4 PropertyData) {};
+	virtual void OnPropertyChange(std::string PropertyName, Math::Matrix PropertyData) {};
+	virtual void OnPropertyChange(std::string PropertyName, std::string PropertyData) {};
 };
 

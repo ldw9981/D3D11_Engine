@@ -118,54 +118,72 @@ void PropertyContainer::OnRenderImGUI()
 		if (property.second.Type == EPropertyType::Bool)
 		{
 			bool* pPtr = (bool*)property.second.Ptr;
-			ImGui::Checkbox(property.first.c_str(), pPtr);
-			
+			if(ImGui::Checkbox(property.first.c_str(), pPtr))
+			{
+				OnPropertyChange(property.first, *pPtr);
+			}			
 		}
 		else if (property.second.Type == EPropertyType::Int)
 		{
 			int* pPtr = (int*)property.second.Ptr;
-			ImGui::DragInt(property.first.c_str(), pPtr);
+			if(ImGui::DragInt(property.first.c_str(), pPtr))
+			{
+				OnPropertyChange(property.first, *pPtr);
+			}
+
 		}
 		else if (property.second.Type == EPropertyType::Float)
 		{
 			float* pPtr = (float*)property.second.Ptr;
-			ImGui::DragFloat(property.first.c_str(), pPtr);
+			if(ImGui::DragFloat(property.first.c_str(), pPtr))
+			{
+				OnPropertyChange(property.first, *pPtr);
+			}
 		}
 		else if (property.second.Type == EPropertyType::Vector2)
 		{
 			Math::Vector2* pPtr = (Math::Vector2*)property.second.Ptr;
-			ImGui::DragFloat2(property.first.c_str(), (float*)pPtr);
+			if(ImGui::DragFloat2(property.first.c_str(), (float*)pPtr))
+			{
+				OnPropertyChange(property.first, *pPtr);
+			}
 		}
 		else if (property.second.Type == EPropertyType::Vector3)
 		{
 			Math::Vector3* pPtr = (Math::Vector3*)property.second.Ptr;
-			ImGui::DragFloat3(property.first.c_str(), (float*)pPtr);
+			if(ImGui::DragFloat3(property.first.c_str(), (float*)pPtr))
+			{
+				OnPropertyChange(property.first, *pPtr);
+			}	
 		}
 		else if (property.second.Type == EPropertyType::Vector4)
 		{
 			Math::Vector4* pPtr = (Math::Vector4*)property.second.Ptr;
-			ImGui::DragFloat4(property.first.c_str(), (float*)pPtr);
+			if(ImGui::DragFloat4(property.first.c_str(), (float*)pPtr))
+			{
+				OnPropertyChange(property.first, *pPtr); 
+			}
 		}
 		else if (property.second.Type == EPropertyType::Matrix)
 		{
 			Math::Matrix* pPtr = (Math::Matrix*)property.second.Ptr;
-			ImGui::DragFloat4(property.first.c_str(), (float*)pPtr);
-			ImGui::DragFloat4(property.first.c_str(), (float*)pPtr + 4);
-			ImGui::DragFloat4(property.first.c_str(), (float*)pPtr + 8);
-			ImGui::DragFloat4(property.first.c_str(), (float*)pPtr + 12);
+		
+			if (ImGui::DragFloat4(property.first.c_str(), (float*)pPtr) ||
+				ImGui::DragFloat4(property.first.c_str(), (float*)pPtr + 4) || 
+				ImGui::DragFloat4(property.first.c_str(), (float*)pPtr + 8) ||
+				ImGui::DragFloat4(property.first.c_str(), (float*)pPtr + 12))
+			{
+				OnPropertyChange(property.first, *pPtr);
+			}			
 		}
 		else if (property.second.Type == EPropertyType::String)
 		{
 			std::string* pPtr = (std::string*)property.second.Ptr;					
 			if (ImGui::InputText(property.first.c_str(), pPtr, ImGuiInputTextFlags_EnterReturnsTrue))
 			{
-				OnEnterStringImGUI(property.first, *pPtr);
+				OnPropertyChange(property.first, *pPtr);
 			}
 		}
 	}
 }
 
-void PropertyContainer::OnEnterStringImGUI(std::string PropertyName,std::string PropertyData)
-{
-	// 자식 클래스에서 재정의 하여 스트링 처리를 구현
-}
