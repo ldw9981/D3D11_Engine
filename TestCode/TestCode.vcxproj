@@ -150,6 +150,7 @@
     <ClCompile Include="PropertyContainer.cpp" />
     <ClCompile Include="TestCode.cpp" />
     <ClCompile Include="TestConstruct.cpp" />
+    <ClCompile Include="TestFileSystemPath.cpp" />
     <ClCompile Include="Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -160,6 +161,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="PropertyContainer.h" />
     <ClInclude Include="TestConstruct.h" />
+    <ClInclude Include="TestFileSystemPath.h" />
     <ClInclude Include="Transform.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

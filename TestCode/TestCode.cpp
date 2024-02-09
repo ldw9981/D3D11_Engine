@@ -11,8 +11,6 @@
 
 int main()
 {
-	//TestDeligate();
-	TestPropertyContainer();
-	//main_TestConstruct();
-	//TestGameObjectMixIn();	
+
+	
 }
