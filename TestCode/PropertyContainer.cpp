@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "PropertyContainer.h"
-
+#include <fstream>
 void PropertyContainer::SerializeOut(nlohmann::ordered_json& object)
 {
 	for (auto& property : m_Properties)
@@ -56,10 +56,10 @@ void PropertyContainer::SerializeOut(nlohmann::ordered_json& object)
 			GetPropertyData<std::string>(property.first, value);
 			object[property.first] = value;
 		}	
-		else if (property.second.Type == EPropertyType::WString)
+		else if (property.second.Type == EPropertyType::Path)
 		{
-			std::wstring value;
-			GetPropertyData<std::wstring>(property.first, value);
+			std::filesystem::path value;
+			GetPropertyData<std::filesystem::path>(property.first, value);
 			object[property.first] = value;
 		}
 	}
@@ -112,10 +112,10 @@ void PropertyContainer::SerializeIn(nlohmann::ordered_json& object)
 			std::string value = object[property.first];
 			SetPropertyData<std::string>(property.first, value);
 		}
-		else if (property.second.Type == EPropertyType::WString)
+		else if (property.second.Type == EPropertyType::Path)
 		{
-			std::wstring value = object[property.first];
-			SetPropertyData<std::wstring>(property.first, value);
+			std::filesystem::path value = object[property.first];
+			SetPropertyData<std::filesystem::path>(property.first, value);
 		}
 	}
 }
@@ -131,11 +131,20 @@ void TestPropertyContainer()
 	TestClass b;
 
 	std::string a = typeid(Math::Vector2).name();
+	std::filesystem::path path;
 
 	int resultInt;
 	Math::Matrix resultMat;
 	b.GetPropertyData<int>(std::string("m_TestInt"), resultInt);
 	b.GetPropertyData<Math::Matrix>(std::string("m_TestMatrix"), resultMat);
+	b.GetPropertyData<std::filesystem::path>(std::string("m_TestPath"), path);
+
+	nlohmann::ordered_json object;
+	b.SerializeOut(object);
+
+	std::ofstream ofs("test.json");
+	ofs << object.dump(2);
+	ofs.close();
 }
 
 void TestClass::SerializeOut(nlohmann::ordered_json& object)

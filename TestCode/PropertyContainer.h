@@ -13,7 +13,7 @@ enum class EPropertyType
 	Vector4,
 	Matrix,
 	String,
-	WString,	
+	Path,	
 };
 
 struct Property
@@ -68,9 +68,9 @@ public:
 		{
 			return EPropertyType::String;
 		}
-		else if (typeid(T) == typeid(std::wstring))
+		else if (typeid(T) == typeid(std::filesystem::path))
 		{
-			return EPropertyType::WString;
+			return EPropertyType::Path;
 		}
 		assert(false);
 		return EPropertyType::None;
@@ -135,12 +135,14 @@ public:
 		m_TestMatrix = Math::Matrix::Identity;
 		ADD_PROPERTY(m_TestInt);	// 		AddProperty("m_TestInt", &m_TestInt);
 		ADD_PROPERTY(m_TestMatrix); //		AddProperty("m_TestMatrix", &m_TestMatrix);
+		ADD_PROPERTY(m_TestPath);
 	}
 	~TestClass() {};
 
 public:
 	int m_TestInt;
 	Math::Matrix m_TestMatrix;
+	std::filesystem::path m_TestPath="C:";
 
 	void SerializeOut(nlohmann::ordered_json& object);
 

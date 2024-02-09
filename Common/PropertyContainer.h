@@ -11,6 +11,7 @@ enum class EPropertyType
 	Vector4,
 	Matrix,
 	String,
+	Path,
 };
 
 struct Property
@@ -66,7 +67,12 @@ public:
 		else if (typeid(T) == typeid(std::string))
 		{
 			return EPropertyType::String;
-		}	
+		}
+		else if (typeid(T) == typeid(std::filesystem::path))
+		{
+			return EPropertyType::Path;
+		}
+		
 		assert(false);
 		return EPropertyType::None;
 	}
