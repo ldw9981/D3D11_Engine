@@ -75,9 +75,6 @@ void StaticMeshComponent::OnPropertyChange(std::string PropertyName, std::string
 {
 	if (PropertyName == "m_SceneFilePath")
 	{		
-		std::filesystem::path path = std::filesystem::current_path();
-		//std::string lastpath = path.parent_path().string() + std::string("\\");
-
 		D3DRenderManager::Instance->RequestFileOpenDialog(".fbx", m_OnResultOpenFileDialog);
 	}
 }
